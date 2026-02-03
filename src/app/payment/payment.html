@@ -1,0 +1,24 @@
+<div class="payment-container">
+  <div class="card-box">
+    <h2>Payment Details</h2>
+    <p class="amount">Total Amount: ₹400</p>
+
+    <form (submit)="processPayment()">
+      <label>Card Number</label>
+      <input type="text" placeholder="1234 5678 1234 5678" required>
+
+      <div class="row">
+        <div>
+          <label>Expiry</label>
+          <input type="text" placeholder="MM/YY" required>
+        </div>
+        <div>
+          <label>CVV</label>
+          <input type="text" placeholder="123" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-pay">Pay Securely</button>
+    </form>
+  </div>
+</div>

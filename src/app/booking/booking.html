@@ -1,0 +1,56 @@
+<div class="booking-page">
+  
+  <div class="timings-sidebar">
+    <div class="timing-card">
+      <h3>Available Timings</h3>
+     <div class="timings-grid">
+    <div *ngFor="let time of times" 
+         class="time-pill" 
+         [class.selected]="selectedTime === time" 
+         (click)="selectTime(time)">
+      <i class="fa-regular fa-clock"></i> {{ time }}
+    </div>
+  </div>
+    </div>
+  </div>
+
+  <div class="theater-container">
+    
+    <h1 class="page-title">Select your seat</h1>
+
+    <div class="screen-curve">
+      <span>SCREEN SIDE</span>
+    </div>
+
+    <div class="seat-grid">
+      <div *ngFor="let row of rows" class="row">
+        
+        <div class="seat-group">
+          <div *ngFor="let seat of [1,2,3,4]" 
+               class="seat" 
+               [class.selected]="isSelected(row, seat)"
+               (click)="toggleSeat(row, seat)">
+            {{ row }}{{ seat }}
+          </div>
+        </div>
+
+        <div class="seat-group">
+          <div *ngFor="let seat of [5,6,7,8,9]" 
+               class="seat" 
+               [class.selected]="isSelected(row, seat)"
+               (click)="toggleSeat(row, seat)">
+            {{ row }}{{ seat }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="checkout-bar" *ngIf="selectedSeats.length > 0">
+  <button class="btn-checkout" routerLink="/payment">
+    Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+  </button>
+</div>

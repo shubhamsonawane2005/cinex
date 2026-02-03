@@ -1,0 +1,115 @@
+/* Navbar Container */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 40px;
+  background-color: #0b0b0b; /* Deep Black to match pages */
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #222; /* Subtle divider */
+}
+
+/* 1. LEFT: Logo */
+.logo-section {
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.logo-text { color: white; }
+.highlight { color: #ff3e3e; } /* Red Brand Color */
+
+
+/* 2. CENTER: The "Pill" Navigation */
+.nav-center {
+  background-color: rgba(255, 255, 255, 0.08); /* Translucent background */
+  padding: 10px 30px;
+  border-radius: 30px; /* Makes it pill-shaped */
+  display: flex;
+  gap: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px); /* Blurs background behind it */
+}
+
+.nav-center a {
+  text-decoration: none;
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.nav-center a:hover {
+  color: white;
+}
+
+/* Active Link Style (When you are on that page) */
+.nav-center a.active {
+  color: white;
+  font-weight: bold;
+}
+
+
+/* 3. RIGHT: Search & Login */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.search-icon {
+  font-size: 18px;
+  color: #ccc;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.search-icon:hover { color: white; }
+
+.btn-login {
+  background-color: #ff3e3e; /* Cinex Red */
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 20px; /* Rounded pill button */
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-login:hover {
+  background-color: #e63535;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 62, 62, 0.4);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .nav-center { display: none; } /* Hide links on small screens */
+  .navbar { padding: 15px 20px; }
+}
+/* Add this to navbar.css */
+.search-box {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  padding: 8px 15px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+  font-size: 14px;
+  width: 150px; /* Adjust width as needed */
+}

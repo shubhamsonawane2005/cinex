@@ -1,0 +1,31 @@
+<div class="releases-container">
+  
+  <div class="header-section">
+    <h2 class="page-title">Coming Soon</h2>
+    <p class="subtitle">Get notified when tickets go live.</p>
+  </div>
+
+  <div class="releases-grid">
+    <div class="movie-card" *ngFor="let movie of upcomingMovies">
+      
+      <div class="card-image">
+        <img [src]="movie.image" [alt]="movie.title">
+        <div class="coming-soon-badge">Coming Soon</div>
+      </div>
+
+      <div class="card-content">
+        <h3 class="movie-title">{{ movie.title }}</h3>
+        <p class="release-date">
+          <i class="fa-regular fa-calendar"></i> Releasing: {{ movie.year }}
+        </p>
+        <p class="genre">{{ movie.genre }}</p>
+
+        <button class="btn-notify">
+          <i class="fa-regular fa-bell"></i> Notify Me
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

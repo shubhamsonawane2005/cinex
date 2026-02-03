@@ -1,0 +1,73 @@
+.releases-container {
+  background-color: #050505;
+  min-height: 100vh;
+  padding: 40px 60px;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+}
+
+.header-section { margin-bottom: 40px; }
+.page-title { font-size: 32px; font-weight: 800; margin-bottom: 5px; }
+.subtitle { color: #888; font-size: 14px; }
+
+/* Grid */
+.releases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 30px;
+}
+
+/* Card */
+.movie-card {
+  background-color: #101010;
+  border: 1px solid #222;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.movie-card:hover { transform: translateY(-5px); border-color: #444; }
+
+.card-image { position: relative; height: 340px; }
+.card-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+
+.coming-soon-badge {
+  position: absolute;
+  top: 10px; left: 10px;
+  background-color: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.card-content { padding: 20px; }
+
+.movie-title { font-size: 18px; margin: 0 0 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.release-date { color: #ff3e3e; font-size: 13px; font-weight: bold; margin-bottom: 5px; }
+.genre { color: #666; font-size: 12px; margin-bottom: 20px; }
+
+/* Notify Button (Blue/Outline) */
+.btn-notify {
+  width: 100%;
+  background-color: transparent;
+  border: 1px solid #444;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-notify:hover {
+  background-color: white;
+  color: black;
+  border-color: white;
+}

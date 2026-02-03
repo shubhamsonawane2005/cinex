@@ -1,0 +1,44 @@
+.payment-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.card-box {
+  background-color: #2c2c2c;
+  padding: 40px;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+h2 { margin-top: 0; color: #ff3e3e; }
+.amount { font-size: 18px; margin-bottom: 20px; color: #ccc; }
+
+label { display: block; margin-bottom: 5px; font-size: 14px; color: #aaa; }
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #333;
+  color: white;
+}
+
+.row { display: flex; gap: 20px; }
+
+.btn-pay {
+  width: 100%;
+  padding: 12px;
+  background-color: #1ecc1e; /* Green for success */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}

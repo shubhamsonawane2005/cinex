@@ -1,0 +1,80 @@
+<div class="details-container" *ngIf="movie">
+  
+  <div class="banner-bg" [style.backgroundImage]="'url(' + movie.image + ')'"></div>
+  
+  <div class="content-layer">
+     <div class="poster-section">
+       <img [src]="movie.image" [alt]="movie.title">
+     </div>
+    <div class="info-section">
+  <h1 class="movie-title">{{ movie.title }}</h1>
+
+  <div class="stats-row">
+    <div class="rating-badge">
+      <i class="fa-solid fa-star"></i> {{ movie.rating }}/10
+    </div>
+    <span>{{ movie.year || '2025' }}</span>
+    <span>•</span>
+    <span>{{ movie.genre }}</span>
+    <span>•</span>
+    <span>2h 15m</span>
+  </div>
+
+  <div class="description-box">
+    <h3>About the Movie</h3>
+    <p>{{ movie.description || 'No description available for this movie.' }}</p>
+  </div>
+
+  <div class="actions">
+ <button class="btn-book" (click)="scrollToBooking()">
+  Book Tickets
+</button>
+  </div>
+</div>
+  </div>
+
+  <div class="section-container">
+    <h3>Your Favorite Cast</h3>
+    <div class="cast-grid">
+      <div class="cast-member" *ngFor="let actor of cast">
+        <div class="cast-img">
+          <img [src]="actor.image" [alt]="actor.name">
+        </div>
+        <div class="cast-text">
+          <p class="actor-name">{{ actor.name }}</p>
+          <p class="actor-role">{{ actor.role }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="date-strip-container" id="booking-section">
+    <div class="date-strip">
+      <div class="strip-header">
+         <h4>Choose Date</h4>
+      </div>
+      <div class="date-row">
+       <div class="date-card" 
+     *ngFor="let d of dates; let i = index" 
+     [class.active]="d.active" 
+     (click)="selectDate(i)"> <span class="month">{{ d.month }}</span>
+  <span class="day">{{ d.day }}</span>
+  
+</div>
+      </div>
+      <button class="btn-strip-book" [routerLink]="['/booking', movie.id]">Book Now</button>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <h3>You May Also Like</h3>
+    <div class="similar-grid">
+      <div class="movie-card-small" *ngFor="let m of similarMovies" [routerLink]="['/movie', m.id]">
+        <img [src]="m.image" [alt]="m.title">
+        <div class="card-title">{{ m.title }}</div> 
+        <div class="card-rating">⭐ {{ m.rating }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>  

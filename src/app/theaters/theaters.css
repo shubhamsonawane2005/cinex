@@ -1,0 +1,44 @@
+.theaters-container {
+  background-color: #050505;
+  min-height: 100vh;
+  padding: 40px 60px;
+  color: white;
+}
+
+h2 { margin-bottom: 30px; font-size: 24px; }
+
+.theater-list { display: flex; flex-direction: column; gap: 20px; max-width: 800px; }
+
+.theater-card {
+  background-color: #161b22;
+  padding: 25px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #333;
+}
+
+.theater-info h3 { margin: 0 0 5px 0; font-size: 18px; color: #fff; }
+.theater-info p { margin: 0 0 10px 0; color: #888; font-size: 14px; }
+.badge {
+  background-color: #222;
+  color: #ff3e3e;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid #ff3e3e;
+}
+
+.btn-directions {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  color: #ccc;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-directions:hover { border-color: white; color: white; }

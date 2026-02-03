@@ -1,0 +1,83 @@
+<div class="home-container">
+  <div class="home-container">
+
+    <div class="slider-container" *ngIf="slides.length > 0">
+
+      <button class="arrow left-arrow" (click)="prev()">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <button class="arrow right-arrow" (click)="next()">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+
+      <div class="slider-viewport">
+        @for (movie of slides; track movie.id; let i = $index) {
+        <div class="slide" [class.active]="i === currentIndex">
+
+          <img [src]="movie.image" [alt]="movie.title" class="slide-image">
+
+          <div class="slide-content">
+            <h1 class="slide-title">{{ movie.title }}</h1>
+            <p class="slide-genre">{{ movie.genre }}</p>
+            <div class="rating">
+              <i class="fa-solid fa-star"></i> {{ movie.rating }}
+            </div>
+          </div>
+
+        </div>
+        }
+      </div>
+
+      <div class="pagination">
+        @for (s of slides; track $index) {
+        <span class="dot" [class.active-dot]="$index === currentIndex" (click)="goToSlide($index)"></span>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <div class="movies-section">
+    <div class="section-header">
+      <h3>Now Showing</h3>
+      <a routerLink="/movies" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <div class="slider-wrapper">
+      <div class="movie-track">
+
+        @for (movie of movies; track movie.id) {
+        <div class="movie-card-slider" [routerLink]="['/movie', movie.id]">
+          <div class="card-image">
+            <img [src]="movie.image" [alt]="movie.title">
+            <div class="rating-badge">
+              <i class="fa-solid fa-star"></i> {{ movie.rating }}
+            </div>
+          </div>
+          <div class="card-info">
+            <h3>{{ movie.title }}</h3>
+            <p>{{ movie.genre }}</p>
+          </div>
+        </div>
+        }
+
+        @for (movie of movies; track 'dup-' + movie.id) {
+        <div class="movie-card-slider" [routerLink]="['/movie', movie.id]">
+          <div class="card-image">
+            <img [src]="movie.image" [alt]="movie.title">
+            <div class="rating-badge">
+              <i class="fa-solid fa-star"></i> {{ movie.rating }}
+            </div>
+          </div>
+          <div class="card-info">
+            <h3>{{ movie.title }}</h3>
+            <p>{{ movie.genre }}</p>
+          </div>
+        </div>
+        }
+
+      </div>
+    </div>
+  </div>
+</div>

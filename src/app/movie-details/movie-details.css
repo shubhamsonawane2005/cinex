@@ -1,0 +1,189 @@
+/* --- 1. GLOBAL WRAPPER --- */
+.details-container {
+  position: relative;
+  min-height: 100vh;
+  background-color: #0b0b0b; /* Deep Black Background */
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  overflow-x: hidden;
+  padding-bottom: 60px;
+}
+
+/* --- 2. HERO / BANNER --- */
+.banner-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 85vh;
+  background-size: cover;
+  background-position: center;
+  /* Dark overlay to make text pop */
+  mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+  filter: blur(40px) brightness(0.4);
+  z-index: 0;
+}
+
+.content-layer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px 40px 20px; /* Spacing from top */
+  gap: 50px;
+}
+
+.poster-section img {
+  width: 300px;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.info-section { flex: 1; padding-top: 20px; }
+.movie-title { font-size: 56px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.1; }
+.actions { margin-top: 30px; }
+
+.btn-book {
+  background-color: #ff3e3e;
+  color: white;
+  padding: 15px 40px;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block;
+  transition: 0.3s;
+}
+.btn-book:hover { background-color: #e63535; transform: translateY(-2px); }
+
+
+/* --- 3. SECTIONS (Cast, Similar) --- */
+.section-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+/* The red line next to titles */
+h3 {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #fff;
+  border-left: 3px solid #ff3e3e;
+  padding-left: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* CAST GRID */
+.cast-grid {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #333 transparent;
+}
+
+.cast-member {
+  text-align: center;
+  min-width: 100px;
+  cursor: pointer;
+}
+
+.cast-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 10px auto;
+  border: 2px solid transparent;
+  transition: 0.3s;
+}
+
+.cast-img img { width: 100%; height: 100%; object-fit: cover; }
+.cast-member:hover .cast-img { border-color: #ff3e3e; transform: scale(1.1); }
+
+.actor-name { font-size: 13px; font-weight: bold; margin: 0; color: #fff; }
+.actor-role { font-size: 11px; margin: 3px 0 0 0; color: #888; }
+
+
+/* --- 4. DATE SELECTION (The Dark Box) --- */
+.date-strip-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.date-strip {
+  /* This gradient matches the 'QuickShow' dark reddish look */
+  background: linear-gradient(90deg, #1f0808 0%, #1a0505 100%);
+  border: 1px solid #381010;
+  border-radius: 12px;
+  padding: 30px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5); /* Deep shadow to pop off background */
+}
+
+.strip-header h4 { margin: 0; color: #fff; font-size: 18px; }
+
+.date-row { display: flex; gap: 15px; }
+
+.date-card {
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 8px;
+  width: 50px;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #888;
+}
+
+.date-card:hover { border-color: #ff3e3e; color: white; }
+
+.date-card.active {
+  background-color: #ff3e3e; /* Solid Red Active State */
+  border-color: #ff3e3e;
+  color: white;
+}
+
+.date-card .day { font-size: 16px; font-weight: bold; }
+.date-card .month { font-size: 10px; text-transform: uppercase; margin-top: 2px; }
+
+.btn-strip-book {
+  background-color: #ff3e3e;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+/* --- 5. SIMILAR MOVIES --- */
+.similar-grid { display: flex; gap: 20px; }
+.movie-card-small { width: 150px; cursor: pointer; transition: transform 0.2s; }
+.movie-card-small:hover { transform: translateY(-5px); }
+.movie-card-small img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+.card-title { font-size: 14px; font-weight: bold; color: white; }
+.card-rating { font-size: 12px; color: #888; }
+
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .content-layer { flex-direction: column; text-align: center; }
+  .poster-section img { width: 220px; }
+  .date-strip { flex-direction: column; gap: 20px; }
+  .btn-strip-book { width: 100%; }
+}

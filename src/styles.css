@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+/* Remove default browser spacing */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure consistent font across the app */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f2f2f2; /* Default light grey for home */
+}

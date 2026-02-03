@@ -1,0 +1,41 @@
+.auth-container {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a1a;
+}
+
+.auth-box {
+  width: 350px;
+  background-color: white; /* White card for contrast */
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+h2 { margin-bottom: 30px; color: #333; }
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box; /* Fixes padding issues */
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff3e3e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.switch-text { font-size: 14px; color: #666; }
+a { color: #ff3e3e; text-decoration: none; font-weight: bold; }
