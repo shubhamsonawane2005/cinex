@@ -12,16 +12,19 @@
       </button>
 
       <div class="slider-viewport">
-        @for (movie of slides; track movie.id; let i = $index) {
+        @for (reles of relese; track reles.id; let i = $index) {
         <div class="slide" [class.active]="i === currentIndex">
 
-          <img [src]="movie.image" [alt]="movie.title" class="slide-image">
+          <img [src]="reles.image" [alt]="reles.title" class="relese-image">
 
           <div class="slide-content">
-            <h1 class="slide-title">{{ movie.title }}</h1>
-            <p class="slide-genre">{{ movie.genre }}</p>
-            <div class="rating">
-              <i class="fa-solid fa-star"></i> {{ movie.rating }}
+            <h1 class="slide-title">{{ reles.title }}</h1>
+            <p class="slide-desc">{{reles.description}}</p>
+            <div class="slide-content-detail">
+              <p class="slide-genre">Genre : {{ reles.genre }}</p>
+              <p class="slide-duration">Duration : {{ reles.Duration }}</p>
+              <p class="slide-Relese">Relese : {{ reles.year }}</p>
+              <p class="slide-rating">Rating : {{ reles.rating }}</p>
             </div>
           </div>
 

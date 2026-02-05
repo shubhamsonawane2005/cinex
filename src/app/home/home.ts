@@ -2,6 +2,7 @@ import { Component, OnInit, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MovieService, Movie } from '../services/movie';
+import { MoviesRelese, ReleseMovie } from './relese.movie';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +15,9 @@ export class HomeComponent implements OnInit {
   
   movies: Movie[] = [];
   private movieService = inject(MovieService);
+  
+  relese: MoviesRelese[] = [];
+  private  movierelese = inject(ReleseMovie);
 
   // This will hold the data for your slider
   slides: any[] = [];
@@ -25,17 +29,22 @@ export class HomeComponent implements OnInit {
       // Populate slides with the movie data once it arrives
       this.slides = data; 
     });
+      
+      this.movierelese.getReleseMovies().subscribe((data) => {
+      this.relese = data;
+    });
   }
+
 
   next(): void {
     if (this.slides.length > 0) {
-      this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+      this.currentIndex = (this.currentIndex + 1) % this.relese.length;
     }
   }
 
   prev(): void {
     if (this.slides.length > 0) {
-      this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
+      this.currentIndex = (this.currentIndex - 1 + this.relese.length) % this.relese.length;
     }
   }
 

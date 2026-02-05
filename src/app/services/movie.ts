@@ -12,7 +12,7 @@ export interface Movie {
   trailer?: string;     // Optional trailer link
 }
 
-@Injectable({
+@Injectable({ 
   providedIn: 'root'
 })
 export class MovieService {

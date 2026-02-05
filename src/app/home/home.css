@@ -242,12 +242,13 @@
 .slider-container {
   position: relative;
   width: 100%;
-  max-width: 1000px;
-  height: 450px;
+  max-width: 100%;
+  height: 500px;
   margin: auto;
-  border-radius: 20px; /* Rounded corners like image */
+  border-radius: 0; /* Rounded corners like image */
   overflow: hidden;
   background-color: #333; /* Dark gray fallback */
+  /* margin-top: 30px; */
 }
 
 .slider-content {
@@ -266,7 +267,7 @@
   transition: opacity 0.6s ease-in-out;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
 }
 
 .slide.active {
@@ -296,7 +297,7 @@
 }
 
 .arrow:hover {
-  color: #0056b3;
+  color: #f53500;
 }
 
 .left-arrow { left: 10px; }
@@ -337,9 +338,9 @@
   width: 100%;
   height: 450px;
   background: #222;
-  border-radius: 20px; /* Rounded corners like your image */
+  /* border-radius: 20px; */
   overflow: hidden;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .slide {
@@ -349,7 +350,7 @@
   transition: opacity 0.6s ease-in-out;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
 }
 
 .slide.active {
@@ -371,7 +372,7 @@
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: #007bff; /* Bright Blue */
+  color: #ffffff; /* Bright Blue */
   font-size: 3rem;
   z-index: 10;
   cursor: pointer;
@@ -382,8 +383,40 @@
 .right-arrow { right: 10px; }
 
 .slide-content {
+  height: 100%;
+  width: 350px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);         
+  -webkit-backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 15px;
   position: absolute;
-  color: white;
+  color: rgb(255, 255, 255);
   text-align: center;
+  justify-content: center;
+  /* align-items: center; */
   z-index: 5;
+}
+
+.relese-image {
+ width: 100%;
+  height: 100%;
+  /* Yeh property image ko bina kharab kiye fit karti hai */
+  object-fit: cover; 
+  /* Image ka center wala hissa hamesha dikhega */
+  object-position: center; 
+  display: block;
+}
+
+.slide-content-detail{
+  border: 1px solid rgb(198, 198, 198);
+  border-radius: 5px;
+  width: 300px;
+  margin: 20px;
+  margin-top: 40px;
+  text-align: left;
+}
+
+.slide-content-detail p{
+  margin-left: 5px;
 }
