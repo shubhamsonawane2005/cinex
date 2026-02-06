@@ -1,31 +1,34 @@
 <div class="theaters-container">
-  <h2>Partner Theaters</h2>
-  <div class="theater-list">
-    <div class="theater-card">
-      <div class="theater-info">
-        <h3>PVR Icon: Pavilion Mall</h3>
-        <p>Shivajinagar, Pune</p>
-        <span class="badge">Dolby Atmos</span>
-      </div>
-      <button class="btn-directions">Get Directions</button>
-    </div>
+  
+  <div class="header">
+    <h1>Theaters in Surat</h1>
+    <p>Experience the best cinematic experience near you.</p>
+  </div>
 
-    <div class="theater-card">
-      <div class="theater-info">
-        <h3>Cinepolis: WestEnd</h3>
-        <p>Aundh, Pune</p>
-        <span class="badge">IMAX</span>
+  <div class="theater-grid">
+    <div class="theater-card" *ngFor="let theater of theaters">
+      
+      <div class="card-top">
+        <i class="fa-solid fa-film theater-icon"></i>
+        <div class="theater-info">
+          <h3>{{ theater.name }}</h3>
+          <p class="location"><i class="fa-solid fa-location-dot"></i> {{ theater.location }}</p>
+        </div>
       </div>
-      <button class="btn-directions">Get Directions</button>
-    </div>
 
-    <div class="theater-card">
-      <div class="theater-info">
-        <h3>Inox: Phoenix Marketcity</h3>
-        <p>Viman Nagar, Pune</p>
-        <span class="badge">4DX</span>
+      <div class="showtimes">
+        <span class="time-tag" *ngFor="let time of theater.showtimes">{{ time }}</span>
       </div>
-      <button class="btn-directions">Get Directions</button>
+
+      <div class="card-actions">
+        <button class="btn-book">Book Tickets</button>
+        
+        <a [href]="theater.mapUrl" target="_blank" class="btn-map">
+           <i class="fa-solid fa-map-location-dot"></i> Directions
+        </a>
+      </div>
+
     </div>
   </div>
+
 </div>

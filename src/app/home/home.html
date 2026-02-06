@@ -15,7 +15,7 @@
         @for (reles of relese; track reles.id; let i = $index) {
         <div class="slide" [class.active]="i === currentIndex">
 
-          <img [src]="reles.image" [alt]="reles.title" class="relese-image">
+          <img [src]="reles.backdrop || reles.image" [alt]="reles.title" class="relese-image">
 
           <div class="slide-content">
             <h1 class="slide-title">{{ reles.title }}</h1>

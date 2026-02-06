@@ -136,7 +136,9 @@
 }
 
 .card-image {
-  height: 340px;
+ height: 360px; /* Standard poster height */
+  width: 100%;
+  overflow: hidden; /* Hides anything that sticks out */
   position: relative;
 }
 
@@ -225,7 +227,8 @@
 
 .movie-card-slider img {
   width: 100%;
-  border-radius: 12px;
+  height: 100%;
+  object-fit: contain;    
   display: block;
 }
 
@@ -277,8 +280,9 @@
 
 .slide img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+height: 100%;
+ object-fit: cover;      /* CROPS the edges instead of stretching */
+    object-position: top;
 }
 
 /* Arrows - Styled to match your uploaded image */
@@ -336,7 +340,7 @@
 .slider-container {
   position: relative;
   width: 100%;
-  height: 450px;
+  height: 500px;
   background: #222;
   /* border-radius: 20px; */
   overflow: hidden;
