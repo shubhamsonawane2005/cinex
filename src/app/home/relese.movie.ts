@@ -72,7 +72,7 @@ export class ReleseMovie {
       title: 'Mardaani 3', 
       genre: 'Crime | Thriller', 
       image: 'mardani3.jpg',
-       backdrop : 'mardani3-banner.jpg', 
+      backdrop : 'mardaani-3-poster.jpg', 
       rating: '8.0', 
       year: '2026',
       Duration: '2h 15m',

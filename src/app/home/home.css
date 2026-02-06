@@ -1,6 +1,7 @@
 /* Global Container */
 .home-container {
-  background-color: #0d0d0d; /* Very Dark Background */
+  background-color: #0d0d0d;
+  /* Very Dark Background */
   min-height: 100vh;
   color: white;
   font-family: 'Roboto', sans-serif;
@@ -8,7 +9,8 @@
 
 /* --- HERO SECTION --- */
 .hero-section {
-  height: 85vh; /* Takes up 85% of the screen height */
+  height: 85vh;
+  /* Takes up 85% of the screen height */
   background-size: cover;
   background-position: center top;
   position: relative;
@@ -17,21 +19,28 @@
 /* The Magic Gradient: Fades from Black (Left) to Transparent (Right) */
 .overlay-gradient {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to right, #0d0d0d 30%, rgba(13,13,13,0.6) 60%, transparent 100%),
-              linear-gradient(to top, #0d0d0d 5%, transparent 30%); /* Fade to black at bottom */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, #0d0d0d 30%, rgba(13, 13, 13, 0.6) 60%, transparent 100%),
+    linear-gradient(to top, #0d0d0d 5%, transparent 30%);
+  /* Fade to black at bottom */
   display: flex;
-  align-items: center; /* Vertically center content */
+  align-items: center;
+  /* Vertically center content */
 }
 
 .hero-content {
   max-width: 600px;
-  padding-left: 80px; /* Space from left edge */
+  padding-left: 80px;
+  /* Space from left edge */
   z-index: 10;
 }
 
 .studio-tag {
-  color: #ff3e3e; /* Red Brand Color */
+  color: #ff3e3e;
+  /* Red Brand Color */
   font-weight: 800;
   letter-spacing: 2px;
   margin-bottom: 10px;
@@ -43,7 +52,7 @@
   font-weight: 800;
   line-height: 1.1;
   margin: 0 0 20px 0;
-  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .meta-tags {
@@ -70,7 +79,8 @@
   padding: 15px 35px;
   font-size: 16px;
   font-weight: bold;
-  border-radius: 30px; /* Fully rounded pill shape */
+  border-radius: 30px;
+  /* Fully rounded pill shape */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -80,7 +90,8 @@
 
 .btn-explore:hover {
   background-color: #e63535;
-  transform: translateX(5px); /* Slide effect */
+  transform: translateX(5px);
+  /* Slide effect */
 }
 
 
@@ -122,7 +133,8 @@
 
 .movie-card {
   width: 240px;
-  background-color: #1a1a1a; /* Dark Card Bg */
+  background-color: #1a1a1a;
+  /* Dark Card Bg */
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
@@ -136,9 +148,11 @@
 }
 
 .card-image {
- height: 360px; /* Standard poster height */
+  height: 360px;
+  /* Standard poster height */
   width: 100%;
-  overflow: hidden; /* Hides anything that sticks out */
+  overflow: hidden;
+  /* Hides anything that sticks out */
   position: relative;
 }
 
@@ -152,7 +166,7 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 4px 8px;
   border-radius: 6px;
@@ -160,7 +174,9 @@
   font-weight: bold;
 }
 
-.rating-badge i { color: #ff3e3e; }
+.rating-badge i {
+  color: #ff3e3e;
+}
 
 .card-info {
   padding: 15px;
@@ -194,11 +210,25 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  .hero-content { padding-left: 20px; }
-  .hero-title { font-size: 40px; }
-  .overlay-gradient { background: linear-gradient(to top, #0d0d0d 10%, rgba(13,13,13,0.4) 100%); }
-  .movies-section { padding: 30px 20px; }
-  .movie-grid { justify-content: center; }
+  .hero-content {
+    padding-left: 20px;
+  }
+
+  .hero-title {
+    font-size: 40px;
+  }
+
+  .overlay-gradient {
+    background: linear-gradient(to top, #0d0d0d 10%, rgba(13, 13, 13, 0.4) 100%);
+  }
+
+  .movies-section {
+    padding: 30px 20px;
+  }
+
+  .movie-grid {
+    justify-content: center;
+  }
 }
 
 .slider-wrapper {
@@ -212,30 +242,42 @@
 
 .movie-track {
   display: flex;
-  width: max-content; /* Vital for dynamic content */
+  width: max-content;
+  /* Vital for dynamic content */
   animation: scrollLeft 40s linear infinite;
 }
 
 .movie-track:hover {
   animation-play-state: paused;
 }
+
 .movie-card-slider {
-  width: 250px; /* Fixed width for consistent calculation */
-  margin: 0 15px;
+ width: 240px;      /* Fixed width for all cards */
   flex-shrink: 0;
+  margin: 0 15px;
+  background-color: #1a1a1a; /* Matches your card theme */
+  border-radius: 12px;
+  overflow: hidden;
+}
+.movie-card-slider .card-image {
+  height: 360px;     /* Fixed height for all images */
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
-.movie-card-slider img {
+.movie-card-slider .card-image img {
   width: 100%;
   height: 100%;
-  object-fit: contain;    
+  object-fit: cover; /* Key: Fills the 240x360 area without stretching */
+  object-position: center;
   display: block;
 }
-
 @keyframes scrollLeft {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -248,9 +290,11 @@
   max-width: 100%;
   height: 500px;
   margin: auto;
-  border-radius: 0; /* Rounded corners like image */
+  border-radius: 0;
+  /* Rounded corners like image */
   overflow: hidden;
-  background-color: #333; /* Dark gray fallback */
+  background-color: #333;
+  /* Dark gray fallback */
   /* margin-top: 30px; */
 }
 
@@ -280,9 +324,10 @@
 
 .slide img {
   width: 100%;
-height: 100%;
- object-fit: cover;      /* CROPS the edges instead of stretching */
-    object-position: top;
+  height: 100%;
+  object-fit: cover;
+  /* CROPS the edges instead of stretching */
+  object-position: top;
 }
 
 /* Arrows - Styled to match your uploaded image */
@@ -292,7 +337,8 @@ height: 100%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: #007bff; /* Bright Blue */
+  color: #007bff;
+  /* Bright Blue */
   font-size: 3rem;
   z-index: 10;
   cursor: pointer;
@@ -304,8 +350,13 @@ height: 100%;
   color: #f53500;
 }
 
-.left-arrow { left: 10px; }
-.right-arrow { right: 10px; }
+.left-arrow {
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+}
 
 /* Text Overlay */
 .slide-overlay {
@@ -327,7 +378,7 @@ height: 100%;
   height: 10px;
   width: 10px;
   margin: 0 5px;
-  background-color: rgba(255,255,255,0.5);
+  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 50%;
   display: inline-block;
   cursor: pointer;
@@ -366,7 +417,8 @@ height: 100%;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.5); /* Dims image so "Slide 2" text is clear */
+  filter: brightness(0.5);
+  /* Dims image so "Slide 2" text is clear */
 }
 
 /* Arrows - Styled to match your blue reference arrows */
@@ -376,43 +428,51 @@ height: 100%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: #ffffff; /* Bright Blue */
+  color: #ffffff;
+  /* Bright Blue */
   font-size: 3rem;
   z-index: 10;
   cursor: pointer;
   padding: 0 20px;
 }
 
-.left-arrow { left: 10px; }
-.right-arrow { right: 10px; }
+.left-arrow {
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+}
 
 .slide-content {
-  height: 100%;
-  width: 350px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);         
-  -webkit-backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 15px;
-  position: absolute;
-  color: rgb(255, 255, 255);
-  text-align: center;
+  height: 90%; /* Doesn't have to be 100% to look like a floating card */
+  width: 400px;
+  background: rgba(0, 0, 0, 0.4); /* Darker transparent background */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 40px;
+  margin-right: 50px; /* Space from the right edge */
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  /* align-items: center; */
   z-index: 5;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .relese-image {
- width: 100%;
+  position: absolute; /* Sits behind the content */
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  /* Yeh property image ko bina kharab kiye fit karti hai */
-  object-fit: cover; 
-  /* Image ka center wala hissa hamesha dikhega */
+  object-fit: cover; /* This is the key to no stretching */
   object-position: center; 
-  display: block;
+  z-index: -1; /* Puts it behind the text */
+  filter: brightness(0.6); /* Makes text easier to read */
 }
 
-.slide-content-detail{
+.slide-content-detail {
   border: 1px solid rgb(198, 198, 198);
   border-radius: 5px;
   width: 300px;
@@ -421,6 +481,6 @@ height: 100%;
   text-align: left;
 }
 
-.slide-content-detail p{
+.slide-content-detail p {
   margin-left: 5px;
 }
