@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
+import { RouterLink } from "@angular/router"; 
 
 // 1. Define what a Theater looks like
 interface Theater {
@@ -13,7 +14,7 @@ interface Theater {
 @Component({
   selector: 'app-theaters',
   standalone: true,
-  imports: [CommonModule], 
+  imports: [CommonModule, RouterLink], 
   templateUrl: './theaters.html',
   styleUrl: './theaters.css'
 })

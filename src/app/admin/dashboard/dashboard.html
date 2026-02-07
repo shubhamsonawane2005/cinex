@@ -1,0 +1,65 @@
+<div class="stats-grid">
+  
+  <div class="stat-card">
+    <div class="icon-box red"><i class="fa-solid fa-ticket"></i></div>
+    <div class="stat-info">
+      <h3>Total Bookings</h3>
+      <p>{{ stats.totalBookings }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="icon-box blue"><i class="fa-solid fa-film"></i></div>
+    <div class="stat-info">
+      <h3>Active Movies</h3>
+      <p>{{ stats.activeMovies }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="icon-box green"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+    <div class="stat-info">
+      <h3>Total Revenue</h3>
+      <p>{{ stats.totalRevenue | currency:'INR':'symbol':'1.0-0' }}</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="icon-box purple"><i class="fa-solid fa-users"></i></div>
+    <div class="stat-info">
+      <h3>New Users</h3>
+      <p>{{ stats.newUsers }}</p>
+    </div>
+  </div>
+
+</div>
+<div class="table-section">
+  <h2>Recent Bookings</h2>
+  
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Booking ID</th>
+        <th>User</th>
+        <th>Movie</th>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr *ngFor="let booking of bookings">
+        <td>{{ booking.id }}</td>
+        <td>{{ booking.user }}</td>
+        <td>{{ booking.movie }}</td>
+        <td>{{ booking.amount | currency:'INR':'symbol':'1.0-0' }}</td>
+        <td>
+          <span class="status" [ngClass]="getStatusClass(booking.status)">
+            {{ booking.status }}
+          </span>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,194 @@
+<div class="manage-container">
+
+  <div class="page-header">
+    <h1>Manage Movies</h1>
+    <button class="btn-add" (click)="openAddForm()">
+      <i class="fa-solid fa-plus"></i> Add Movie
+    </button>
+  </div>
+
+  <div class="dashboard-tabs">
+    <button [class.active]="activeTab === 'released'"
+      (click)="activeTab = 'released'">
+      Now Showing
+    </button>
+    <button [class.active]="activeTab === 'upcoming'"
+      (click)="activeTab = 'upcoming'">
+      Coming Soon
+    </button>
+  </div>
+
+  <div class="movie-grid">
+    <div class="movie-card" *ngFor="let movie of filteredMovies">
+
+      <div class="card-image">
+        <img [src]="movie.image || 'assets/placeholder-vertical.jpg'"
+          [alt]="movie.title">
+        <div class="card-overlay">
+          <button class="btn-edit" (click)="editMovie(movie)">
+            <i class="fa-solid fa-pen"></i> Edit
+          </button>
+          <button class="btn-delete" (click)="deleteMovie(movie.id)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-details">
+        <h3>{{ movie.title }}</h3>
+        <span class="genre">{{ movie.genre }}</span>
+
+        <div class="meta" *ngIf="movie.status === 'released'">
+          <span class="rating">★ {{ movie.rating }}</span>
+        </div>
+
+        <div class="meta" *ngIf="movie.status === 'upcoming'">
+          <span class="date">{{ movie.releaseDate }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="no-movies" *ngIf="filteredMovies.length === 0">
+      <p>No movies found in this category.</p>
+    </div>
+  </div>
+
+</div>
+<div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
+  <div class="modal-box large-modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>{{ isEditing ? 'Edit Movie' : 'Add New Movie' }}</h2>
+      <button class="btn-close" (click)="closeForm()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-section">
+
+        <div class="form-tabs">
+          <button [class.active]="activeFormTab === 'basic'"
+            (click)="activeFormTab = 'basic'">Basic Info</button>
+          <button [class.active]="activeFormTab === 'media'"
+            (click)="activeFormTab = 'media'">Media & Assets</button>
+        </div>
+
+        <form (ngSubmit)="saveMovie()" #f="ngForm">
+
+          <div *ngIf="activeFormTab === 'basic'" class="tab-content">
+            <div class="form-group">
+              <label for="mTitle">Movie Title <span class="required"
+                  style="color:red">*</span></label>
+              <input id="mTitle" type="text" [(ngModel)]="movieForm.title"
+                name="title" required placeholder="e.g. Inception">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="mGenre">Genre</label>
+                <input id="mGenre" type="text" [(ngModel)]="movieForm.genre"
+                  name="genre" placeholder="Sci-Fi | Action">
+              </div>
+              <div class="form-group">
+                <label for="mStatus">Status</label>
+                <select id="mStatus" [(ngModel)]="movieForm.status"
+                  name="status">
+                  <option value="released">Now Showing</option>
+                  <option value="upcoming">Coming Soon</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="mDesc">Description</label>
+              <textarea id="mDesc" [(ngModel)]="movieForm.description"
+                name="description" rows="4"
+                placeholder="Plot summary..."></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" *ngIf="movieForm.status === 'released'">
+                <label for="mRating">Rating (0-10)</label>
+                <input id="mRating" type="number" [(ngModel)]="movieForm.rating"
+                  name="rating" step="0.1" max="10">
+              </div>
+              <div class="form-group" *ngIf="movieForm.status === 'upcoming'">
+                <label for="mDate">Release Date</label>
+                <input id="mDate" type="date"
+                  [(ngModel)]="movieForm.releaseDate" name="releaseDate">
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="activeFormTab === 'media'" class="tab-content">
+            <div class="form-group">
+              <label for="mImage">Poster URL (Vertical)</label>
+              <input id="mImage" type="text" [(ngModel)]="movieForm.image"
+                name="image" placeholder="https://...">
+              <small>Used for Movie Cards</small>
+            </div>
+
+            <div class="form-group">
+              <label for="mBackdrop">Backdrop URL (Horizontal)</label>
+              <input id="mBackdrop" type="text" [(ngModel)]="movieForm.backdrop"
+                name="backdrop" placeholder="https://...">
+              <small>Used for the Home Banner</small>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel"
+              (click)="closeForm()">Cancel</button>
+            <button type="submit" class="btn-save" [disabled]="!f.valid">
+              Save Movie
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="preview-section">
+        <h3>Live Preview</h3>
+
+        <p class="preview-label">Card View (Vertical)</p>
+        <div class="movie-card-preview">
+      <div class="poster-box">
+  <img 
+    [src]="movieForm.image || 'https://placehold.co/300x450?text=Poster+Preview'" 
+    (error)="$event.target.src = 'https://placehold.co/300x450?text=Invalid+URL'"
+    [alt]="movieForm.title || 'Movie Poster'">
+</div>
+          <div class="card-info">
+            <h4>{{ movieForm.title || 'Movie Title' }}</h4>
+            <span class="genre">{{ movieForm.genre || 'Genre' }}</span>
+            <div class="rating" *ngIf="movieForm.status === 'released'">
+              ★ {{ movieForm.rating || '0.0' }}
+            </div>
+            <div class="date" *ngIf="movieForm.status === 'upcoming'">
+              Releases: {{ movieForm.releaseDate || 'TBA' }}
+            </div>
+          </div>
+        </div>
+
+      <p class="preview-label" style="margin-top: 20px;">Banner View (Horizontal)</p>
+
+<div class="banner-preview">
+  <img 
+    [src]="movieForm.backdrop || 'https://placehold.co/600x340?text=Banner+Preview'"
+    (error)="$event.target.src = 'https://placehold.co/600x340?text=Invalid+URL'"
+    alt="Banner Preview">
+    
+  <div class="banner-overlay">
+    <h5>{{ movieForm.title || 'Movie Title' }}</h5>
+  </div>
+</div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

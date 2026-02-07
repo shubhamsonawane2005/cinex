@@ -1,0 +1,75 @@
+<div class="manage-container">
+
+  <div class="page-header">
+    <div>
+      <h1>Manage Theaters</h1>
+      <p>Add new cinema halls or update show timings.</p>
+    </div>
+    <button class="btn-add" (click)="openAddForm()">
+      <i class="fa-solid fa-plus"></i> Add Theater
+    </button>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Theater Name</th>
+          <th>Location</th>
+          <th>Current Showtimes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let theater of theaters">
+          <td class="theater-name">{{ theater.name }}</td>
+          <td><i class="fa-solid fa-location-dot"></i> {{ theater.location }}</td>
+          <td>
+            <div class="tags-row">
+              <span class="time-tag" *ngFor="let time of theater.showtimes">{{ time }}</span>
+            </div>
+          </td>
+          <td>
+            <button class="btn-icon edit" (click)="editTheater(theater)"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn-icon delete" (click)="deleteTheater(theater.id)"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showForm">
+    <div class="modal-box">
+      <h2>{{ isEditing ? 'Edit Theater' : 'Add New Theater' }}</h2>
+      
+      <form (ngSubmit)="saveTheater()">
+        <div class="form-group">
+          <label>Theater Name</label>
+          <input type="text" [(ngModel)]="theaterForm.name" name="name" required placeholder="e.g. PVR: Rahul Raj Mall">
+        </div>
+
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" [(ngModel)]="theaterForm.location" name="location" required placeholder="e.g. Piplod, Surat">
+        </div>
+
+        <div class="form-group">
+          <label>Google Maps Link</label>
+          <input type="text" [(ngModel)]="theaterForm.mapUrl" name="mapUrl" placeholder="http://maps.google.com/...">
+        </div>
+
+        <div class="form-group">
+          <label>Showtimes (Comma Separated)</label>
+          <input type="text" [(ngModel)]="theaterForm.showtimesInput" name="showtimes" placeholder="10:00 AM, 1:30 PM, 5:00 PM">
+          <small style="color: #666;">Separate multiple times with a comma.</small>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeForm()">Cancel</button>
+          <button type="submit" class="btn-save">Save Theater</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
