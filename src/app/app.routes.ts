@@ -20,7 +20,10 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'movies', component: MoviesComponent },
   { path: 'movie/:id', component: MovieDetailsComponent },
-  { path: 'booking/:id', component: BookingComponent },
+{ 
+    path: 'booking/:movieId/:theaterId/:time', 
+    loadComponent: () => import('./booking/booking').then(m => m.BookingComponent) 
+  },
   { path: 'payment', component: PaymentComponent },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },

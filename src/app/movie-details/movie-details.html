@@ -3,34 +3,34 @@
   <div class="banner-bg" [style.backgroundImage]="'url(' + movie.image + ')'"></div>
   
   <div class="content-layer">
-     <div class="poster-section">
-       <img [src]="movie.image" [alt]="movie.title">
-     </div>
+      <div class="poster-section">
+        <img [src]="movie.image" [alt]="movie.title">
+      </div>
     <div class="info-section">
-  <h1 class="movie-title">{{ movie.title }}</h1>
+      <h1 class="movie-title">{{ movie.title }}</h1>
 
-  <div class="stats-row">
-    <div class="rating-badge">
-      <i class="fa-solid fa-star"></i> {{ movie.rating }}/10
+      <div class="stats-row">
+        <div class="rating-badge">
+          <i class="fa-solid fa-star"></i> {{ movie.rating }}/10
+        </div>
+        <span>{{ movie.year || '2025' }}</span>
+        <span>•</span>
+        <span>{{ movie.genre }}</span>
+        <span>•</span>
+        <span>2h 15m</span>
+      </div>
+
+      <div class="description-box">
+        <h3>About the Movie</h3>
+        <p>{{ movie.description || 'No description available.' }}</p>
+      </div>
+
+      <div class="actions">
+        <button class="btn-book" (click)="scrollToBooking()">
+          Book Tickets
+        </button>
+      </div>
     </div>
-    <span>{{ movie.year || '2025' }}</span>
-    <span>•</span>
-    <span>{{ movie.genre }}</span>
-    <span>•</span>
-    <span>2h 15m</span>
-  </div>
-
-  <div class="description-box">
-    <h3>About the Movie</h3>
-    <p>{{ movie.description || 'No description available for this movie.' }}</p>
-  </div>
-
-  <div class="actions">
- <button class="btn-book" (click)="scrollToBooking()">
-  Book Tickets
-</button>
-  </div>
-</div>
   </div>
 
   <div class="section-container">
@@ -48,21 +48,72 @@
     </div>
   </div>
 
-  <div class="date-strip-container" id="booking-section">
-    <div class="date-strip">
-      <div class="strip-header">
-         <h4>Choose Date</h4>
+  <div class="booking-wrapper" id="booking-section">
+    <div class="section-container">
+      <h3>Select Date & Theater</h3>
+      
+      <div class="date-selector-row">
+        <div class="date-card" 
+             *ngFor="let d of dates; let i = index" 
+             [class.active]="d.active" 
+             (click)="selectDate(i)">
+           <span class="month">{{ d.month }}</span>
+           <span class="day">{{ d.day }}</span>
+           <span class="weekday">{{ d.weekday }}</span>
+        </div>
       </div>
-      <div class="date-row">
-       <div class="date-card" 
-     *ngFor="let d of dates; let i = index" 
-     [class.active]="d.active" 
-     (click)="selectDate(i)"> <span class="month">{{ d.month }}</span>
-  <span class="day">{{ d.day }}</span>
-  
+
+<!-- THEATER LIST -->
+<div class="theaters-list">
+  <div class="theater-row" *ngFor="let theater of theaters">
+    
+    <!-- COL 1: Theater Info & Directions -->
+    <div class="theater-info-col">
+       <div class="info-top">
+         <div class="text-group">
+           <h4>{{ theater.name }}</h4>
+           <p class="address">{{ theater.address }}</p>
+         </div>
+       </div>
+       
+       <div class="info-bottom">
+         <!-- YOUR DIRECTIONS BUTTON -->
+         <div class="card-actions">
+            <a [href]="theater.mapUrl || '#'" target="_blank" class="btn-map">
+              <i class="fa-solid fa-map-location-dot"></i> Directions
+            </a>
+         </div>
+         
+         <div class="facilities">
+           <span class="badge">M-Ticket</span>
+           <span class="badge">F&B</span>
+         </div>
+       </div>
+    </div>
+
+    <!-- COL 2: Time Slots -->
+    <div class="time-slots-col">
+      <button class="time-btn" 
+              *ngFor="let time of theater.timings" 
+              [class.selected]="selectedTime === time && selectedTheater === theater.id"
+              (click)="selectTime(time, theater.id)">
+         {{ time }}
+         <div class="price-tooltip">Rs. 250</div>
+      </button>
+    </div>
+
+    <!-- COL 3: Book Action -->
+    <div class="action-col">
+      <button class="btn-book-ticket" 
+              [disabled]="selectedTheater !== theater.id"
+              (click)="proceedToBooking()">
+        Book
+      </button>
+    </div>
+
+  </div>
 </div>
-      </div>
-      <button class="btn-strip-book" [routerLink]="['/booking', movie.id]">Book Now</button>
+
     </div>
   </div>
 
@@ -77,4 +128,4 @@
     </div>
   </div>
 
-</div>  
+</div>

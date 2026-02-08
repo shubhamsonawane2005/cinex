@@ -29,7 +29,7 @@
   display: flex;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 80px 20px 40px 20px; /* Spacing from top */
+  padding: 80px 20px 40px 20px;
   gap: 50px;
 }
 
@@ -41,6 +41,24 @@
 
 .info-section { flex: 1; padding-top: 20px; }
 .movie-title { font-size: 56px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.1; }
+
+.stats-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #ccc;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+.rating-badge {
+  background: #ff3e3e; /* Red Badge */
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
 .actions { margin-top: 30px; }
 
 .btn-book {
@@ -49,13 +67,34 @@
   padding: 15px 40px;
   font-weight: bold;
   border-radius: 8px;
-  text-decoration: none;
-  display: inline-block;
+  border: none;
+  cursor: pointer;
   transition: 0.3s;
 }
 .btn-book:hover { background-color: #e63535; transform: translateY(-2px); }
+/* map button */
+/* Directions Link Style */
+.btn-map {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  padding: 5px 0;
+  cursor: pointer;
+}
 
+.btn-map:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
 
+.btn-map i {
+  font-size: 14px;
+}
 /* --- 3. SECTIONS (Cast, Similar) --- */
 .section-container {
   position: relative;
@@ -65,7 +104,6 @@
   padding: 30px 20px;
 }
 
-/* The red line next to titles */
 h3 {
   font-size: 18px;
   margin-bottom: 25px;
@@ -82,93 +120,131 @@ h3 {
   gap: 30px;
   overflow-x: auto;
   padding-bottom: 20px;
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #333 transparent;
 }
 
-.cast-member {
-  text-align: center;
-  min-width: 100px;
-  cursor: pointer;
-}
+.cast-member { text-align: center; min-width: 100px; cursor: pointer; }
 
 .cast-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 0 auto 10px auto;
-  border: 2px solid transparent;
-  transition: 0.3s;
+  width: 80px; height: 80px; border-radius: 50%; overflow: hidden;
+  margin: 0 auto 10px auto; border: 2px solid transparent; transition: 0.3s;
 }
-
 .cast-img img { width: 100%; height: 100%; object-fit: cover; }
 .cast-member:hover .cast-img { border-color: #ff3e3e; transform: scale(1.1); }
-
 .actor-name { font-size: 13px; font-weight: bold; margin: 0; color: #fff; }
 .actor-role { font-size: 11px; margin: 3px 0 0 0; color: #888; }
 
 
-/* --- 4. DATE SELECTION (The Dark Box) --- */
-.date-strip-container {
+/* --- 4. BOOKING SECTION (Fixed Layout) --- */
+.booking-wrapper {
+  background-color: #121212;
+  margin-top: 40px;
+  border-top: 1px solid #333;
+  width: 100vw;
   position: relative;
-  z-index: 2;
-  max-width: 1200px;
-  margin: 30px auto;
-  padding: 0 20px;
+  left: 50%; right: 50%;
+  margin-left: -50vw; margin-right: -50vw;
+  padding: 40px 0;
 }
+.booking-wrapper .section-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-.date-strip {
-  /* This gradient matches the 'QuickShow' dark reddish look */
-  background: linear-gradient(90deg, #1f0808 0%, #1a0505 100%);
-  border: 1px solid #381010;
-  border-radius: 12px;
-  padding: 30px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5); /* Deep shadow to pop off background */
+
+/* DATE SELECTOR */
+.date-selector-row {
+  display: flex; gap: 15px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px;
 }
-
-.strip-header h4 { margin: 0; color: #fff; font-size: 18px; }
-
-.date-row { display: flex; gap: 15px; }
-
 .date-card {
-  background: transparent;
-  border: 1px solid #444;
-  border-radius: 8px;
-  width: 50px;
-  height: 60px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.2s;
-  color: #888;
+  background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+  min-width: 70px; height: 80px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: 0.2s; color: #aaa; flex-shrink: 0;
 }
-
 .date-card:hover { border-color: #ff3e3e; color: white; }
-
 .date-card.active {
-  background-color: #ff3e3e; /* Solid Red Active State */
-  border-color: #ff3e3e;
-  color: white;
+  background-color: #ff3e3e; border-color: #ff3e3e; color: white;
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 62, 62, 0.4);
+}
+.date-card .month { font-size: 10px; text-transform: uppercase; }
+.date-card .day { font-size: 24px; font-weight: 800; line-height: 1.1; margin: 2px 0; }
+.date-card .weekday { font-size: 10px; font-weight: 600; opacity: 0.8; }
+
+
+/* --- THEATER LIST (3 Columns) --- */
+.theaters-list { display: flex; flex-direction: column; gap: 20px; }
+
+.theater-row {
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex; /* Flexbox ensures horizontal layout */
+  align-items: center;
+  gap: 20px;
+  transition: all 0.2s ease;
+}
+.theater-row:hover { border-color: #444; background-color: #202020; }
+
+/* COL 1: Info (30%) */
+.theater-info-col {
+  flex: 0 0 30%;
+  border-right: 1px solid #333;
+  padding-right: 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.info-top { display: flex; gap: 10px; align-items: flex-start; }
+.like-icon { color: #ff3e3e; margin-top: 4px; cursor: pointer; }
+.text-group h4 { margin: 0; font-size: 16px; color: white; font-weight: 700; }
+.text-group .address { margin: 4px 0 0; font-size: 12px; color: #888; }
+.info-bottom { display: flex; align-items: center; gap: 15px; }
+.btn-directions {
+  background: transparent; border: none; color: #007bff; font-size: 12px;
+  cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 0;
+}
+.facilities { display: flex; gap: 5px; }
+.badge { font-size: 9px; color: #2dc492; border: 1px solid #2dc492; padding: 1px 5px; border-radius: 4px; }
+
+
+/* COL 2: Time Slots (Flexible) */
+.time-slots-col {
+  flex: 1; /* Takes all available middle space */
+  display: flex; flex-wrap: wrap; gap: 10px;
+}
+.time-btn {
+  background: #111; border: 1px solid #444; color: #2dc492;
+  padding: 10px 18px; border-radius: 6px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: 0.2s; position: relative;
+}
+.time-btn:hover { border-color: #2dc492; background: #1f3a2e; }
+.time-btn.selected { background-color: #2dc492; color: black; border-color: #2dc492; font-weight: 800; }
+
+/* Tooltip */
+.price-tooltip {
+  display: none; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
+  background: #fff; color: #000; padding: 4px 8px; font-size: 11px; font-weight: bold;
+  border-radius: 4px; white-space: nowrap;
+}
+.time-btn:hover .price-tooltip { display: block; }
+
+
+/* COL 3: Action Button (Fixed Width) */
+.action-col {
+  flex: 0 0 100px; /* Fixed width prevents shrinking */
+  display: flex; justify-content: flex-end; align-items: center;
 }
 
-.date-card .day { font-size: 16px; font-weight: bold; }
-.date-card .month { font-size: 10px; text-transform: uppercase; margin-top: 2px; }
-
-.btn-strip-book {
+.btn-book-ticket {
   background-color: #ff3e3e;
   color: white;
   border: none;
-  padding: 12px 30px;
-  border-radius: 6px;
+  padding: 12px 0; /* Vertical padding */
+  width: 100%;     /* Full width of the column */
+  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
+  text-align: center;
 }
+.btn-book-ticket:hover { background-color: #e50914; }
+.btn-book-ticket:disabled { background-color: #333; color: #666; cursor: not-allowed; }
 
 
 /* --- 5. SIMILAR MOVIES --- */
@@ -182,8 +258,8 @@ h3 {
 
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-  .content-layer { flex-direction: column; text-align: center; }
-  .poster-section img { width: 220px; }
-  .date-strip { flex-direction: column; gap: 20px; }
-  .btn-strip-book { width: 100%; }
+  .theater-row { flex-direction: column; align-items: stretch; gap: 15px; }
+  .theater-info-col { border-right: none; border-bottom: 1px solid #333; padding-right: 0; padding-bottom: 15px; }
+  .action-col { flex: auto; width: 100%; margin-top: 5px; }
+  .time-slots-col { justify-content: flex-start; }
 }

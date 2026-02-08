@@ -1,75 +1,141 @@
-<div class="manage-container">
-
+<div class="admin-container">
+  
+  <!-- Header -->
   <div class="page-header">
-    <div>
+    <div class="header-content">
       <h1>Manage Theaters</h1>
-      <p>Add new cinema halls or update show timings.</p>
+      <p>Monitor schedules and occupancy across all locations.</p>
     </div>
+    <!-- ADD THEATER BUTTON -->
     <button class="btn-add" (click)="openAddForm()">
       <i class="fa-solid fa-plus"></i> Add Theater
     </button>
   </div>
 
-  <div class="table-wrapper">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>Theater Name</th>
-          <th>Location</th>
-          <th>Current Showtimes</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let theater of theaters">
-          <td class="theater-name">{{ theater.name }}</td>
-          <td><i class="fa-solid fa-location-dot"></i> {{ theater.location }}</td>
-          <td>
-            <div class="tags-row">
-              <span class="time-tag" *ngFor="let time of theater.showtimes">{{ time }}</span>
+  <!-- Theater Grid -->
+  <div class="theater-grid">
+    <div class="theater-card" *ngFor="let theater of theaters">
+      
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="header-icon"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="header-info">
+          <h2>{{ theater.name }}</h2>
+          <span class="sub-text">{{ theater.location }}</span>
+        </div>
+        <!-- Delete Button -->
+        <button class="btn-icon-del" (click)="deleteTheater(theater.id)" title="Remove Theater">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+
+      <!-- Movies List -->
+      <div class="movies-list">
+        
+        <div class="movie-row" *ngFor="let movie of theater.movies">
+          <img [src]="movie.image" class="thumb">
+          <div class="movie-info">
+            <h4>{{ movie.title }}</h4>
+            
+            <!-- Time Slots -->
+            <div class="time-chips">
+              <button class="time-btn" 
+                      *ngFor="let t of movie.times"
+                      (click)="openInspector(theater.name, movie.title, t)"
+                      title="Click to view seat map">
+                {{ t.time }}
+                <span class="occupancy-dot" [style.background-color]="getOccupancyColor(t.bookedCount, t.totalSeats)"></span>
+              </button>
             </div>
-          </td>
-          <td>
-            <button class="btn-icon edit" (click)="editTheater(theater)"><i class="fa-solid fa-pen"></i></button>
-            <button class="btn-icon delete" (click)="deleteTheater(theater.id)"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-theater" *ngIf="theater.movies.length === 0">
+          <i class="fa-regular fa-calendar-xmark"></i>
+          <p>No shows scheduled for today.</p>
+        </div>
+
+      </div>
+
+    </div>
   </div>
 
-  <div class="modal-overlay" *ngIf="showForm">
-    <div class="modal-box">
-      <h2>{{ isEditing ? 'Edit Theater' : 'Add New Theater' }}</h2>
-      
-      <form (ngSubmit)="saveTheater()">
+</div>
+
+<!-- --- 1. ADD THEATER MODAL --- -->
+<div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
+  <div class="form-box" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h2>Add New Theater</h2>
+      <button class="btn-close" (click)="closeForm()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="saveTheater()" #f="ngForm">
         <div class="form-group">
-          <label>Theater Name</label>
-          <input type="text" [(ngModel)]="theaterForm.name" name="name" required placeholder="e.g. PVR: Rahul Raj Mall">
+          <label>Theater Name <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="theaterForm.name" name="name" required placeholder="e.g. PVR Cinema">
         </div>
 
         <div class="form-group">
-          <label>Location</label>
-          <input type="text" [(ngModel)]="theaterForm.location" name="location" required placeholder="e.g. Piplod, Surat">
+          <label>Location / Address <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="theaterForm.location" name="location" required placeholder="e.g. Downtown Mall">
         </div>
 
         <div class="form-group">
-          <label>Google Maps Link</label>
-          <input type="text" [(ngModel)]="theaterForm.mapUrl" name="mapUrl" placeholder="http://maps.google.com/...">
-        </div>
-
-        <div class="form-group">
-          <label>Showtimes (Comma Separated)</label>
-          <input type="text" [(ngModel)]="theaterForm.showtimesInput" name="showtimes" placeholder="10:00 AM, 1:30 PM, 5:00 PM">
-          <small style="color: #666;">Separate multiple times with a comma.</small>
+          <label>Facilities (Comma separated)</label>
+          <input type="text" [(ngModel)]="theaterForm.facilities" name="facilities" placeholder="e.g. IMAX, 4DX, Parking">
         </div>
 
         <div class="modal-actions">
           <button type="button" class="btn-cancel" (click)="closeForm()">Cancel</button>
-          <button type="submit" class="btn-save">Save Theater</button>
+          <button type="submit" class="btn-save" [disabled]="!f.valid">Create Theater</button>
         </div>
       </form>
     </div>
-  </div>
 
+  </div>
+</div>
+
+<!-- --- 2. INSPECTOR MODAL (Seat Map) --- -->
+<div class="modal-overlay" *ngIf="showInspector" (click)="closeInspector()">
+  <div class="inspector-box" (click)="$event.stopPropagation()">
+    
+    <div class="inspector-header">
+      <div class="insp-info">
+        <h3>{{ inspectMovieTitle }}</h3>
+        <p>{{ inspectTheaterName }} • <span class="highlight">{{ inspectTime }}</span></p>
+      </div>
+      <button class="btn-close" (click)="closeInspector()">✕</button>
+    </div>
+
+    <div class="visual-map">
+      <div class="screen">SCREEN</div>
+      
+      <div class="seat-grid">
+        <div *ngFor="let row of rows" class="row">
+          <!-- Left Bank -->
+          <div class="seat-group">
+            <div *ngFor="let s of leftSeats" class="seat" [class.booked]="isBooked(row, s)">
+              {{ row }}{{ s }}
+            </div>
+          </div>
+          <!-- Right Bank -->
+          <div class="seat-group">
+            <div *ngFor="let s of rightSeats" class="seat" [class.booked]="isBooked(row, s)">
+              {{ row }}{{ s }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><i class="dot free"></i> Available</span>
+        <span><i class="dot booked"></i> Booked</span>
+      </div>
+    </div>
+
+  </div>
 </div>

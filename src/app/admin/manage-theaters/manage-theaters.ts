@@ -2,42 +2,110 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+// --- INTERFACES ---
+interface ScheduledMovie {
+  title: string;
+  image: string;
+  times: { time: string, bookedCount: number, totalSeats: number }[];
+}
+
+interface Theater {
+  id: number;
+  name: string;
+  location: string;
+  facilities: string;
+  movies: ScheduledMovie[];
+}
+
 @Component({
   selector: 'app-manage-theaters',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './manage-theaters.html',
-  styleUrl: './manage-theaters.css'
+  styleUrls: ['./manage-theaters.css']
 })
 export class ManageTheatersComponent {
-  
-  showForm = false;
-  isEditing = false;
-  
-  // Form Data (Showtimes is a string here for easy editing)
-  theaterForm = {
-    id: 0,
-    name: '',
-    location: '',
-    mapUrl: '',
-    showtimesInput: '' // We will split this string into an array later
-  };
 
-  // Mock Data (Matches your User Panel data)
-  theaters = [
-    { 
-      id: 1, 
-      name: 'PVR: Rahul Raj Mall', 
-      location: 'Piplod, Surat', 
-      showtimes: ['10:00 AM', '1:30 PM', '5:00 PM'],
-      mapUrl: 'https://www.google.com/maps/search/?api=1&query=PVR+Rahul+Raj+Mall+Surat' 
+  // --- UI STATE ---
+  showInspector = false;
+  showForm = false; // Controls Add Modal
+
+  // --- INSPECTOR VARIABLES ---
+  inspectTheaterName: string = '';
+  inspectMovieTitle: string = '';
+  inspectTime: string = '';
+  
+  // Mock Seat Data
+  rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F'];
+  leftSeats = [1, 2, 3, 4];
+  rightSeats = [5, 6, 7, 8];
+  bookedSeats: string[] = []; 
+
+  // --- FORM DATA ---
+  theaterForm: Theater = { id: 0, name: '', location: '', facilities: '', movies: [] };
+
+  // --- THEATER DATA (Mock) ---
+  theaters: Theater[] = [
+    {
+      id: 1,
+      name: 'PVR: Rahul Raj Mall',
+      location: 'Piplod, Surat',
+      facilities: 'Dolby Atmos, Recliners',
+      movies: [
+        {
+          title: 'Border 2',
+          image: 'https://placehold.co/100x150/333/FFF?text=Border+2',
+          times: [
+            { time: '10:00 AM', bookedCount: 42, totalSeats: 48 },
+            { time: '02:00 PM', bookedCount: 12, totalSeats: 48 }
+          ]
+        },
+        {
+          title: 'Superman: Legacy',
+          image: 'https://placehold.co/100x150/2563eb/FFF?text=Superman',
+          times: [
+            { time: '05:30 PM', bookedCount: 5, totalSeats: 48 }
+          ]
+        }
+      ]
     },
-    { 
-      id: 2, 
-      name: 'INOX: VR Mall', 
-      location: 'Dumas Road, Surat', 
-      showtimes: ['11:00 AM', '6:15 PM'],
-      mapUrl: 'https://www.google.com/maps/search/?api=1&query=INOX+VR+Mall+Surat' 
+    {
+      id: 2,
+      name: 'INOX: VR Mall',
+      location: 'Dumas Rd, Surat',
+      facilities: 'IMAX, Laser',
+      movies: [
+        {
+          title: 'Border 2',
+          image: 'https://placehold.co/100x150/333/FFF?text=Border+2',
+          times: [
+            { time: '11:00 AM', bookedCount: 20, totalSeats: 48 },
+            { time: '06:00 PM', bookedCount: 48, totalSeats: 48 }
+          ]
+        }
+      ]
+    },
+    {
+      id: 3,
+      name: 'Cinépolis: Imperial Square',
+      location: 'Adajan, Surat',
+      facilities: '4DX, Coffee Shop',
+      movies: []
+    },
+    {
+      id: 4,
+      name: 'Rajhans Multiplex',
+      location: 'Pal, Surat',
+      facilities: 'Budget Friendly',
+      movies: [
+        {
+          title: 'Mickey 17',
+          image: 'https://placehold.co/100x150/1a1a1a/FFF?text=Mickey+17',
+          times: [
+            { time: '09:00 PM', bookedCount: 0, totalSeats: 48 }
+          ]
+        }
+      ]
     }
   ];
 
@@ -45,18 +113,20 @@ export class ManageTheatersComponent {
 
   openAddForm() {
     this.showForm = true;
-    this.isEditing = false;
-    this.resetForm();
+    // Reset Form
+    this.theaterForm = { id: 0, name: '', location: '', facilities: '', movies: [] };
   }
 
-  editTheater(theater: any) {
-    this.showForm = true;
-    this.isEditing = true;
-    // Copy data and convert Array -> String for the input box
-    this.theaterForm = { 
-      ...theater, 
-      showtimesInput: theater.showtimes.join(', ') 
-    };
+  closeForm() {
+    this.showForm = false;
+  }
+
+  saveTheater() {
+    if (this.theaterForm.name && this.theaterForm.location) {
+      this.theaterForm.id = Date.now(); // Generate ID
+      this.theaters.push({ ...this.theaterForm }); // Add to list
+      this.closeForm();
+    }
   }
 
   deleteTheater(id: number) {
@@ -65,33 +135,46 @@ export class ManageTheatersComponent {
     }
   }
 
-  saveTheater() {
-    // Convert String "10:00 AM, 1:00 PM" -> Array ["10:00 AM", "1:00 PM"]
-    const showtimesArray = this.theaterForm.showtimesInput.split(',').map(s => s.trim());
+  // --- INSPECTOR ACTIONS ---
 
-    const theaterData = {
-      id: this.theaterForm.id,
-      name: this.theaterForm.name,
-      location: this.theaterForm.location,
-      mapUrl: this.theaterForm.mapUrl,
-      showtimes: showtimesArray
-    };
+  openInspector(theaterName: string, movieTitle: string, timeData: any) {
+    this.inspectTheaterName = theaterName;
+    this.inspectMovieTitle = movieTitle;
+    this.inspectTime = timeData.time;
+    this.showInspector = true;
+    
+    // Generate mock booked seats based on count
+    this.generateMockSeatMap(timeData.bookedCount);
+  }
 
-    if (this.isEditing) {
-      const index = this.theaters.findIndex(t => t.id === theaterData.id);
-      if (index !== -1) this.theaters[index] = theaterData;
-    } else {
-      theaterData.id = Date.now();
-      this.theaters.push(theaterData);
+  closeInspector() {
+    this.showInspector = false;
+    this.bookedSeats = [];
+  }
+
+  generateMockSeatMap(count: number) {
+    this.bookedSeats = [];
+    const allSeats: string[] = [];
+    
+    this.rows.forEach(r => {
+      [...this.leftSeats, ...this.rightSeats].forEach(n => allSeats.push(r + n));
+    });
+
+    for (let i = allSeats.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allSeats[i], allSeats[j]] = [allSeats[j], allSeats[i]];
     }
-    this.closeForm();
+    this.bookedSeats = allSeats.slice(0, count);
   }
 
-  closeForm() {
-    this.showForm = false;
+  isBooked(row: string, num: number): boolean {
+    return this.bookedSeats.includes(row + num);
   }
 
-  resetForm() {
-    this.theaterForm = { id: 0, name: '', location: '', mapUrl: '', showtimesInput: '' };
+  getOccupancyColor(booked: number, total: number): string {
+    const percentage = booked / total;
+    if (percentage >= 0.8) return '#dc3545'; // Red
+    if (percentage >= 0.5) return '#ffc107'; // Yellow
+    return '#28a745'; // Green
   }
 }

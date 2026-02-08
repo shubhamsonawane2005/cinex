@@ -1,24 +1,68 @@
 <div class="payment-container">
-  <div class="card-box">
-    <h2>Payment Details</h2>
-    <p class="amount">Total Amount: ₹400</p>
+  
+  <div class="summary-card">
+    <h2>Order Summary</h2>
+    
+    <div class="movie-card-row">
+      <div class="poster-preview">
+        <i class="fa-solid fa-film"></i>
+      </div>
+      <div class="movie-info">
+        <h3>Border 2</h3>
+        <p>PVR: Rahul Raj Mall</p>
+        <p class="highlight">Today, 10:00 PM</p>
+      </div>
+    </div>
 
-    <form (submit)="processPayment()">
-      <label>Card Number</label>
-      <input type="text" placeholder="1234 5678 1234 5678" required>
-
+    <div class="bill-details">
       <div class="row">
-        <div>
+        <span>Tickets (x3)</span>
+        <span>Rs. 750</span>
+      </div>
+      <div class="row">
+        <span>Convenience Fee</span>
+        <span>Rs. 45</span>
+      </div>
+      <div class="divider"></div>
+      <div class="row total">
+        <span>Total Payable</span>
+        <span>Rs. 795</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-section">
+    <h2>Payment Details</h2>
+    
+    <div class="tabs">
+      <button class="active"><i class="fa-regular fa-credit-card"></i> Card</button>
+      <button><i class="fa-brands fa-google-pay"></i> UPI</button>
+    </div>
+
+    <form class="card-form" (submit)="processPayment()">
+      <div class="input-group">
+        <label>Card Number</label>
+        <input type="text" placeholder="XXXX XXXX XXXX XXXX">
+      </div>
+      
+      <div class="row-inputs">
+        <div class="input-group">
           <label>Expiry</label>
-          <input type="text" placeholder="MM/YY" required>
+          <input type="text" placeholder="MM/YY">
         </div>
-        <div>
+        <div class="input-group">
           <label>CVV</label>
-          <input type="text" placeholder="123" required>
+          <input type="password" placeholder="123">
         </div>
       </div>
 
-      <button type="submit" class="btn-pay">Pay Securely</button>
+      <div class="input-group">
+        <label>Name on Card</label>
+        <input type="text" placeholder="John Doe">
+      </div>
+
+      <button type="submit" class="btn-pay">Pay Rs. 795</button>
     </form>
+
   </div>
 </div>

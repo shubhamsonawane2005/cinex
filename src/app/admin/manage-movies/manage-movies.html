@@ -1,194 +1,212 @@
 <div class="manage-container">
-
+  
   <div class="page-header">
-    <h1>Manage Movies</h1>
+    <div class="header-content">
+      <h1>Manage Movies</h1>
+      <p>Organize your catalog and upcoming releases</p>
+    </div>
     <button class="btn-add" (click)="openAddForm()">
-      <i class="fa-solid fa-plus"></i> Add Movie
+      <i class="fa-solid fa-plus"></i> Add New Movie
     </button>
   </div>
 
-  <div class="dashboard-tabs">
-    <button [class.active]="activeTab === 'released'"
-      (click)="activeTab = 'released'">
-      Now Showing
-    </button>
-    <button [class.active]="activeTab === 'upcoming'"
-      (click)="activeTab = 'upcoming'">
-      Coming Soon
-    </button>
+  <div class="toolbar">
+    <div class="dashboard-tabs">
+      <button [class.active]="activeTab === 'released'" (click)="activeTab = 'released'">Now Showing</button>
+      <button [class.active]="activeTab === 'upcoming'" (click)="activeTab = 'upcoming'">Coming Soon</button>
+    </div>
+    <div class="view-toggles">
+      <button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'"><i class="fa-solid fa-grip"></i></button>
+      <button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'"><i class="fa-solid fa-list"></i></button>
+    </div>
   </div>
 
-  <div class="movie-grid">
+  <div class="movie-grid" *ngIf="viewMode === 'grid'">
     <div class="movie-card" *ngFor="let movie of filteredMovies">
-
       <div class="card-image">
-        <img [src]="movie.image || 'assets/placeholder-vertical.jpg'"
-          [alt]="movie.title">
+        <img [src]="movie.image || 'https://placehold.co/300x450'" [alt]="movie.title">
         <div class="card-overlay">
-          <button class="btn-edit" (click)="editMovie(movie)">
-            <i class="fa-solid fa-pen"></i> Edit
-          </button>
-          <button class="btn-delete" (click)="deleteMovie(movie.id)">
-            <i class="fa-solid fa-trash"></i>
-          </button>
+           <button class="btn-edit" (click)="editMovie(movie)"><i class="fa-solid fa-pen"></i> Edit</button>
+           <button class="btn-delete" (click)="deleteMovie(movie.id)"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
-
       <div class="card-details">
         <h3>{{ movie.title }}</h3>
         <span class="genre">{{ movie.genre }}</span>
-
-        <div class="meta" *ngIf="movie.status === 'released'">
-          <span class="rating">★ {{ movie.rating }}</span>
-        </div>
-
-        <div class="meta" *ngIf="movie.status === 'upcoming'">
-          <span class="date">{{ movie.releaseDate }}</span>
-        </div>
+        <button class="btn-check-grid" (click)="openInspector(movie)" *ngIf="movie.showtimes && movie.showtimes.length > 0">
+          <i class="fa-solid fa-eye"></i> View Bookings
+        </button>
       </div>
-
-    </div>
-
-    <div class="no-movies" *ngIf="filteredMovies.length === 0">
-      <p>No movies found in this category.</p>
     </div>
   </div>
 
+  <div class="movie-list-container" *ngIf="viewMode === 'list'">
+    <table class="movie-table">
+      <thead>
+        <tr>
+          <th style="width: 50px;">ID</th>
+          <th>Media</th>
+          <th style="width: 25%;">Movie Details</th>
+          <th style="width: 30%;">Theaters & Showtimes</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let movie of filteredMovies">
+          <td class="text-muted">#{{ movie.id }}</td>
+          <td>
+            <div class="media-stack">
+              <img [src]="movie.image || 'assets/placeholder.jpg'" class="table-poster">
+            </div>
+          </td>
+          <td>
+            <div class="table-info">
+              <h4>{{ movie.title }}</h4>
+              <span class="genre-pill">{{ movie.genre }}</span>
+              <p class="desc-text">{{ movie.description || 'No description available.' }}</p>
+            </div>
+          </td>
+          <td>
+            <div class="booking-check-cell" *ngIf="movie.showtimes && movie.showtimes.length > 0; else noShows">
+              <span class="theater-count">{{ movie.showtimes.length }} locations active</span>
+              <button class="btn-check-bookings" (click)="openInspector(movie)">
+                <i class="fa-solid fa-chart-pie"></i> Check Occupancy
+              </button>
+            </div>
+            <ng-template #noShows><span class="text-muted">-</span></ng-template>
+          </td>
+          <td class="text-right">
+            <div class="table-actions">
+              <button class="btn-icon edit" (click)="editMovie(movie)"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn-icon delete" (click)="deleteMovie(movie.id)"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
+
 <div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
   <div class="modal-box large-modal" (click)="$event.stopPropagation()">
-
     <div class="modal-header">
       <h2>{{ isEditing ? 'Edit Movie' : 'Add New Movie' }}</h2>
-      <button class="btn-close" (click)="closeForm()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+      <button class="btn-close" (click)="closeForm()">✕</button>
     </div>
-
-    <div class="modal-body">
-
+    <div class="split-body">
       <div class="form-section">
-
         <div class="form-tabs">
-          <button [class.active]="activeFormTab === 'basic'"
-            (click)="activeFormTab = 'basic'">Basic Info</button>
-          <button [class.active]="activeFormTab === 'media'"
-            (click)="activeFormTab = 'media'">Media & Assets</button>
+          <button [class.active]="activeFormTab === 'basic'" (click)="activeFormTab = 'basic'">Basic Info</button>
+          <button [class.active]="activeFormTab === 'media'" (click)="activeFormTab = 'media'">Media & Assets</button>
+          <button [class.active]="activeFormTab === 'shows'" (click)="activeFormTab = 'shows'">Theaters</button>
         </div>
-
         <form (ngSubmit)="saveMovie()" #f="ngForm">
-
-          <div *ngIf="activeFormTab === 'basic'" class="tab-content">
-            <div class="form-group">
-              <label for="mTitle">Movie Title <span class="required"
-                  style="color:red">*</span></label>
-              <input id="mTitle" type="text" [(ngModel)]="movieForm.title"
-                name="title" required placeholder="e.g. Inception">
-            </div>
-
+          <div *ngIf="activeFormTab === 'basic'">
+            <div class="form-group"><label>Movie Title</label><input type="text" [(ngModel)]="movieForm.title" name="title" required></div>
             <div class="form-row">
-              <div class="form-group">
-                <label for="mGenre">Genre</label>
-                <input id="mGenre" type="text" [(ngModel)]="movieForm.genre"
-                  name="genre" placeholder="Sci-Fi | Action">
-              </div>
-              <div class="form-group">
-                <label for="mStatus">Status</label>
-                <select id="mStatus" [(ngModel)]="movieForm.status"
-                  name="status">
-                  <option value="released">Now Showing</option>
-                  <option value="upcoming">Coming Soon</option>
-                </select>
-              </div>
+               <div class="form-group"><label>Genre</label><input type="text" [(ngModel)]="movieForm.genre" name="genre"></div>
+               <div class="form-group"><label>Status</label><select [(ngModel)]="movieForm.status" name="status"><option value="released">Released</option><option value="upcoming">Upcoming</option></select></div>
             </div>
-
-            <div class="form-group">
-              <label for="mDesc">Description</label>
-              <textarea id="mDesc" [(ngModel)]="movieForm.description"
-                name="description" rows="4"
-                placeholder="Plot summary..."></textarea>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group" *ngIf="movieForm.status === 'released'">
-                <label for="mRating">Rating (0-10)</label>
-                <input id="mRating" type="number" [(ngModel)]="movieForm.rating"
-                  name="rating" step="0.1" max="10">
-              </div>
-              <div class="form-group" *ngIf="movieForm.status === 'upcoming'">
-                <label for="mDate">Release Date</label>
-                <input id="mDate" type="date"
-                  [(ngModel)]="movieForm.releaseDate" name="releaseDate">
-              </div>
-            </div>
+            <div class="form-group"><label>Description</label><textarea [(ngModel)]="movieForm.description" name="desc" rows="3"></textarea></div>
           </div>
-
-          <div *ngIf="activeFormTab === 'media'" class="tab-content">
-            <div class="form-group">
-              <label for="mImage">Poster URL (Vertical)</label>
-              <input id="mImage" type="text" [(ngModel)]="movieForm.image"
-                name="image" placeholder="https://...">
-              <small>Used for Movie Cards</small>
-            </div>
-
-            <div class="form-group">
-              <label for="mBackdrop">Backdrop URL (Horizontal)</label>
-              <input id="mBackdrop" type="text" [(ngModel)]="movieForm.backdrop"
-                name="backdrop" placeholder="https://...">
-              <small>Used for the Home Banner</small>
-            </div>
+          <div *ngIf="activeFormTab === 'media'">
+            <div class="form-group"><label>Poster Path</label><input type="text" [(ngModel)]="movieForm.image" name="image"></div>
+            <div class="form-group"><label>Backdrop Path</label><input type="text" [(ngModel)]="movieForm.backdrop" name="backdrop"></div>
           </div>
-
+          <div *ngIf="activeFormTab === 'shows'">
+             <div class="showtime-controls">
+                <div class="form-group"><label>Select Theater</label><select [(ngModel)]="tempTheaterId" name="tempTheaterId"><option [ngValue]="null">-- Choose --</option><option *ngFor="let t of availableTheaters" [ngValue]="t.id">{{t.name}}</option></select></div>
+                <div class="form-group"><label>Add Time</label><div class="input-with-btn"><input type="time" [(ngModel)]="tempTime" name="tempTime"><button type="button" class="btn-add-time" (click)="addShowtime()">Add</button></div></div>
+             </div>
+             <div class="shows-list">
+                <div class="theater-group" *ngFor="let group of movieForm.showtimes">
+                   <div class="group-header"><strong>{{group.theaterName}}</strong><button type="button" class="btn-icon-del" (click)="removeTheater(group.theaterId)"><i class="fa-solid fa-trash"></i></button></div>
+                   <div class="times-chips"><span class="chip" *ngFor="let time of group.times">{{time}}<span class="x" (click)="removeTime(group.theaterId, time)">×</span></span></div>
+                </div>
+             </div>
+          </div>
           <div class="modal-actions">
-            <button type="button" class="btn-cancel"
-              (click)="closeForm()">Cancel</button>
-            <button type="submit" class="btn-save" [disabled]="!f.valid">
-              Save Movie
-            </button>
+            <button type="button" class="btn-cancel" (click)="closeForm()">Cancel</button>
+            <button type="submit" class="btn-save" [disabled]="!f.valid">Save Changes</button>
           </div>
-
         </form>
       </div>
-
       <div class="preview-section">
         <h3>Live Preview</h3>
-
-        <p class="preview-label">Card View (Vertical)</p>
-        <div class="movie-card-preview">
-      <div class="poster-box">
-  <img 
-    [src]="movieForm.image || 'https://placehold.co/300x450?text=Poster+Preview'" 
-    (error)="$event.target.src = 'https://placehold.co/300x450?text=Invalid+URL'"
-    [alt]="movieForm.title || 'Movie Poster'">
-</div>
-          <div class="card-info">
-            <h4>{{ movieForm.title || 'Movie Title' }}</h4>
-            <span class="genre">{{ movieForm.genre || 'Genre' }}</span>
-            <div class="rating" *ngIf="movieForm.status === 'released'">
-              ★ {{ movieForm.rating || '0.0' }}
-            </div>
-            <div class="date" *ngIf="movieForm.status === 'upcoming'">
-              Releases: {{ movieForm.releaseDate || 'TBA' }}
-            </div>
-          </div>
-        </div>
-
-      <p class="preview-label" style="margin-top: 20px;">Banner View (Horizontal)</p>
-
-<div class="banner-preview">
-  <img 
-    [src]="movieForm.backdrop || 'https://placehold.co/600x340?text=Banner+Preview'"
-    (error)="$event.target.src = 'https://placehold.co/600x340?text=Invalid+URL'"
-    alt="Banner Preview">
-    
-  <div class="banner-overlay">
-    <h5>{{ movieForm.title || 'Movie Title' }}</h5>
+        <div class="movie-card-preview"><div class="poster-box"><img [src]="movieForm.image || ''"></div></div>
+      </div>
+    </div>
   </div>
 </div>
 
+<div class="modal-overlay" *ngIf="showInspector" (click)="closeInspector()">
+  <div class="modal-box inspector-modal" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h2>Booking Inspector: <span class="highlight">{{ inspectMovie?.title }}</span></h2>
+      <button class="btn-close" (click)="closeInspector()">✕</button>
+    </div>
+
+    <div class="inspector-body">
+      
+      <div class="inspector-filters">
+        <div class="filter-group">
+          <label>Theater</label>
+          <select [(ngModel)]="inspectTheaterId" (change)="loadBookings()">
+             <option *ngFor="let s of inspectMovie?.showtimes" [value]="s.theaterId">{{ s.theaterName }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Showtime</label>
+          <select [(ngModel)]="inspectTime" (change)="loadBookings()">
+             <ng-container *ngFor="let s of inspectMovie?.showtimes">
+               <ng-container *ngIf="s.theaterId == inspectTheaterId">
+                 <option *ngFor="let t of s.times" [value]="t">{{ t }}</option>
+               </ng-container>
+             </ng-container>
+          </select>
+        </div>
+        <div class="stats-box">
+          <span class="stat-label">Occupancy</span>
+          <span class="stat-value">{{ occupancyPercent }}%</span>
+        </div>
+      </div>
+
+      <div class="visual-map-container">
+        
+        <div class="screen-curve">
+          <span>SCREEN</span>
+        </div>
+        
+        <div class="seat-grid">
+          <div *ngFor="let row of rows" class="row">
+            
+            <div class="seat-group">
+              <div *ngFor="let seat of leftSeats" 
+                   class="seat"
+                   [class.booked]="isSeatBooked(row, seat)">
+                {{ row }}{{ seat }}
+              </div>
+            </div>
+
+            <div class="seat-group">
+              <div *ngFor="let seat of rightSeats" 
+                   class="seat"
+                   [class.booked]="isSeatBooked(row, seat)">
+                {{ row }}{{ seat }}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="legend">
+          <span class="legend-item"><span class="dot free"></span> Available</span>
+          <span class="legend-item"><span class="dot booked"></span> Booked</span>
+        </div>
       </div>
 
     </div>
-
   </div>
 </div>

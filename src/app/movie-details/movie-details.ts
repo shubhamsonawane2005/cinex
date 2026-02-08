@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router'; 
+import { ActivatedRoute, RouterModule, Router, RouterLink } from '@angular/router'; // Added Router
 import { MovieService, Movie } from '../services/movie';
 
 @Component({
@@ -13,8 +13,13 @@ import { MovieService, Movie } from '../services/movie';
 export class MovieDetailsComponent implements OnInit {
 
   movie: Movie | undefined;
-  
-  // 1. Cast Data (Static for now)
+  selectedTheater: number | null = null;
+  selectedTime: string | null = null;
+
+  private route = inject(ActivatedRoute);
+  private router = inject(Router); // Inject Router for navigation
+  private movieService = inject(MovieService);
+
   cast = [
     { name: 'Cillian Murphy', role: 'Oppenheimer', image: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Cillian_Murphy_Press_Conference_The_Party_Berlinale_2017_02cr.jpg' },
     { name: 'Robert Downey Jr.', role: 'Lewis Strauss', image: 'https://upload.wikimedia.org/wikipedia/commons/9/94/Robert_Downey_Jr_2014_Comic_Con_%28cropped%29.jpg' },
@@ -23,40 +28,49 @@ export class MovieDetailsComponent implements OnInit {
     { name: 'Florence Pugh', role: 'Jean Tatlock', image: 'https://upload.wikimedia.org/wikipedia/commons/6/68/Florence_Pugh_SDCC_2019.jpg' }
   ];
 
-  // Make sure your Similar Movies also have full URLs
-  // (In your loadMovie function, ensure the 'image' property is a full URL like 'https://...')
-
-  // 2. Dates for the Booking Strip
- dates = [
-    { day: '11', month: 'Jan', active: true },
-    { day: '12', month: 'Jan', active: false },
-    { day: '13', month: 'Jan', active: false },
-    { day: '14', month: 'Jan', active: false }
+  // Dates
+  dates = [
+    { day: '11', month: 'OCT', weekday: 'TODAY', active: true },
+    { day: '12', month: 'OCT', weekday: 'TOMORROW', active: false },
+    { day: '13', month: 'OCT', weekday: 'FRI', active: false },
+    { day: '14', month: 'OCT', weekday: 'SAT', active: false }
   ];
 
-  // <--- ADD THIS FUNCTION
-  selectDate(index: number) {
-    // 1. Reset all dates to false
-    this.dates.forEach(d => d.active = false);
-    
-    // 2. Set the clicked date to true
-    this.dates[index].active = true;
-  }
-scrollToBooking() {
-  const element = document.getElementById('booking-section');
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-}
-  // 3. Similar Movies (We reuse existing movies for demo)
+  // Theaters Data (Integrated from previous component)
+  theaters = [
+    {
+      id: 1,
+      name: 'PVR: Rahul Raj Mall',
+      address: 'Piplod, Dumas Road, Surat',
+      timings: ['10:00 AM', '01:30 PM', '05:00 PM', '09:00 PM'],
+      mapUrl: 'https://www.google.com/maps/search/?api=1&query=PVR+Rahul+Raj+Mall+Surat'
+    },
+    {
+      id: 2,
+      name: 'INOX: VR Mall',
+      address: 'Dumas Road, Magdalla, Surat',
+      timings: ['11:00 AM', '02:00 PM', '06:15 PM', '10:30 PM'],
+      mapUrl: 'https://www.google.com/maps/search/?api=1&query=INOX+VR+Mall+Surat'
+    },
+    {
+      id: 3,
+      name: 'Cinépolis: Imperial Square',
+      address: 'Adajan Gam, Surat',
+      timings: ['09:30 AM', '12:45 PM', '04:30 PM', '08:15 PM'],
+      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Cinepolis+Imperial+Square+Mall+Surat'
+    },
+    {
+      id: 4,
+      name: 'Rajhans Multiplex',
+      address: 'Pal Hazira Road, Adajan, Surat',
+      timings: ['10:15 AM', '01:45 PM', '05:30 PM', '09:45 PM'],
+      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Rajhans+Cinema+Pal+Adajan+Surat'
+    }
+  ];
+
   similarMovies: Movie[] = [];
 
-  private route = inject(ActivatedRoute); 
-  private movieService = inject(MovieService); 
-// Add this method inside your MovieDetailsComponent class
-
   ngOnInit() {
-    // Get ID from URL
     this.route.paramMap.subscribe(params => {
       const id = Number(params.get('id'));
       if (id) {
@@ -66,14 +80,62 @@ scrollToBooking() {
   }
 
   loadMovie(id: number) {
-    // Fetch Main Movie
     this.movieService.getMovieById(id).subscribe(data => {
       this.movie = data;
     });
 
-    // Fetch Similar Movies (Just showing all movies as recommendations for now)
     this.movieService.getMovies().subscribe(data => {
-      this.similarMovies = data.filter(m => m.id !== id); // Exclude current movie
+      this.similarMovies = data.filter(m => m.id !== id);
     });
+  }
+
+  proceedToBooking() {
+    // Check if we have a movie, a theater, and a time selected
+    if (this.movie && this.selectedTheater && this.selectedTime) {
+
+      // Navigate using the pattern: /booking/movieId/theaterId/time
+      this.router.navigate([
+        '/booking',
+        this.movie.id,
+        this.selectedTheater,
+        this.selectedTime
+      ]);
+
+    } else {
+      // Alert the user if they haven't picked a time slot yet
+      alert('Please select a theater and a showtime first.');
+
+      // Optional: Scroll them down to the booking section if they haven't picked
+      this.scrollToBooking();
+    }
+  }
+
+  selectDate(index: number) {
+    this.dates.forEach(d => d.active = false);
+    this.dates[index].active = true;
+    // Optional: Reset time selection when date changes
+    this.selectedTime = null;
+    this.selectedTheater = null;
+  }
+
+  selectTime(time: string, theaterId: number) {
+    this.selectedTime = time;
+    this.selectedTheater = theaterId;
+
+    // Trigger Navigation to Seat Booking
+    console.log(`Booking ${this.movie?.title} at Theater ${theaterId} for ${time}`);
+
+    // Example: Navigate to a seat booking page (You'll need to create this later)
+    // this.router.navigate(['/seat-booking', this.movie?.id, theaterId, time]);
+
+    // For now, just an alert to show it works
+    // alert(`Redirecting to Seat Selection for ${time} at Theater ID: ${theaterId}`);
+  }
+
+  scrollToBooking() {
+    const element = document.getElementById('booking-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }
