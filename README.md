@@ -57,3 +57,21 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+
+<!-- what change task -->
+1. sit booking page in available time change 
+2. and default selected users selected time, and after user can change the time
+3. change css in selected sit "process to checkout 
+3. select sit option. and when user select seet then autometic select another seet
+
+<!-- advance task -->
+4. booked seet are show disable or also different color.
+5. payment page in add "Pay at Cinema" option.
+6. relese movie work notification 
+
+<!-- admin panel -->
+7. dashboard on status in show how  to pay fees user.
+8. manage movie in show the how many seet booked today and which movie live now?.
+9. up to comming ....

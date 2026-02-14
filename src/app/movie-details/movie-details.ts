@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule, Router, RouterLink } from '@angular/router'; // Added Router
+import { ActivatedRoute, RouterModule, Router } from '@angular/router'; // Added Router
 import { MovieService, Movie } from '../services/movie';
 
 @Component({
@@ -19,6 +19,8 @@ export class MovieDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router); // Inject Router for navigation
   private movieService = inject(MovieService);
+  dates: any[] = [];
+  similarMovies: Movie[] = [];
 
   cast = [
     { name: 'Cillian Murphy', role: 'Oppenheimer', image: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Cillian_Murphy_Press_Conference_The_Party_Berlinale_2017_02cr.jpg' },
@@ -28,13 +30,70 @@ export class MovieDetailsComponent implements OnInit {
     { name: 'Florence Pugh', role: 'Jean Tatlock', image: 'https://upload.wikimedia.org/wikipedia/commons/6/68/Florence_Pugh_SDCC_2019.jpg' }
   ];
 
-  // Dates
-  dates = [
-    { day: '11', month: 'OCT', weekday: 'TODAY', active: true },
-    { day: '12', month: 'OCT', weekday: 'TOMORROW', active: false },
-    { day: '13', month: 'OCT', weekday: 'FRI', active: false },
-    { day: '14', month: 'OCT', weekday: 'SAT', active: false }
-  ];
+
+  ngOnInit() {
+    // 1. Generate live dates first
+    this.generateLiveDates();
+
+    // 2. Load movie data
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      if (id) {
+        this.loadMovie(id);
+      }
+    });
+  }
+  generateLiveDates() {
+    const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+    const tempDates = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+
+      let weekdayLabel = dayNames[d.getDay()];
+      if (i === 0) weekdayLabel = 'TODAY';
+      if (i === 1) weekdayLabel = 'TOMORROW';
+
+      tempDates.push({
+        day: d.getDate().toString().padStart(2, '0'),
+        month: monthNames[d.getMonth()],
+        weekday: weekdayLabel,
+        active: i === 0,
+        fullDate: d
+      });
+    }
+    this.dates = tempDates;
+  }
+
+  // Booking time 
+  isTimePassed(timeStr: string): boolean {
+    
+  // 1. Find the currently active date card
+  const activeDate = this.dates.find(d => d.active);
+  
+  // 2. If the selected date is NOT "TODAY", all shows are available
+  if (!activeDate || activeDate.weekday !== 'TODAY') {
+    return false;
+  }
+
+  // 3. Convert time string (e.g., "01:30 PM") to a 24-hour Date object
+  const now = new Date();
+  const [time, modifier] = timeStr.split(' ');
+  let [hours, minutes] = time.split(':').map(Number);
+
+  if (modifier === 'PM' && hours < 12) hours += 12;
+  if (modifier === 'AM' && hours === 12) hours = 0;
+
+  const showTime = new Date();
+  showTime.setHours(hours, minutes, 0, 0);
+
+  // 4. Compare: If showTime is before now, it's passed
+  return showTime < now;
+}
+
 
   // Theaters Data (Integrated from previous component)
   theaters = [
@@ -68,16 +127,6 @@ export class MovieDetailsComponent implements OnInit {
     }
   ];
 
-  similarMovies: Movie[] = [];
-
-  ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
-      if (id) {
-        this.loadMovie(id);
-      }
-    });
-  }
 
   loadMovie(id: number) {
     this.movieService.getMovieById(id).subscribe(data => {
@@ -88,6 +137,20 @@ export class MovieDetailsComponent implements OnInit {
       this.similarMovies = data.filter(m => m.id !== id);
     });
   }
+
+  selectDate(index: number) {
+    this.dates.forEach(d => d.active = false);
+    this.dates[index].active = true;
+    this.selectedTime = null;
+    this.selectedTheater = null;
+  }
+
+  selectTime(time: string, theaterId: number) {
+    this.selectedTime = time;
+    this.selectedTheater = theaterId;
+    console.log(`Booking ${this.movie?.title} at Theater ${theaterId} for ${time}`);
+  }
+
 
   proceedToBooking() {
     // Check if we have a movie, a theater, and a time selected
@@ -109,29 +172,6 @@ export class MovieDetailsComponent implements OnInit {
       this.scrollToBooking();
     }
   }
-
-  selectDate(index: number) {
-    this.dates.forEach(d => d.active = false);
-    this.dates[index].active = true;
-    // Optional: Reset time selection when date changes
-    this.selectedTime = null;
-    this.selectedTheater = null;
-  }
-
-  selectTime(time: string, theaterId: number) {
-    this.selectedTime = time;
-    this.selectedTheater = theaterId;
-
-    // Trigger Navigation to Seat Booking
-    console.log(`Booking ${this.movie?.title} at Theater ${theaterId} for ${time}`);
-
-    // Example: Navigate to a seat booking page (You'll need to create this later)
-    // this.router.navigate(['/seat-booking', this.movie?.id, theaterId, time]);
-
-    // For now, just an alert to show it works
-    // alert(`Redirecting to Seat Selection for ${time} at Theater ID: ${theaterId}`);
-  }
-
   scrollToBooking() {
     const element = document.getElementById('booking-section');
     if (element) {

@@ -96,9 +96,12 @@
       <button class="time-btn" 
               *ngFor="let time of theater.timings" 
               [class.selected]="selectedTime === time && selectedTheater === theater.id"
+              [class.disabled]="isTimePassed(time)"
+              [disabled]="isTimePassed(time)"
               (click)="selectTime(time, theater.id)">
          {{ time }}
-         <div class="price-tooltip">Rs. 250</div>
+         <div class="price-tooltip" *ngIf="!isTimePassed(time)">Rs. 250</div>
+         <div class="price-tooltip" *ngIf="isTimePassed(time)">Expired</div>
       </button>
     </div>
 

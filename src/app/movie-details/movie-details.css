@@ -215,7 +215,21 @@ h3 {
 }
 .time-btn:hover { border-color: #2dc492; background: #1f3a2e; }
 .time-btn.selected { background-color: #2dc492; color: black; border-color: #2dc492; font-weight: 800; }
-
+.time-btn.disabled {
+  background: #1a1a1a;
+  border-color: #333;
+  color: #444; /* Dark grey text */
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.time-btn.disabled:hover {
+  background: #1a1a1a;
+  border-color: #333;
+}
+.time-btn.disabled .price-tooltip {
+  background: #333;
+  color: #888;
+}
 /* Tooltip */
 .price-tooltip {
   display: none; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
