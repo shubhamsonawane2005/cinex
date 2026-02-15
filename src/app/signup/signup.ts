@@ -30,10 +30,16 @@ export class SignupComponent {
   signupData = {
     username: '',
     email: '',
+    mobile: '',
     password: ''
   };
 
   onSignup() {
+// Validation: Simple check to ensure mobile is provided
+    if (!this.signupData.mobile || this.signupData.mobile.length !== 10) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
     // Service ko call kar rahe hain
     this.authService.signup(this.signupData).subscribe({
       next: (res) => {

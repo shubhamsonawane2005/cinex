@@ -14,6 +14,7 @@ import { AdminLayoutComponent } from './admin/admin-layout/admin-layout';
 import { DashboardComponent } from './admin/dashboard/dashboard';
 import { ManageMoviesComponent } from './admin/manage-movies/manage-movies';
 import { ManageTheatersComponent } from './admin/manage-theaters/manage-theaters';
+import { UserListComponent } from './admin/user-list/user-list';
 
 export const routes: Routes = [
   // User Routes
@@ -30,7 +31,7 @@ export const routes: Routes = [
   { path: 'theaters', component: TheatersComponent },
   { path: 'releases', component: ReleasesComponent },
 
-  // --- NEW ADMIN ROUTES ---
+  // --- ADMIN ROUTES ---
   {
     path: 'admin',
     component: AdminLayoutComponent, // The Shell (Sidebar + Content)
@@ -38,6 +39,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'movies', component: ManageMoviesComponent },
       { path: 'theaters', component: ManageTheatersComponent },
+      { path: 'users', component: UserListComponent },
       // Redirect empty 'admin' path to 'dashboard'
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]

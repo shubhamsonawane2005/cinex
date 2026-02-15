@@ -1,0 +1,72 @@
+<div class="admin-container">
+  <div class="page-header">
+    <h1>User Insights</h1>
+    <p>Track booking frequency and reward top customers</p>
+  </div>
+
+  <div class="table-card">
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>User Profile</th>
+          <th>Mobile</th>
+          <th>Total Value</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>
+            <div class="user-info">
+              <span class="name">
+                {{ user.username }}
+                <span class="vip-tag" *ngIf="user.totalSpent > 1000">VIP</span>
+              </span>
+              <span class="email">{{ user.email }}</span>
+            </div>
+          </td>
+          <td>{{ user.mobile }}</td>
+          <td><span class="amount">₹{{ user.totalSpent }}</span></td>
+          <td class="text-right">
+            <button class="btn-history" (click)="viewHistory(user)">
+              <i class="fa-solid fa-clock-rotate-left"></i> History
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-overlay" *ngIf="selectedUser" (click)="closeHistory()">
+    <div class="history-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>History: {{ selectedUser.username }}</h3>
+        <button class="btn-close" (click)="closeHistory()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="booking-item" *ngFor="let b of selectedUser.bookingHistory">
+          <div class="b-header">
+            <strong>{{ b.movieTitle }}</strong>
+            <span class="b-price">₹{{ b.amount }}</span>
+          </div>
+          <div class="b-meta">
+            <span><i class="fa-solid fa-location-dot"></i> {{ b.theater }}</span>
+            <span><i class="fa-solid fa-chair"></i> {{ b.seats.join(', ') }}</span>
+          </div>
+        </div>
+
+        <div class="coupon-section" *ngIf="selectedUser.totalSpent > 1000">
+          <div class="coupon-card">
+            <div class="coupon-icon">🎟️</div>
+            <div class="coupon-info">
+              <h4>Generate Reward</h4>
+              <p>User is eligible for a <strong>LOVALTY20</strong> coupon.</p>
+            </div>
+            <button class="btn-copy">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
