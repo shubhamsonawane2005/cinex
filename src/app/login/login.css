@@ -1,4 +1,4 @@
-.auth-container {
+/* .auth-container {
   min-height: 90vh;
   display: flex;
   justify-content: center;
@@ -8,7 +8,7 @@
 
 .auth-box {
   width: 350px;
-  background-color: white; /* White card for contrast */
+  background-color: white; 
   padding: 40px;
   border-radius: 8px;
   text-align: center;
@@ -22,7 +22,7 @@ input {
   margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  box-sizing: border-box; /* Fixes padding issues */
+  box-sizing: border-box; 
 }
 
 .btn-primary {
@@ -38,4 +38,55 @@ input {
 }
 
 .switch-text { font-size: 14px; color: #666; }
-a { color: #ff3e3e; text-decoration: none; font-weight: bold; }
+a { color: #ff3e3e; text-decoration: none; font-weight: bold; } */
+
+
+/* ye maine abhi  and 15 tarik ko comment kiya */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 20px;
+}
+
+.login-box {
+    background: #1a1a1a;
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 350px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.brand { color: #ff4d4d; }
+
+.input-group { margin-bottom: 15px; }
+
+.input-group label { display: block; margin-bottom: 5px; font-size: 14px; }
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: white;
+    box-sizing: border-box; /* Isse input bahar nahi niklega */
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.login-btn:disabled { background: #555; }
+
+.footer-text { text-align: center; margin-top: 15px; font-size: 13px; }

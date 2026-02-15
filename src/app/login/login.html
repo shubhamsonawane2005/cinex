@@ -1,4 +1,4 @@
-<div class="auth-container">
+<!-- <div class="auth-container">
   <div class="auth-box">
     <h2>Welcome Back</h2>
     <input type="email" placeholder="Email Address">
@@ -9,4 +9,25 @@
       New to Cinex? <a routerLink="/signup">Sign up here</a>
     </p>
   </div>
+</div> -->
+<div class="login-wrapper">
+    <div class="login-box">
+        <h2>Login to <span class="brand">Cinex</span></h2>
+        
+        <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" name="email" [(ngModel)]="loginData.email" placeholder="example@mail.com" required>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" [(ngModel)]="loginData.password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="login-btn" [disabled]="!loginForm.valid">Login</button>
+        </form>
+
+        <p class="footer-text">New to Cinex? <a routerLink="/signup">Create account</a></p>
+    </div>
 </div>

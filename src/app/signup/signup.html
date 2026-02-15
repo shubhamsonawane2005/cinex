@@ -1,4 +1,4 @@
-<div class="auth-container">
+<!-- <div class="auth-container">
   <div class="auth-box">
     <h2>Create Account</h2>
     <input type="text" placeholder="Full Name">
@@ -6,6 +6,25 @@
     <input type="password" placeholder="Create Password">
     
     <button class="btn-primary">Sign Up</button>
+
+    <p class="switch-text">
+      Already have an account? <a routerLink="/login">Sign In</a>
+    </p>
+  </div>
+</div> -->
+<!-- 15 ko comment kiya h -->
+
+<div class="auth-container">
+  <div class="auth-box">
+    <h2>Create Account</h2>
+    
+    <input type="text" placeholder="Full Name" name="username" [(ngModel)]="signupData.username">
+    
+    <input type="email" placeholder="Email Address" name="email" [(ngModel)]="signupData.email">
+    
+    <input type="password" placeholder="Create Password" name="password" [(ngModel)]="signupData.password">
+    
+    <button class="btn-primary" (click)="onSignup()">Sign Up</button>
 
     <p class="switch-text">
       Already have an account? <a routerLink="/login">Sign In</a>
