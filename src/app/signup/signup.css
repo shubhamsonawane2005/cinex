@@ -3,7 +3,7 @@
     max-width: 400px;
     margin: 50px auto;
     padding: 30px;
-    background: #1f1f1f; /* Dark background */
+    background: #1f1f1f; 
     border-radius: 12px;
     box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
     color: #ffffff;
@@ -11,13 +11,16 @@
     border: 1px solid #333;
 }
 
-h2 {
-    color: #e50914; /* Netflix Red */
+/* h2 {
+    color: #e50914; 
     text-align: center;
     font-weight: bold;
     margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;
+} */
+.brand {
+  color: #ff4d4d;
 }
 
 hr {

@@ -1,5 +1,5 @@
 <div class="admin-container">
-  
+
   <aside class="sidebar">
     <div class="brand">
       <h2>CINEX <span class="admin-badge">ADMIN</span></h2>
@@ -18,7 +18,7 @@
       <a routerLink="/admin/users" routerLinkActive="active-link" class="nav-item">
         <i class="fa-solid fa-users"></i> User List
       </a>
-      <a routerLink="/login" class="nav-item logout">
+      <a (click)="logout()" style="cursor: pointer;" class="nav-item logout">
         <i class="fa-solid fa-right-from-bracket"></i> Logout
       </a>
     </nav>

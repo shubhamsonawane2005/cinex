@@ -1,6 +1,6 @@
 .login-wrapper {
   display: flex;
-  background-color: #1a1a1a;
+  background-color: #ffffff;
   justify-content: center;
   align-items: center;
   min-height: 60vh;
@@ -8,13 +8,20 @@
 }
 
 .login-box {
-  background: white;
+  background: #1f1f1f;
   padding: 30px;
   border-radius: 10px;
   width: 100%;
   max-width: 350px;
-  color: #1a1a1a;
+  color: #ffffff;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #444;
+    margin-bottom: 25px;
 }
 
 .brand {
@@ -29,15 +36,24 @@
   display: block;
   margin-bottom: 5px;
   font-size: 14px;
+  color: #bbb;
 }
 
 .input-group input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
+   width: 100%;
+    padding: 12px;
+    background: #2b2b2b;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: white;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+   border-color: #e50914;
+    outline: none;
+    background: #333;
 }
 
 .login-btn {
