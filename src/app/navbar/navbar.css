@@ -113,3 +113,31 @@
   font-size: 14px;
   width: 150px; /* Adjust width as needed */
 }
+
+/* User Name Styling */
+.welcome-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-right: 10px;
+  
+  /* Gradient effect on Name */
+  background: linear-gradient(to right, #ffffff, #ff4d4d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Background capsule style */
+  background-color: rgba(255, 77, 77, 0.1); 
+  padding: 4px 12px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.welcome-name:hover {
+  background-color: rgba(255, 77, 77, 0.2);
+  transform: scale(1.05); /* Hover karne par halka sa bada hoga */
+  border-color: #ff4d4d;
+}

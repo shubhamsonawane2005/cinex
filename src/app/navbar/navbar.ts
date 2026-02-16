@@ -16,12 +16,19 @@ export class NavbarComponent {
   private router = inject(Router);
 
  
-  get isLoggedIn() {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('token'); 
+  get isLoggedIn(): boolean {
+    if (typeof window !== 'undefined') {
+      return !!localStorage.getItem('token'); // !! string ko boolean mein badal deta hai
+    }
+    return false; 
   }
-  return false; 
-}
+
+  get userName(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('userName');
+    }
+    return null;
+  }
 
   onSearch() {
     if (this.searchTerm.trim()) {

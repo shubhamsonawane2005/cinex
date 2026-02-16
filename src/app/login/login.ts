@@ -1,8 +1,9 @@
-import { Component, inject, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, inject, PLATFORM_ID, OnInit } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; 
 import { HttpClient, HttpClientModule } from '@angular/common/http'; 
+
 
 @Component({
   selector: 'app-login',
@@ -11,7 +12,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  
   
   private router = inject(Router);
   private http = inject(HttpClient);
@@ -22,6 +24,38 @@ export class LoginComponent {
     email: '',
     password: ''
   };
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      // @ts-ignore
+      google.accounts.id.initialize({
+        client_id: '239208433902-6fj5dhqs58iggtm025973p71o3lngjqb.apps.googleusercontent.com',
+        callback: (response: any) => this.handleLogin(response)
+      });
+
+      // Google Button render karne ke liye (agar HTML mein <div id="google-btn"></div> hai)
+      // @ts-ignore
+      google.accounts.id.renderButton(
+        document.getElementById('google-btn'),
+        { theme: 'outline', size: 'large' }
+      );
+    }
+  }
+  handleLogin(response: any) {
+    const payload = JSON.parse(atob(response.credential.split('.')[1])); // Token decode
+    console.log("Google User:", payload);
+
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('token', response.credential);
+      localStorage.setItem('role', 'user');
+      localStorage.setItem('userName', payload.name);
+      
+      alert(`Welcome ${payload.name}!`);
+      this.router.navigate(['/']);
+    }
+  }
+
+ 
 
   onLogin() {
     // Check karein ki browser hai ya nahi (localStorage ke liye)

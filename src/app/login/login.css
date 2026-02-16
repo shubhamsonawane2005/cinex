@@ -82,3 +82,20 @@ hr {
 
 .switch-text { font-size: 14px; color: #666; }
 a { color: #ff3e3e; text-decoration: none; font-weight: bold; }
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    border-bottom: 1px solid #ddd;
+    line-height: 0.1em;
+}
+.divider span {
+    background: #fff;
+    padding: 0 10px;
+    color: #888;
+}
+#google-btn {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
