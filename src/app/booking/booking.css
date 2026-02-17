@@ -7,12 +7,22 @@
   font-family: 'Roboto', sans-serif;
 }
 
-/* --- SIDEBAR (Time Selection) --- */
+/* --- SIDEBAR (Time & Input) --- */
 .timings-sidebar {
   width: 250px;
   background-color: #121212;
   border-right: 1px solid #222;
   padding: 30px;
+}
+
+/* [NEW] Input Box Styling */
+.form-control {
+  background: #1a1a1a !important;
+  color: white !important;
+  border: 1px solid #333 !important;
+  margin-top: 10px;
+  text-align: center;
+  border-radius: 8px;
 }
 
 .timing-card h3 {
@@ -81,15 +91,28 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; color: #666;
   cursor: pointer; transition: 0.2s;
+  background: transparent;
 }
 
-.seat:hover { border-color: #ff3e3e; color: white; }
+/* [NEW] Booked Seat Styling - Screenshot 3 ke hisaab se */
+.seat.booked {
+  background-color: #262626 !important; /* Dark gray background */
+  border-color: #1a1a1a !important;
+  color: #444 !important; /* Hidden text */
+  cursor: not-allowed;
+  opacity: 0.4;
+}
 
 .seat.selected {
-  background-color: #ff3e3e;
-  border-color: #ff3e3e;
-  color: white;
+  background-color: #ff3e3e !important;
+  border-color: #ff3e3e !important;
+  color: white !important;
   box-shadow: 0 0 10px rgba(255, 62, 62, 0.5);
+}
+
+.seat:hover:not(.booked) { 
+  border-color: #ff3e3e; 
+  color: white; 
 }
 
 /* CHECKOUT BAR */
@@ -97,7 +120,8 @@
   position: fixed; bottom: 0; left: 250px; right: 0;
   background: #161616; padding: 20px;
   border-top: 1px solid #333;
-  display: flex; justify-content: center;
+  display: flex; justify-content: center; align-items: center;
+  gap: 30px;
 }
 
 .btn-checkout {

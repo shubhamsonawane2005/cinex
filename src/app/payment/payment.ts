@@ -1,3 +1,46 @@
+// import { Component, OnInit, inject } from '@angular/core';
+// import { ActivatedRoute, Router } from '@angular/router';
+// import { CommonModule } from '@angular/common';
+
+// @Component({
+//   selector: 'app-payment',
+//   standalone: true,
+//   imports: [CommonModule],
+//   templateUrl: './payment.html',
+//   styleUrls: ['./payment.css']
+// })
+// export class PaymentComponent implements OnInit {
+  
+//   movieTitle: string = '';
+//   theaterName: string = '';
+//   showTime: string = '';
+//   seats: string = '';
+//   totalPrice: number = 0;
+//   convenienceFee: number = 45;
+
+//   private route = inject(ActivatedRoute);
+//   private router = inject(Router);
+
+//   ngOnInit() {
+//     this.route.queryParams.subscribe(params => {
+//       this.movieTitle = params['movie'] || 'Unknown Movie';
+//       this.theaterName = params['theater'] || 'Unknown Theater';
+//       this.showTime = params['time'] || '';
+//       this.seats = params['seats'] || '';
+//       this.totalPrice = Number(params['price']) || 0;
+//     });
+//   }
+
+//   get finalAmount() {
+//     return this.totalPrice + this.convenienceFee;
+//   }
+
+//   processPayment() {
+//     alert('Payment Successful!');
+//     this.router.navigate(['/']); 
+//   }
+// }
+
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,7 +50,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './payment.html',
-  styleUrls: ['./payment.css']
+  styleUrls: ['./payment.css'] // 'styleUrl' ko 'styleUrls' kiya agar array hai
 })
 export class PaymentComponent implements OnInit {
   
@@ -16,13 +59,19 @@ export class PaymentComponent implements OnInit {
   showTime: string = '';
   seats: string = '';
   totalPrice: number = 0;
-  convenienceFee: number = 45;
+  
+  // Isko 0 rakha hai taaki extra charge na jude
+  convenienceFee: number = 0; 
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   ngOnInit() {
+    // Ye URL se sara data kheencht hai
     this.route.queryParams.subscribe(params => {
+      console.log('Payment Params Received:', params); // Browser Console (F12) mein check karo
+
+      // Yahan check karna ki Booking HTML mein 'movie' hi likha hai na
       this.movieTitle = params['movie'] || 'Unknown Movie';
       this.theaterName = params['theater'] || 'Unknown Theater';
       this.showTime = params['time'] || '';
@@ -32,6 +81,7 @@ export class PaymentComponent implements OnInit {
   }
 
   get finalAmount() {
+    // Total price + Fee (Abhi 0 hai)
     return this.totalPrice + this.convenienceFee;
   }
 

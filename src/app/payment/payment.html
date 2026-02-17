@@ -1,4 +1,4 @@
-<div class="payment-container">
+<!-- <div class="payment-container">
   
   <div class="summary-card">
     <h2>Order Summary</h2>
@@ -62,6 +62,144 @@
       </div>
 
       <button type="submit" class="btn-pay">Pay Rs. 795</button>
+    </form>
+
+  </div>
+</div> -->
+
+<!-- <div class="payment-container">
+  
+  <div class="summary-card">
+    <h2>Order Summary</h2>
+    
+    <div class="movie-card-row">
+      <div class="poster-preview">
+        <i class="fa-solid fa-film"></i>
+      </div>
+      <div class="movie-info">
+        <h3>{{ movieTitle }}</h3>
+        <p>{{ theaterName }}</p>
+        <p class="highlight">Today, {{ showTime }}</p>
+      </div>
+    </div>
+
+    <div class="bill-details">
+      <div class="row">
+        <span>Tickets ({{ seats }})</span>
+        <span>Rs. {{ totalPrice }}</span>
+      </div>
+      <div class="row">
+        <span>Convenience Fee</span>
+        <span>Rs. {{ convenienceFee }}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="row total">
+        <span>Total Payable</span>
+        <span>Rs. {{ finalAmount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-section">
+    <h2>Payment Details</h2>
+    
+    <div class="tabs">
+      <button class="active"><i class="fa-regular fa-credit-card"></i> Card</button>
+      <button><i class="fa-brands fa-google-pay"></i> UPI</button>
+    </div>
+
+    <form class="card-form" (submit)="processPayment()">
+      <div class="input-group">
+        <label>Card Number</label>
+        <input type="text" placeholder="XXXX XXXX XXXX XXXX">
+      </div>
+      
+      <div class="row-inputs">
+        <div class="input-group">
+          <label>Expiry</label>
+          <input type="text" placeholder="MM/YY">
+        </div>
+        <div class="input-group">
+          <label>CVV</label>
+          <input type="password" placeholder="123">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Name on Card</label>
+        <input type="text" placeholder="John Doe">
+      </div>
+
+      <button type="submit" class="btn-pay">Pay Rs. {{ finalAmount }}</button>
+    </form>
+
+  </div>
+</div> -->
+
+<div class="payment-container">
+  
+  <div class="summary-card">
+    <h2>Order Summary</h2>
+    
+    <div class="movie-card-row">
+      <div class="poster-preview">
+        <i class="fa-solid fa-film"></i>
+      </div>
+      <div class="movie-info">
+        <h3>{{ movieTitle }}</h3>
+        <p>{{ theaterName }}</p>
+        <p class="highlight">Today, {{ showTime }}</p>
+      </div>
+    </div>
+
+    <div class="bill-details">
+      <div class="row">
+        <span>Tickets ({{ seats }})</span>
+        <span>Rs. {{ totalPrice }}</span>
+      </div>
+      <div class="row">
+        <span>Convenience Fee</span>
+        <span>Rs. {{ convenienceFee }}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="row total">
+        <span>Total Payable</span>
+        <span>Rs. {{ finalAmount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-section">
+    <h2>Payment Details</h2>
+    
+    <div class="tabs">
+      <button class="active"><i class="fa-regular fa-credit-card"></i> Card</button>
+      <button><i class="fa-brands fa-google-pay"></i> UPI</button>
+    </div>
+
+    <form class="card-form" (submit)="processPayment()">
+      <div class="input-group">
+        <label>Card Number</label>
+        <input type="text" placeholder="XXXX XXXX XXXX XXXX">
+      </div>
+      
+      <div class="row-inputs">
+        <div class="input-group">
+          <label>Expiry</label>
+          <input type="text" placeholder="MM/YY">
+        </div>
+        <div class="input-group">
+          <label>CVV</label>
+          <input type="password" placeholder="123">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Name on Card</label>
+        <input type="text" placeholder="John Doe">
+      </div>
+
+      <button type="submit" class="btn-pay">Pay Rs. {{ finalAmount }}</button>
     </form>
 
   </div>

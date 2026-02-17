@@ -1,62 +1,151 @@
+// import { Component, OnInit, inject } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { ActivatedRoute, RouterModule } from '@angular/router'; 
+// import { MovieService } from '../services/movie'; // Import Service
+
+// @Component({
+//   selector: 'app-booking',
+//   standalone: true,
+//   imports: [CommonModule, RouterModule],
+//   templateUrl: './booking.html',
+//   styleUrl: './booking.css'
+// })
+// export class BookingComponent implements OnInit {
+  
+//   movieTitle: string = "";
+//   selectedSeats: string[] = [];
+//   totalPrice: number = 0;
+//   ticketPrice: number = 200; 
+
+//   // 1. Define Available Times
+//   times: string[] = ['10:00 PM', '01:00 PM']; 
+  
+//   // 2. Track Selected Time (Default to the first one)
+//   selectedTime: string = '10:00 PM';
+//   // Rows A to J
+//   rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+//   // Seats 1 to 9
+//   seatsPerRow: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  
+//   selectTime(time: string) {
+//     this.selectedTime = time;
+//   }
+//   private route = inject(ActivatedRoute);
+//   private movieService = inject(MovieService);
+
+//   ngOnInit() {
+//     const id = Number(this.route.snapshot.paramMap.get('id'));
+    
+//     // Fetch the real movie name
+//     if (id) {
+//       this.movieService.getMovieById(id).subscribe(movie => {
+//         if (movie) {
+//           this.movieTitle = movie.title;
+//         }
+//       });
+//     }
+//   }
+
+//   toggleSeat(row: string, seatNum: number) {
+//     const seatId = row + seatNum;
+//     if (this.selectedSeats.includes(seatId)) {
+//       this.selectedSeats = this.selectedSeats.filter(s => s !== seatId);
+//     } else {
+//       this.selectedSeats.push(seatId);
+//     }
+//     this.totalPrice = this.selectedSeats.length * this.ticketPrice;
+//   }
+
+//   isSelected(row: string, seatNum: number): boolean {
+//     return this.selectedSeats.includes(row + seatNum);
+//   }
+// }
+
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router'; 
-import { MovieService } from '../services/movie'; // Import Service
+import { FormsModule } from '@angular/forms'; 
+import { MovieService } from '../services/movie'; 
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule], 
   templateUrl: './booking.html',
   styleUrl: './booking.css'
 })
 export class BookingComponent implements OnInit {
   
-  movieTitle: string = "";
+  movieTitle: string = "Loading..."; // Default text
+  theaterName: string = "PVR: Rahul Raj Mall"; 
   selectedSeats: string[] = [];
   totalPrice: number = 0;
   ticketPrice: number = 200; 
 
-  // 1. Define Available Times
+  seatsToBook: number = 1; 
+  bookedSeats: string[] = ['A2', 'C5', 'E1']; 
+
   times: string[] = ['10:00 PM', '01:00 PM']; 
-  
-  // 2. Track Selected Time (Default to the first one)
   selectedTime: string = '10:00 PM';
-  // Rows A to J
   rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-  // Seats 1 to 9
   seatsPerRow: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   
-  selectTime(time: string) {
-    this.selectedTime = time;
-  }
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    
-    // Fetch the real movie name
-    if (id) {
-      this.movieService.getMovieById(id).subscribe(movie => {
-        if (movie) {
-          this.movieTitle = movie.title;
+    // 1. URL ke queryParams ko subscribe karo
+    this.route.queryParams.subscribe(params => {
+      console.log('Received Params on Booking:', params); 
+
+      // Timeout lagaya hai taaki variable ko update hone ka pakka time mile
+      setTimeout(() => {
+        if (params['name']) {
+          this.movieTitle = params['name'];
         }
-      });
-    }
+        
+        if (params['theater']) {
+          this.theaterName = params['theater'];
+        }
+
+        // 2. Backup: Agar name URL mein nahi hai, toh ID se fetch karo
+        if (!params['name'] || params['name'] === 'Loading...') {
+          const id = Number(this.route.snapshot.paramMap.get('id'));
+          if (id) {
+            this.movieService.getMovieById(id).subscribe(movie => {
+              if (movie) {
+                this.movieTitle = movie.title;
+              }
+            });
+          }
+        }
+      }, 0);
+    });
+  }
+
+  selectTime(time: string) {
+    this.selectedTime = time;
   }
 
   toggleSeat(row: string, seatNum: number) {
-    const seatId = row + seatNum;
-    if (this.selectedSeats.includes(seatId)) {
-      this.selectedSeats = this.selectedSeats.filter(s => s !== seatId);
-    } else {
-      this.selectedSeats.push(seatId);
+    this.selectedSeats = [];
+    for (let i = 0; i < this.seatsToBook; i++) {
+      const currentSeatNum = seatNum + i;
+      const seatId = row + currentSeatNum;
+      if (currentSeatNum <= 9 && !this.isBooked(row, currentSeatNum)) {
+        this.selectedSeats.push(seatId);
+      } else {
+        break; 
+      }
     }
     this.totalPrice = this.selectedSeats.length * this.ticketPrice;
   }
 
   isSelected(row: string, seatNum: number): boolean {
     return this.selectedSeats.includes(row + seatNum);
+  }
+
+  isBooked(row: string, seatNum: number): boolean {
+    return this.bookedSeats.includes(row + seatNum);
   }
 }
