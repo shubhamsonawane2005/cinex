@@ -32,4 +32,8 @@ export class AuthService {
     return false;
 
   }
+
+  getUserCount(): Observable<{ count: number }> {
+    return this.http.get<{ count: number }>(`${this.apiUrl}/user-count`);
+  }
 }

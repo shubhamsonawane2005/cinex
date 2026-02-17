@@ -65,4 +65,15 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// total user count
+router.get('/user-count', async (req, res) => {
+  try {
+    // .countDocuments() function total records count karta hai
+    const count = await User.countDocuments(); 
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
