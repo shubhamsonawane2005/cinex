@@ -29,6 +29,7 @@ export class SignupComponent {
   userEnteredOtp: string = '';
   serverGeneratedOtp: any = null;
 
+isLoading: boolean = false;
   sendOtp() {
     // 1. Basic Empty Check
     if (!this.signupData.username || !this.signupData.email || !this.signupData.mobile || !this.signupData.password) {
@@ -43,22 +44,24 @@ export class SignupComponent {
       return;
     }
     // -------------------------
-
+    this.isLoading = true;
     this.http.post('http://localhost:5000/api/send-otp', { email: this.signupData.email })
       .subscribe({
         next: (res: any) => {
+          this.isLoading = false;
           this.serverGeneratedOtp = res.otp; 
 
           alert("OTP sent successfully! Please check your email.");
+          this.otpSent = true; 
+          this.cdr.detectChanges(); 
 
-          setTimeout(() => {
-            this.otpSent = true; 
-            this.cdr.detectChanges(); 
-          }, 0);
+          // setTimeout(() => {
+          // }, 1000);
 
           console.log("OK clicked, Section switched to OTP input.");
         },
         error: (err) => {
+          this.isLoading = false;
           console.error(err);
           alert("Error sending OTP. Please check if your backend is running.");
         }

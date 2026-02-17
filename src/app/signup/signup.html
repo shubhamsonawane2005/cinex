@@ -21,7 +21,7 @@
             <input type="password" [(ngModel)]="signupData.password" name="password" class="form-control" placeholder="Create password">
         </div>
 
-        <button type="button" class="btn-primary" (click)="sendOtp()">Send OTP</button>
+        <button  type="button"  class="btn-primary" (click)="sendOtp()" [disabled]="isLoading">{{ isLoading ? 'Sending OTP...' : 'Send OTP' }}</button>
     </div>
 
     <div *ngIf="otpSent">

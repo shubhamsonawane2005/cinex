@@ -65,6 +65,58 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.post('/google-login', async (req, res) => {
+    try {
+        const { username, email, googleId, profilePic } = req.body;
+
+        // 1. Check karein ki user pehle se hai ya nahi
+        let user = await User.findOne({ email });
+
+        if (user) {
+            // Agar user mil gaya, toh bas token bhej dein (Login)
+            const token = jwt.sign(
+                { id: user._id }, 
+                process.env.JWT_SECRET || 'MY_SECRET', 
+                { expiresIn: '1h' }
+            );
+
+            return res.status(200).json({ 
+                token, 
+                user: { id: user._id, username: user.username },
+                message: "Google Login Successful"
+            });
+        }
+
+        
+        const dummyPassword = await bcrypt.hash(googleId + "GOOGLE_AUTH", 10);
+
+        const newUser = new User({ 
+            username, 
+            email, 
+            password: dummyPassword 
+        });
+
+        await newUser.save();
+        
+        // Token banayein naye user ke liye
+        const token = jwt.sign(
+            { id: newUser._id }, 
+            process.env.JWT_SECRET || 'MY_SECRET', 
+            { expiresIn: '1h' }
+        );
+
+        res.status(201).json({ 
+            token, 
+            user: { id: newUser._id, username: newUser.username },
+            message: "User Registered via Google!" 
+        });
+
+    } catch (err) {
+        console.error("Google Auth Error:", err);
+        res.status(500).json({ error: "Google data saving failed" });
+    }
+});
+
 // total user count
 router.get('/user-count', async (req, res) => {
   try {
