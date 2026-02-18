@@ -50,7 +50,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './payment.html',
-  styleUrls: ['./payment.css'] // 'styleUrl' ko 'styleUrls' kiya agar array hai
+  styleUrls: ['./payment.css'] // Isko array format mein hi rehne diya hai
 })
 export class PaymentComponent implements OnInit {
   
@@ -69,9 +69,9 @@ export class PaymentComponent implements OnInit {
   ngOnInit() {
     // Ye URL se sara data kheencht hai
     this.route.queryParams.subscribe(params => {
-      console.log('Payment Params Received:', params); // Browser Console (F12) mein check karo
+      console.log('Payment Params Received:', params); // Browser Console (F12) mein check karna
 
-      // Yahan check karna ki Booking HTML mein 'movie' hi likha hai na
+      // Booking HTML se jo 'movie', 'theater', 'time' aa raha hai wahi yahan set hoga
       this.movieTitle = params['movie'] || 'Unknown Movie';
       this.theaterName = params['theater'] || 'Unknown Theater';
       this.showTime = params['time'] || '';
