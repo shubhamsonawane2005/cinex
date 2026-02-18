@@ -9,17 +9,26 @@ import jsPDF from 'jspdf';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './payment.html',
+<<<<<<< HEAD
   styleUrls: ['./payment.css']
+=======
+  styleUrls: ['./payment.css'] 
+>>>>>>> c3ef872 (update files)
 })
 export class PaymentComponent implements OnInit {
   movieTitle: string = '';
   theaterName: string = '';
-  showTime: string = '';
+  showTime: string = ''; // Isme Booking page se time aayega
   seats: string = '';
   totalPrice: number = 0;
+<<<<<<< HEAD
   selectedMethod: string = 'card';
   isUpiVerified: boolean = false;
   convenienceFee: number = 0;
+=======
+  
+  convenienceFee: number = 0; 
+>>>>>>> c3ef872 (update files)
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -27,19 +36,30 @@ export class PaymentComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
+<<<<<<< HEAD
+=======
+      console.log('Payment Params Received:', params); 
+
+      // Sab parameters sahi se map ho rahe hain
+>>>>>>> c3ef872 (update files)
       this.movieTitle = params['movie'] || 'Unknown Movie';
       this.theaterName = params['theater'] || 'Unknown Theater';
-      this.showTime = params['time'] || '';
+      this.showTime = params['time'] || ''; // Booking page se 'time' utha raha hai
       this.seats = params['seats'] || '';
       this.totalPrice = Number(params['price']) || 0;
     });
   }
 
+<<<<<<< HEAD
   get finalAmount() { return this.totalPrice + this.convenienceFee; }
 
   setPaymentMethod(method: string) {
     this.selectedMethod = method;
     this.isUpiVerified = false;
+=======
+  get finalAmount() {
+    return this.totalPrice + this.convenienceFee;
+>>>>>>> c3ef872 (update files)
   }
 
   verifyUPI() { this.isUpiVerified = true; }

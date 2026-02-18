@@ -89,7 +89,7 @@
 // }
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router'; 
+import { ActivatedRoute, RouterModule, Router } from '@angular/router'; // 1. Router add kiya
 import { FormsModule } from '@angular/forms'; 
 import { MovieService } from '../services/movie'; 
 
@@ -103,7 +103,7 @@ import { MovieService } from '../services/movie';
 export class BookingComponent implements OnInit {
   
   movieTitle: string = ""; 
-  theaterName: string = "PVR: Rahul Raj Mall"; 
+  theaterName: string = ""; 
   selectedSeats: string[] = [];
   totalPrice: number = 0;
   ticketPrice: number = 200; 
@@ -118,6 +118,7 @@ export class BookingComponent implements OnInit {
   
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
+  private router = inject(Router); // 2. Router inject kiya
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -129,13 +130,14 @@ export class BookingComponent implements OnInit {
       
       if (params['theater']) {
         this.theaterName = params['theater'];
+      } else if (!this.theaterName) {
+        this.theaterName = "PVR: Rahul Raj Mall"; 
       }
 
       if (params['time']) {
         this.selectedTime = params['time'];
       }
 
-      // Backup logic for movie title
       const idFromPath = this.route.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('movieId');
       if (idFromPath && !this.movieTitle) {
         this.movieService.getMovieById(Number(idFromPath)).subscribe(movie => {
@@ -143,6 +145,19 @@ export class BookingComponent implements OnInit {
             this.movieTitle = movie.title;
           }
         });
+      }
+    });
+  }
+
+  // 3. Ye function add kiya jo latest select kiya hua data bhejega
+  goToPayment() {
+    this.router.navigate(['/payment'], {
+      queryParams: {
+        movie: this.movieTitle,
+        price: this.totalPrice,
+        seats: this.selectedSeats.join(', '),
+        time: this.selectedTime,   // Jo screen par select kiya wahi jayega
+        theater: this.theaterName  // Jo screen par dikh raha hai wahi jayega
       }
     });
   }

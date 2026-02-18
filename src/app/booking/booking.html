@@ -64,6 +64,22 @@
              style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background: #1a1a1a; color: white;">
     </div>
 
+    <div class="timing-card" style="margin-bottom: 20px;">
+      <h3>Select Theater</h3>
+      <div class="timings-grid">
+        <div class="time-pill" 
+             [class.selected]="theaterName === 'PVR: Rahul Raj Mall'" 
+             (click)="theaterName = 'PVR: Rahul Raj Mall'">
+          PVR: Rahul Raj
+        </div>
+        <div class="time-pill" 
+             [class.selected]="theaterName === 'Inox: VR Mall'" 
+             (click)="theaterName = 'Inox: VR Mall'">
+          Inox: VR Mall
+        </div>
+      </div>
+    </div>
+
     <div class="timing-card">
       <h3>Available Timings</h3>
       <div class="timings-grid">

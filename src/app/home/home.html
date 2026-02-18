@@ -147,7 +147,7 @@
         @for (movie of movies; track movie.id) {
         <div class="movie-card-slider" 
              [routerLink]="['/movie', movie.id]" 
-             [queryParams]="{ name: movie.title, theater: 'PVR: Rahul Raj Mall' }" 
+             [queryParams]="{ name: movie.title, theater: 'PVR: Rahul Raj Mall', time: '10:00 PM' }" 
              style="cursor: pointer;">
           <div class="card-image">
             <img [src]="movie.image" [alt]="movie.title">
@@ -165,7 +165,7 @@
         @for (movie of movies; track 'dup-' + movie.id) {
         <div class="movie-card-slider" 
              [routerLink]="['/movie', movie.id]" 
-             [queryParams]="{ name: movie.title, theater: 'PVR: Rahul Raj Mall' }" 
+             [queryParams]="{ name: movie.title, theater: 'PVR: Rahul Raj Mall', time: '10:00 PM' }" 
              style="cursor: pointer;">
           <div class="card-image">
             <img [src]="movie.image" [alt]="movie.title">
