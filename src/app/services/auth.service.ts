@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 export class AuthService {
   // Backend URL (Make sure your node server is running on 5000)
   private apiUrl = 'http://localhost:5000/api/auth';
+  private bookingUrl = 'http://localhost:5000/api/bookings';
 
   constructor(
     private http: HttpClient ,
@@ -35,5 +36,9 @@ export class AuthService {
 
   getUserCount(): Observable<{ count: number }> {
     return this.http.get<{ count: number }>(`${this.apiUrl}/user-count`);
+  }
+
+  saveBooking(data: any) {
+    return this.http.post(`${this.bookingUrl}/save`, data);
   }
 }

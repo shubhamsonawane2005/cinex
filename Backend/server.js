@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const MovieRoute = require('./routes/MovieRoute.js');
 const AuthRoute = require('./routes/AuthRoute.js');
+const TicketRoute = require('./routes/TicketRoutes.js')
 
 const app = express();
 
@@ -82,9 +83,12 @@ app.post('/api/send-otp', async (req, res) => {
 
 // --- OTP SYSTEM END ---
 
+// booking 
+
 // Routes mapping
 app.use('/api/movies', MovieRoute);
 app.use('/api/auth', AuthRoute);
+app.use('/api/bookings' , TicketRoute);
 
 // Test Route
 app.get('/', (req, res) => {
