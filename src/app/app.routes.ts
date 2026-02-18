@@ -21,8 +21,11 @@ export const routes: Routes = [
   // User Routes
   { path: '', component: HomeComponent },
   { path: 'movies', component: MoviesComponent },
-  { path: 'movie/:id', component: MovieDetailsComponent },
-  
+  { 
+  path: 'movie/:id', 
+  loadComponent: () => import('./booking/booking').then(m => m.BookingComponent),
+  canActivate: [authGuard] 
+},
   // 1. Booking pe security lagayi (Lazy Loading ke saath)
   { 
     path: 'booking/:movieId/:theaterId/:time', 

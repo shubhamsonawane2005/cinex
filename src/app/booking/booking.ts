@@ -98,28 +98,26 @@ export class BookingComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       console.log('Received Params on Booking:', params); 
 
-      // Timeout lagaya hai taaki variable ko update hone ka pakka time mile
-      setTimeout(() => {
-        if (params['name']) {
-          this.movieTitle = params['name'];
-        }
-        
-        if (params['theater']) {
-          this.theaterName = params['theater'];
-        }
+      // Agar URL mein data hai toh pehle wo lo
+      if (params['name']) {
+        this.movieTitle = params['name'];
+      }
+      
+      if (params['theater']) {
+        this.theaterName = params['theater'];
+      }
 
-        // 2. Backup: Agar name URL mein nahi hai, toh ID se fetch karo
-        if (!params['name'] || params['name'] === 'Loading...') {
-          const id = Number(this.route.snapshot.paramMap.get('id'));
-          if (id) {
-            this.movieService.getMovieById(id).subscribe(movie => {
-              if (movie) {
-                this.movieTitle = movie.title;
-              }
-            });
+      // 2. BACKUP: Agar params khali hain ya Loading dikha raha hai
+      // Toh seedha URL path se ID nikaalo aur service se movie ka asli naam lao
+      const idFromPath = this.route.snapshot.paramMap.get('id');
+      if (idFromPath && (this.movieTitle === "Loading..." || !params['name'])) {
+        this.movieService.getMovieById(Number(idFromPath)).subscribe(movie => {
+          if (movie) {
+            this.movieTitle = movie.title;
+            console.log('Service se movie name mil gaya:', movie.title);
           }
-        }
-      }, 0);
+        });
+      }
     });
   }
 
