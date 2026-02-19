@@ -1,8 +1,6 @@
-
-
 // import { Component, OnInit, inject } from '@angular/core';
 // import { CommonModule } from '@angular/common';
-// import { ActivatedRoute, RouterModule } from '@angular/router'; 
+// import { ActivatedRoute, RouterModule, Router } from '@angular/router'; 
 // import { FormsModule } from '@angular/forms'; 
 // import { MovieService } from '../services/movie'; 
 
@@ -15,8 +13,8 @@
 // })
 // export class BookingComponent implements OnInit {
   
-//   movieTitle: string = ""; // Default khali rakha hai taaki "Loading..." na dikhe
-//   theaterName: string = "PVR: Rahul Raj Mall"; 
+//   movieTitle: string = ""; 
+//   theaterName: string = ""; 
 //   selectedSeats: string[] = [];
 //   totalPrice: number = 0;
 //   ticketPrice: number = 200; 
@@ -31,9 +29,9 @@
   
 //   private route = inject(ActivatedRoute);
 //   private movieService = inject(MovieService);
+//   private router = inject(Router);
 
 //   ngOnInit() {
-//     // URL ke queryParams se data uthao
 //     this.route.queryParams.subscribe(params => {
 //       console.log('Received Params:', params); 
 
@@ -41,15 +39,17 @@
 //         this.movieTitle = params['name'];
 //       }
       
+//       // Home page se jo theater aayega wahi save hoga
 //       if (params['theater']) {
 //         this.theaterName = params['theater'];
+//       } else if (!this.theaterName) {
+//         this.theaterName = "PVR: Rahul Raj Mall"; 
 //       }
 
 //       if (params['time']) {
 //         this.selectedTime = params['time'];
 //       }
 
-//       // BACKUP: Agar movieTitle khali hai toh ID se fetch karo
 //       const idFromPath = this.route.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('movieId');
 //       if (idFromPath && !this.movieTitle) {
 //         this.movieService.getMovieById(Number(idFromPath)).subscribe(movie => {
@@ -61,8 +61,21 @@
 //     });
 //   }
 
+//   // YE FUNCTION AB LATEST DATA BHEJEGA
+//   goToPayment() {
+//     this.router.navigate(['/payment'], {
+//       queryParams: {
+//         movie: this.movieTitle,
+//         price: this.totalPrice,
+//         seats: this.selectedSeats.join(', '),
+//         time: this.selectedTime,   // Latest selected time
+//         theater: this.theaterName  // Latest theater name
+//       }
+//     });
+//   }
+
 //   selectTime(time: string) {
-//     this.selectedTime = time;
+//     this.selectedTime = time; // Time update karne ke liye
 //   }
 
 //   toggleSeat(row: string, seatNum: number) {
@@ -89,7 +102,7 @@
 // }
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule, Router } from '@angular/router'; // 1. Router add kiya
+import { ActivatedRoute, RouterModule, Router } from '@angular/router'; 
 import { FormsModule } from '@angular/forms'; 
 import { MovieService } from '../services/movie'; 
 
@@ -103,7 +116,7 @@ import { MovieService } from '../services/movie';
 export class BookingComponent implements OnInit {
   
   movieTitle: string = ""; 
-  theaterName: string = ""; 
+  theaterName: string = ""; // Default Khali rakho
   selectedSeats: string[] = [];
   totalPrice: number = 0;
   ticketPrice: number = 200; 
@@ -118,52 +131,60 @@ export class BookingComponent implements OnInit {
   
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
-  private router = inject(Router); // 2. Router inject kiya
+  private router = inject(Router);
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      console.log('Received Params:', params); 
+    // SIRF EK BAR DATA FETCH KARO TAAKI OVERWRITE NA HO
+    this.route.paramMap.subscribe(params => {
+      const movieId = params.get('movieId');
+      const theaterId = params.get('theaterId');
+      const timeFromPath = params.get('time');
 
-      if (params['name']) {
-        this.movieTitle = params['name'];
-      }
-      
-      if (params['theater']) {
-        this.theaterName = params['theater'];
-      } else if (!this.theaterName) {
-        this.theaterName = "PVR: Rahul Raj Mall"; 
+      const theaterMap: { [key: string]: string } = {
+        '1': 'PVR: Rahul Raj Mall',
+        '2': 'INOX: VR Mall',
+        '3': 'Cinépolis: Imperial Square',
+        '4': 'Rajhans Multiplex'
+      };
+
+      // ID se naam uthao, agar ID nahi hai toh QueryParams se uthao
+      if (theaterId && theaterMap[theaterId]) {
+        this.theaterName = theaterMap[theaterId];
+      } else {
+        // QueryParams backup
+        const qTheater = this.route.snapshot.queryParams['theater'];
+        this.theaterName = qTheater || "PVR: Rahul Raj Mall"; 
       }
 
-      if (params['time']) {
-        this.selectedTime = params['time'];
+      if (timeFromPath) {
+        this.selectedTime = timeFromPath;
       }
 
-      const idFromPath = this.route.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('movieId');
-      if (idFromPath && !this.movieTitle) {
-        this.movieService.getMovieById(Number(idFromPath)).subscribe(movie => {
-          if (movie) {
-            this.movieTitle = movie.title;
-          }
+      if (movieId) {
+        this.movieService.getMovieById(Number(movieId)).subscribe(movie => {
+          if (movie) this.movieTitle = movie.title;
         });
       }
     });
   }
 
-  // 3. Ye function add kiya jo latest select kiya hua data bhejega
   goToPayment() {
+    // Navigation se pehle check karo data sahi hai
+    console.log("Navigating with Theater:", this.theaterName);
+    
     this.router.navigate(['/payment'], {
       queryParams: {
         movie: this.movieTitle,
         price: this.totalPrice,
         seats: this.selectedSeats.join(', '),
-        time: this.selectedTime,   // Jo screen par select kiya wahi jayega
-        theater: this.theaterName  // Jo screen par dikh raha hai wahi jayega
+        time: this.selectedTime,   
+        theater: this.theaterName  
       }
     });
   }
 
   selectTime(time: string) {
-    this.selectedTime = time;
+    this.selectedTime = time; 
   }
 
   toggleSeat(row: string, seatNum: number) {

@@ -55,32 +55,32 @@
 import { Component, OnInit, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms'; // <-- Ye line add ki hai
 import { MovieService, Movie } from '../services/movie';
 import { MoviesRelese, ReleseMovie } from './relese.movie';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule], // <-- FormsModule yahan dalo
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
 export class HomeComponent implements OnInit {
   
-  movies: Movie[] = [];
+  movies: any[] = []; // Movie[] ki jagah any[] kiya taaki theaterName add ho sake
   private movieService = inject(MovieService);
   
   relese: MoviesRelese[] = [];
   private movierelese = inject(ReleseMovie);
 
-  // This will hold the data for your slider
   slides: any[] = [];
   currentIndex: number = 0;
 
   ngOnInit() {
     this.movieService.getMovies().subscribe((data) => {
-      this.movies = data;
-      // Populate slides with the movie data once it arrives
+      // Har movie ke liye ek default theater set kar rahe hain
+      this.movies = data.map(m => ({...m, theaterName: 'PVR: Rahul Raj Mall'}));
       this.slides = data; 
     });
       
@@ -90,13 +90,13 @@ export class HomeComponent implements OnInit {
   }
 
   next(): void {
-    if (this.slides.length > 0) {
+    if (this.relese.length > 0) {
       this.currentIndex = (this.currentIndex + 1) % this.relese.length;
     }
   }
 
   prev(): void {
-    if (this.slides.length > 0) {
+    if (this.relese.length > 0) {
       this.currentIndex = (this.currentIndex - 1 + this.relese.length) % this.relese.length;
     }
   }

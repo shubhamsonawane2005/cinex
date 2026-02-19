@@ -94,23 +94,17 @@
  -->
 <div class="home-container">
   <div class="home-container">
-
     <div class="slider-container" *ngIf="slides.length > 0">
-
       <button class="arrow left-arrow" (click)="prev()">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
-
       <button class="arrow right-arrow" (click)="next()">
         <i class="fa-solid fa-chevron-right"></i>
       </button>
-
       <div class="slider-viewport">
         @for (reles of relese; track reles.id; let i = $index) {
         <div class="slide" [class.active]="i === currentIndex">
-
           <img [src]="reles.backdrop || reles.image" [alt]="reles.title" class="relese-image">
-
           <div class="slide-content">
             <h1 class="slide-title">{{ reles.title }}</h1>
             <p class="slide-desc">{{reles.description}}</p>
@@ -121,18 +115,15 @@
               <p class="slide-rating">Rating : {{ reles.rating }}</p>
             </div>
           </div>
-
         </div>
         }
       </div>
-
       <div class="pagination">
         @for (s of slides; track $index) {
         <span class="dot" [class.active-dot]="$index === currentIndex" (click)="goToSlide($index)"></span>
         }
       </div>
     </div>
-
   </div>
 
   <div class="movies-section">
@@ -145,11 +136,9 @@
       <div class="movie-track">
 
         @for (movie of movies; track movie.id) {
-        <div class="movie-card-slider" 
-             [routerLink]="['/movie', movie.id]" 
-             [queryParams]="{ name: movie.title, theater: 'PVR: Rahul Raj Mall', time: '10:00 PM' }" 
-             style="cursor: pointer;">
-          <div class="card-image">
+        <div class="movie-card-slider">
+          <div class="card-image" [routerLink]="['/movie', movie.id]" 
+               [queryParams]="{ name: movie.title, theater: movie.selectedTheater || 'PVR: Rahul Raj Mall', time: '10:00 PM' }">
             <img [src]="movie.image" [alt]="movie.title">
             <div class="rating-badge">
               <i class="fa-solid fa-star"></i> {{ movie.rating }}
@@ -157,17 +146,20 @@
           </div>
           <div class="card-info">
             <h3>{{ movie.title }}</h3>
-            <p>{{ movie.genre }}</p>
+            <select [(ngModel)]="movie.selectedTheater" 
+                    style="width: 100%; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px; padding: 5px; margin-top: 5px;">
+              <option value="PVR: Rahul Raj Mall">PVR: Rahul Raj Mall</option>
+              <option value="INOX: VR Mall">INOX: VR Mall</option>
+              <option value="Cinepolis: Imperial">Cinepolis: Imperial</option>
+            </select>
           </div>
         </div>
         }
 
         @for (movie of movies; track 'dup-' + movie.id) {
-        <div class="movie-card-slider" 
-             [routerLink]="['/movie', movie.id]" 
-             [queryParams]="{ name: movie.title, theater: 'PVR: Rahul Raj Mall', time: '10:00 PM' }" 
-             style="cursor: pointer;">
-          <div class="card-image">
+        <div class="movie-card-slider">
+          <div class="card-image" [routerLink]="['/movie', movie.id]" 
+               [queryParams]="{ name: movie.title, theater: movie.selectedTheater || 'PVR: Rahul Raj Mall', time: '10:00 PM' }">
             <img [src]="movie.image" [alt]="movie.title">
             <div class="rating-badge">
               <i class="fa-solid fa-star"></i> {{ movie.rating }}
@@ -175,7 +167,11 @@
           </div>
           <div class="card-info">
             <h3>{{ movie.title }}</h3>
-            <p>{{ movie.genre }}</p>
+            <select [(ngModel)]="movie.selectedTheater" 
+                    style="width: 100%; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px; padding: 5px; margin-top: 5px;">
+              <option value="PVR: Rahul Raj Mall">PVR: Rahul Raj Mall</option>
+              <option value="INOX: VR Mall">INOX: VR Mall</option>
+            </select>
           </div>
         </div>
         }
