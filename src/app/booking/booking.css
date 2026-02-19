@@ -9,13 +9,13 @@
 
 /* --- SIDEBAR (Time & Input) --- */
 .timings-sidebar {
-  width: 250px;
+  width: 280px; /* Thoda wide kiya hai comfort ke liye */
   background-color: #121212;
   border-right: 1px solid #222;
   padding: 30px;
 }
 
-/* [NEW] Input Box Styling */
+/* Input Box Styling */
 .form-control {
   background: #1a1a1a !important;
   color: white !important;
@@ -23,6 +23,7 @@
   margin-top: 10px;
   text-align: center;
   border-radius: 8px;
+  outline: none;
 }
 
 .timing-card h3 {
@@ -33,6 +34,7 @@
   padding-left: 10px;
 }
 
+/* Time Pill Styling */
 .time-pill {
   background: #1a1a1a;
   border: 1px solid #333;
@@ -44,13 +46,15 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
 
+/* Subham's Requirement: Selected Time Highlight */
 .time-pill:hover, .time-pill.selected {
-  background-color: #ff3e3e;
-  color: white;
-  border-color: #ff3e3e;
+  background-color: #ff3e3e !important;
+  color: white !important;
+  border-color: #ff3e3e !important;
+  box-shadow: 0 4px 15px rgba(255, 62, 62, 0.3);
 }
 
 /* --- MAIN THEATER AREA --- */
@@ -60,73 +64,135 @@
   flex-direction: column;
   align-items: center;
   padding: 40px;
+  overflow-y: auto;
 }
 
-.page-title { margin-bottom: 40px; font-weight: 300; }
+.page-title { 
+  margin-bottom: 5px; 
+  font-weight: bold; 
+  font-size: 2.5rem;
+  color: #fff;
+}
 
 /* SCREEN VISUAL */
 .screen-curve {
-  width: 60%;
+  width: 70%;
   height: 60px;
   border-top: 4px solid #fff;
   border-radius: 50% 50% 0 0;
-  box-shadow: 0 -10px 30px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 -15px 35px rgba(255, 255, 255, 0.15);
   margin-bottom: 60px;
+  margin-top: 30px;
   text-align: center;
   color: #555;
-  font-size: 10px;
-  letter-spacing: 2px;
-  display: flex; justify-content: center; align-items: flex-end;
+  font-size: 11px;
+  letter-spacing: 4px;
+  display: flex; 
+  justify-content: center; 
+  align-items: flex-end;
+  padding-bottom: 10px;
 }
 
 /* SEATS */
-.seat-grid { display: flex; flex-direction: column; gap: 15px; margin-bottom: 100px; }
-.row { display: flex; gap: 30px; justify-content: center; }
-.seat-group { display: flex; gap: 10px; }
+.seat-grid { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 15px; 
+  margin-bottom: 120px; 
+}
+
+.row { 
+  display: flex; 
+  gap: 40px; 
+  justify-content: center; 
+  align-items: center;
+}
+
+.seat-group { 
+  display: flex; 
+  gap: 10px; 
+}
 
 .seat {
-  width: 35px; height: 35px;
-  border: 1px solid #444;
+  width: 38px; 
+  height: 38px;
+  border: 1px solid #333;
   border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; color: #666;
-  cursor: pointer; transition: 0.2s;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 11px; 
+  color: #777;
+  cursor: pointer; 
+  transition: all 0.2s ease;
   background: transparent;
 }
 
-/* [NEW] Booked Seat Styling - Screenshot 3 ke hisaab se */
+/* Booked Seat Styling */
 .seat.booked {
-  background-color: #262626 !important; /* Dark gray background */
-  border-color: #1a1a1a !important;
-  color: #444 !important; /* Hidden text */
+  background-color: #1a1a1a !important; 
+  border-color: #222 !important;
+  color: #333 !important; 
   cursor: not-allowed;
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
+/* Selected Seat Styling */
 .seat.selected {
   background-color: #ff3e3e !important;
   border-color: #ff3e3e !important;
   color: white !important;
-  box-shadow: 0 0 10px rgba(255, 62, 62, 0.5);
+  box-shadow: 0 0 15px rgba(255, 62, 62, 0.5);
+  transform: scale(1.1);
 }
 
-.seat:hover:not(.booked) { 
+.seat:hover:not(.booked):not(.selected) { 
   border-color: #ff3e3e; 
   color: white; 
+  background: rgba(255, 62, 62, 0.1);
 }
 
 /* CHECKOUT BAR */
 .checkout-bar {
-  position: fixed; bottom: 0; left: 250px; right: 0;
-  background: #161616; padding: 20px;
-  border-top: 1px solid #333;
-  display: flex; justify-content: center; align-items: center;
-  gap: 30px;
+  position: fixed; 
+  bottom: 0; 
+  left: 280px; /* Sidebar width se match kiya */
+  right: 0;
+  background: #161616; 
+  padding: 20px 40px;
+  border-top: 1px solid #222;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  z-index: 1000;
+}
+
+.total-info {
+  font-size: 1.1rem;
+}
+
+.total-info b {
+  color: #ff3e3e;
+  font-size: 1.4rem;
 }
 
 .btn-checkout {
-  background: #ff3e3e; color: white; border: none;
-  padding: 15px 40px; border-radius: 8px; font-weight: bold;
-  cursor: pointer; display: flex; gap: 10px; align-items: center;
+  background: #ff3e3e; 
+  color: white; 
+  border: none;
+  padding: 15px 45px; 
+  border-radius: 8px; 
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer; 
+  display: flex; 
+  gap: 12px; 
+  align-items: center;
+  transition: 0.3s;
 }
-.btn-checkout:hover { background: #e50914; }
+
+.btn-checkout:hover { 
+  background: #e50914; 
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+}

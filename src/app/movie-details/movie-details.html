@@ -63,59 +63,52 @@
         </div>
       </div>
 
-<!-- THEATER LIST -->
-<div class="theaters-list">
-  <div class="theater-row" *ngFor="let theater of theaters">
-    
-    <!-- COL 1: Theater Info & Directions -->
-    <div class="theater-info-col">
-       <div class="info-top">
-         <div class="text-group">
-           <h4>{{ theater.name }}</h4>
-           <p class="address">{{ theater.address }}</p>
-         </div>
-       </div>
-       
-       <div class="info-bottom">
-         <!-- YOUR DIRECTIONS BUTTON -->
-         <div class="card-actions">
-            <a [href]="theater.mapUrl || '#'" target="_blank" class="btn-map">
-              <i class="fa-solid fa-map-location-dot"></i> Directions
-            </a>
-         </div>
-         
-         <div class="facilities">
-           <span class="badge">M-Ticket</span>
-           <span class="badge">F&B</span>
-         </div>
-       </div>
-    </div>
+      <div class="theaters-list">
+        <div class="theater-row" *ngFor="let theater of theaters">
+          
+          <div class="theater-info-col">
+             <div class="info-top">
+               <div class="text-group">
+                 <h4>{{ theater.name }}</h4>
+                 <p class="address">{{ theater.address }}</p>
+               </div>
+             </div>
+             
+             <div class="info-bottom">
+               <div class="card-actions">
+                  <a [href]="theater.mapUrl || '#'" target="_blank" class="btn-map">
+                    <i class="fa-solid fa-map-location-dot"></i> Directions
+                  </a>
+               </div>
+               
+               <div class="facilities">
+                 <span class="badge">M-Ticket</span>
+                 <span class="badge">F&B</span>
+               </div>
+             </div>
+          </div>
 
-    <!-- COL 2: Time Slots -->
-    <div class="time-slots-col">
-      <button class="time-btn" 
-              *ngFor="let time of theater.timings" 
-              [class.selected]="selectedTime === time && selectedTheater === theater.id"
-              [class.disabled]="isTimePassed(time)"
-              [disabled]="isTimePassed(time)"
-              (click)="selectTime(time, theater.id)">
-         {{ time }}
-         <div class="price-tooltip" *ngIf="!isTimePassed(time)">Rs. 250</div>
-         <div class="price-tooltip" *ngIf="isTimePassed(time)">Expired</div>
-      </button>
-    </div>
+          <div class="time-slots-col">
+            <button class="time-btn" 
+                    *ngFor="let time of theater.timings" 
+                    [class.selected]="selectedTime === time && selectedTheater === theater.id"
+                    [class.disabled]="isTimePassed(time)"
+                    [disabled]="isTimePassed(time)"
+                    (click)="selectTime(time, theater.id)">
+               {{ time }}
+            </button>
+          </div>
 
-    <!-- COL 3: Book Action -->
-    <div class="action-col">
-      <button class="btn-book-ticket" 
-              [disabled]="selectedTheater !== theater.id"
-              (click)="proceedToBooking()">
-        Book
-      </button>
-    </div>
+          <div class="action-col">
+            <button class="btn-book-ticket" 
+                    [disabled]="selectedTheater !== theater.id"
+                    (click)="proceedToBooking()">
+              Book
+            </button>
+          </div>
 
-  </div>
-</div>
+        </div>
+      </div>
 
     </div>
   </div>
