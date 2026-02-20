@@ -1,3 +1,4 @@
+
 <div class="payment-container">
   
   <div class="summary-card">
@@ -35,71 +36,59 @@
     <h2>Payment Details</h2>
     
     <div class="tabs">
-    <button [class.active]="selectedMethod === 'card'" (click)="setPaymentMethod('card')">
-      <i class="fa-regular fa-credit-card"></i> Card
-    </button>
-    
-    <button [class.active]="selectedMethod === 'upi'" (click)="setPaymentMethod('upi')">
-      <i class="fa-brands fa-google-pay"></i> UPI
-    </button>
+      <button [class.active]="selectedMethod === 'card'" (click)="setPaymentMethod('card')">
+        <i class="fa-regular fa-credit-card"></i> Card
+      </button>
+      
+      <button [class.active]="selectedMethod === 'upi'" (click)="setPaymentMethod('upi')">
+        <i class="fa-brands fa-google-pay"></i> UPI
+      </button>
 
-    <button [class.active]="selectedMethod === 'offline'" (click)="setPaymentMethod('offline')">
-      <i class="fa-solid fa-building-columns"></i> Pay at Cinema
-    </button>
-  </div>
-
-  <form *ngIf="selectedMethod === 'card'" class="card-form" (submit)="processPayment()">
-    <div class="input-group">
-      <label>Card Number</label>
-      <input type="text" placeholder="XXXX XXXX XXXX XXXX">
+      <button [class.active]="selectedMethod === 'offline'" (click)="setPaymentMethod('offline')">
+        <i class="fa-solid fa-building-columns"></i> Pay at Cinema
+      </button>
     </div>
-    <div class="row-inputs">
+
+    <form *ngIf="selectedMethod === 'card'" class="card-form" (submit)="$event.preventDefault(); processPayment()">
       <div class="input-group">
-        <label>Expiry</label>
-        <input type="text" placeholder="MM/YY">
+        <label>Card Number</label>
+        <input type="text" name="cardNumber" [(ngModel)]="cardNumber" placeholder="16 Digit Number" maxlength="16">
       </div>
+      <div class="row-inputs">
+        <div class="input-group">
+          <label>Expiry</label>
+          <input type="text" name="expiry" [(ngModel)]="expiry" placeholder="MM/YY" maxlength="5">
+        </div>
+        <div class="input-group">
+          <label>CVV</label>
+          <input type="password" name="cvv" [(ngModel)]="cvv" placeholder="123" maxlength="3">
+        </div>
+      </div>
+      <button type="submit" class="btn-pay">Pay Rs. {{ finalAmount }}</button>
+    </form>
+
+    <div *ngIf="selectedMethod === 'upi'" class="upi-section">
       <div class="input-group">
-        <label>CVV</label>
-        <input type="password" placeholder="123">
+        <label>Enter UPI ID</label>
+        <div class="upi-input-wrapper">
+          <input type="text" name="upiId" [(ngModel)]="upiId" placeholder="username@okaxis">
+          <button type="button" class="btn-verify" (click)="verifyUPI()">Verify</button>
+        </div>
+      </div>
+
+      <div *ngIf="isUpiVerified" class="qr-container">
+        <p>Scan this QR to pay <strong>Rs. {{ finalAmount }}</strong></p>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PaymentForMovie" alt="UPI QR Code" class="qr-code">
+        <button (click)="processPayment()" class="btn-pay">I have paid</button>
       </div>
     </div>
-    <button type="submit" class="btn-pay">Pay Rs. {{ finalAmount }}</button>
-  </form>
 
-  <div *ngIf="selectedMethod === 'upi'" class="upi-section">
-  <div class="input-group">
-    <label>Enter UPI ID</label>
-    <div class="upi-input-wrapper">
-      <input type="text" placeholder="username@okaxis" #upiInput>
-      <button type="button" class="btn-verify" (click)="verifyUPI()">Verify</button>
+    <div *ngIf="selectedMethod === 'offline'" class="offline-section">
+      <div class="info-box">
+        <p>Pay cash/card at counter 20 mins before show.</p>
+      </div>
+      <button (click)="processPayment()" class="btn-pay">Confirm Booking</button>
     </div>
-  </div>
 
-  <div *ngIf="isUpiVerified" class="qr-container">
-    <p>Scan this QR to pay <strong>Rs. {{ finalAmount }}</strong></p>
-    
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PaymentForMovie" alt="UPI QR Code" class="qr-code">
-    
-    <p class="timer">Waiting for payment confirmation... 02:59</p>
-    <button (click)="processPayment()" class="btn-pay">I have paid</button>
-  </div>
-</div>
-
-<div *ngIf="selectedMethod === 'offline'" class="offline-section">
-  <div class="info-box">
-    <i class="fa-solid fa-circle-info"></i>
-    <p>Aap tickets counter par cash ya card se pay kar sakte hain.</p>
-    <p><strong>Note:</strong> Show se 20 min pehle counter par report karein.</p>
-  </div>
-  <button (click)="processPayment()" class="btn-pay">Confirm Booking</button>
-</div>
-
-  <div *ngIf="selectedMethod === 'offline'" class="offline-section">
-    <div class="info-box">
-      <p>Aap apni tickets counter par cash ya card se pay kar sakte hain.</p>
-      <p><strong>Note:</strong> Show shuru hone se 20 min pehle pahunchna zaroori hai.</p>
-    </div>
-    <button (click)="processPayment()" class="btn-pay">Confirm Booking</button>
-  </div>
   </div>
 </div>
