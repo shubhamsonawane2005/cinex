@@ -1,3 +1,4 @@
+
 <div class="releases-container">
   
   <div class="header-section">
@@ -20,7 +21,7 @@
         </p>
         <p class="genre">{{ movie.genre }}</p>
 
-        <button class="btn-notify">
+        <button class="btn-notify" (click)="notifyUser(movie.title)">
           <i class="fa-regular fa-bell"></i> Notify Me
         </button>
       </div>
