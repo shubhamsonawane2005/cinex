@@ -62,4 +62,23 @@
 
     </tbody>
   </table>
+  <div class="pagination-container" *ngIf="totalPages > 1">
+  <button 
+    class="page-btn" 
+    (click)="changePage(currentPage - 1)" 
+    [disabled]="currentPage === 1">
+    <i class="fa-solid fa-arrow-left"></i> Previous 
+  </button>
+
+  <span class="page-numbers">
+    Page  <strong>{{ currentPage }}</strong> of {{ totalPages }}
+  </span>
+
+  <button 
+    class="page-btn" 
+    (click)="changePage(currentPage + 1)" 
+    [disabled]="currentPage === totalPages">
+    Next <i class="fa-solid fa-arrow-right"></i>
+  </button>
+</div>
 </div>
