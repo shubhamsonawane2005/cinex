@@ -1,0 +1,132 @@
+/* Container Styling */
+.profile-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #ffffff;
+    background-color: #0f0f0f; /* Dark background like Cinema */
+    border-radius: 15px;
+}
+
+.page-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    border-left: 5px solid #e50914; /* Netflix Red accent */
+    padding-left: 15px;
+    color: #fff;
+}
+
+/* Empty State Styling */
+.empty-state {
+    background: #1a1a1a;
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px dashed #444;
+}
+
+/* Grid Layout for Tickets */
+.booking-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+/* Individual Ticket Card */
+.b-card {
+    background: #1f1f1f;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.b-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(229, 9, 20, 0.2);
+    border-color: #e50914;
+}
+
+/* Movie Title Area */
+.movie-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #e50914;
+    margin: 0;
+    padding: 15px 20px;
+    background: rgba(229, 9, 20, 0.05);
+    border-bottom: 1px solid #333;
+}
+
+/* Details Section */
+.movie-detail {
+    padding: 20px;
+}
+
+.info-grid p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: #ccc;
+    display: flex;
+    justify-content: space-between;
+}
+
+.info-grid strong {
+    color: #888;
+}
+
+/* Seat and Price Styling */
+.seat-badge {
+    background: #333;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border: 1px solid #444;
+}
+
+.price-tag {
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Button & Status Area */
+.btn-area {
+    padding: 15px 20px;
+    background: #181818;
+    text-align: center;
+}
+
+.btn-cancel {
+    width: 100%;
+    background: transparent;
+    color: #e50914;
+    border: 2px solid #e50914;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-cancel:hover {
+    background: #e50914;
+    color: white;
+}
+
+.tag-expired {
+    display: block;
+    color: #666;
+    font-size: 0.9rem;
+    font-style: italic;
+    border: 1px solid #333;
+    padding: 8px;
+    border-radius: 8px;
+}

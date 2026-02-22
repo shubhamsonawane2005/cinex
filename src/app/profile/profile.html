@@ -1,0 +1,37 @@
+<div class="profile-container">
+  
+  <h2 class="page-title">My Bookings</h2>
+  
+  <div *ngIf="!myBookings || myBookings.length === 0" class="empty-state">
+    <p>Abhi tak koi booking nahi mili. Ek nayi ticket book karke dekhein!</p>
+  </div>
+
+  <div class="booking-list" *ngIf="myBookings && myBookings.length > 0">
+    <div *ngFor="let booking of myBookings" class="b-card">
+      
+      <div class="movie-detail">
+        <h3 class="movie-name">{{ booking?.movieTitle }}</h3> 
+        
+        <div class="info-grid">
+          <p><strong>Date:</strong> {{ booking?.showDate ? (booking.showDate | date:'mediumDate') : (booking?.createdAt | date:'mediumDate') }}</p>
+          <p><strong>Time:</strong> {{ booking?.showTime }}</p>
+          <p><strong>Seats:</strong> <span class="seat-badge">{{ booking?.seats }}</span></p>
+          <p><strong>Total:</strong> <span class="price-tag">₹{{ booking?.totalAmount }}</span></p>
+        </div>
+      </div>
+
+      <div class="btn-area">
+        <button *ngIf="!isExpired(booking?.showDate, booking?.showTime)" 
+                (click)="cancelTicket(booking?._id)" 
+                class="btn-cancel">
+          Cancel Ticket
+        </button>
+
+        <span *ngIf="isExpired(booking?.showDate, booking?.showTime)" class="tag-expired">
+          Show Ended (Cannot Cancel)
+        </span>
+      </div>
+
+    </div>
+  </div>
+</div>

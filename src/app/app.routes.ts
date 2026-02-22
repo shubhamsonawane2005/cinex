@@ -10,6 +10,8 @@ import { MoviesComponent } from './movies/movies';
 import { TheatersComponent } from './theaters/theaters';
 import { ReleasesComponent } from './releases/releases';
 
+import { ProfileComponent } from './profile/profile.component'; // Profile component import kiya
+
 // --- IMPORT ADMIN COMPONENTS ---
 import { AdminLayoutComponent } from './admin/admin-layout/admin-layout';
 import { DashboardComponent } from './admin/dashboard/dashboard';
@@ -33,6 +35,10 @@ export const routes: Routes = [
   },
 
   { path: 'payment', component: PaymentComponent, canActivate: [authGuard] },
+  
+  // --- YE WALI LINE ADD KI HAI (Profile page khulne ke liye) ---
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'theaters', component: TheatersComponent },
