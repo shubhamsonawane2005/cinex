@@ -7,7 +7,9 @@ const UserSchema = new mongoose.Schema({
 
     googleId: { type: String, unique: true, sparse: true }, 
     profilePic: { type: String },
-    authType: { type: String, default: 'local' }
+    authType: { type: String, default: 'local' },
+    // bookings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' }]
+
 },{timestamps: true});
 
 module.exports = mongoose.model('User', UserSchema);

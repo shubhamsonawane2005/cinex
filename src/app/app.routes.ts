@@ -15,7 +15,7 @@ import { AdminLayoutComponent } from './admin/admin-layout/admin-layout';
 import { DashboardComponent } from './admin/dashboard/dashboard';
 import { ManageMoviesComponent } from './admin/manage-movies/manage-movies';
 import { ManageTheatersComponent } from './admin/manage-theaters/manage-theaters';
-import { UserListComponent } from './admin/user-list/user-list';
+// import { UserListComponent } from './admin/user-list/user-list';
 
 export const routes: Routes = [
   // User Routes
@@ -47,7 +47,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'movies', component: ManageMoviesComponent },
       { path: 'theaters', component: ManageTheatersComponent },
-      { path: 'users', component: UserListComponent },
+      // { path: 'users', component: UserListComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   }

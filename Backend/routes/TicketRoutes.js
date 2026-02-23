@@ -5,10 +5,19 @@ const router = express.Router();
 // POST: Save new booking
 router.post('/save', async (req, res) => {
     try {
-        const newBooking = new MovieTicket(req.body);
-        const savedBooking = await newBooking.save(); // Store result
+        const newBooking = new MovieTicket({
+            movieTitle: req.body.movieTitle,
+            theaterName: req.body.theaterName,
+            userEmail: req.body.userEmail,
+            showTime: req.body.showTime,
+            seats: req.body.seats,
+            totalAmount: Number(req.body.totalAmount), // Type conversion safe rahega
+            bookingId: req.body.bookingId || 'BKT-' + Date.now()
+        });
+        const savedBooking = await newBooking.save();
         res.status(200).json({ success: true, data: savedBooking });
     } catch (error) {
+        console.log("Validation Error Details:", error.errors); // Isse pata chalega kaunsa field fail hua
         res.status(500).json({ success: false, message: error.message });
     }
 });

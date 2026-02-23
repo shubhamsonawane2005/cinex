@@ -47,12 +47,16 @@ export class AuthService {
     return this.http.get<{ count: number }>(`${this.bookingUrl}/count`);
   }
 
-  getDashboardStats(page:number,limit:number): Observable<any> {
+  getDashboardStats(page: number, limit: number): Observable<any> {
     return this.http.get(`${this.bookingUrl}/stats`);
-    
+
   }
 
   getPagedBookings(page: number, limit: number): Observable<any> {
     return this.http.get(`${this.bookingUrl}/stats?page=${page}&limit=${limit}`);
   }
+
+  // getAllUsers(): Observable<any> {
+  //   return this.http.get(`${this.apiUrl}/all-users`);
+  // }
 }

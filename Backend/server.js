@@ -5,9 +5,9 @@ const connectDB = require('./config/db.js');
 require('dotenv').config();
 
 
-const MovieRoute = require('./routes/MovieRoute.js');
-const AuthRoute = require('./routes/AuthRoute.js');
-const TicketRoute = require('./routes/TicketRoutes.js')
+const MovieRoute = require('./routes/MovieRoute');
+const AuthRoute = require('./routes/AuthRoute');
+const TicketRoute = require('./routes/TicketRoutes')
 
 const app = express();
 
