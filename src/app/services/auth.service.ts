@@ -1,99 +1,30 @@
-
-// import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-// import { isPlatformBrowser } from '@angular/common';
-// import { HttpClient } from '@angular/common/http';
-// import { Observable } from 'rxjs';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AuthService {
-//   // Backend URL (Make sure your node server is running on 5000)
-//   private apiUrl = 'http://localhost:5000/api/auth';
-//   private bookingUrl = 'http://localhost:5000/api/bookings';
-//   private notifyUrl = 'http://localhost:5000/api/notify-me'; // Notify Me ke liye naya URL
-
-//   constructor(
-//     private http: HttpClient,
-//     @Inject(PLATFORM_ID) private platformId: Object
-//   ) { }
-
-//   // Login API Call (Iske bina 404 aa raha tha)
-//   login(userData: any): Observable<any> {
-//     return this.http.post(`${this.apiUrl}/login`, userData);
-//   }
-
-//   // Signup API Call
-//   signup(userData: any): Observable<any> {
-//     return this.http.post(`${this.apiUrl}/signup`, userData);
-//   }
-
-//   // Notify Me API Call (Subham's Task)
-//   setupNotification(data: any): Observable<any> {
-//     return this.http.post(this.notifyUrl, data);
-//   }
-
-//   // --- NAYA CODE YAHAN SE HAI (LOGIN STATUS CHECK KARNE KE LIYE) ---
-
-//   isLoggedIn(): boolean {
-//     // Check karein ki kya hum Browser mein hain?
-//     if (isPlatformBrowser(this.platformId)) {
-//       return !!localStorage.getItem('token');
-//     }
-
-//     // Agar hum Server (SSR) par hain, toh default 'false' return karein
-//     return false;
-//   }
-
-//   getUserCount(): Observable<{ count: number }> {
-//     return this.http.get<{ count: number }>(`${this.apiUrl}/user-count`);
-//   }
-
-//   saveBooking(data: any) {
-//     return this.http.post(`${this.bookingUrl}/save`, data);
-//   }
-
-//   getBookingCount(): Observable<{ count: number }> {
-//     // Backend URL matches: http://localhost:5000/api/bookings/count
-//     return this.http.get<{ count: number }>(`${this.bookingUrl}/count`);
-//   }
-
-//   getDashboardStats(page:number,limit:number): Observable<any> {
-//     return this.http.get(`${this.bookingUrl}/stats`);
-//   }
-
-//   getPagedBookings(page: number, limit: number): Observable<any> {
-//     return this.http.get(`${this.bookingUrl}/stats?page=${page}&limit=${limit}`);
-//   }
-// }
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth';
-  private bookingUrl = 'http://localhost:5000/api/bookings';
-  private notifyUrl = 'http://localhost:5000/api/notify-me';
+  private readonly baseUrl = 'http://localhost:5000/api';
+  private readonly authUrl = `${this.baseUrl}/auth`;
+  private readonly bookingUrl = `${this.baseUrl}/bookings`;
+  private readonly notifyUrl = `${this.baseUrl}/notify-me`;
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {}
+
+  // --- Authentication & Profile ---
 
   login(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, userData);
+    return this.http.post(`${this.authUrl}/login`, userData);
   }
 
   signup(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/signup`, userData);
-  }
-
-  setupNotification(data: any): Observable<any> {
-    return this.http.post(this.notifyUrl, data);
+    return this.http.post(`${this.authUrl}/signup`, userData);
   }
 
   isLoggedIn(): boolean {
@@ -104,58 +35,59 @@ export class AuthService {
   }
 
   getUserDetails(email: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/user/${email}`);
+    return this.http.get(`${this.authUrl}/user/${email}`);
   }
 
   updateProfile(email: string, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update-profile/${email}`, data);
+    return this.http.put(`${this.authUrl}/update-profile/${email}`, data);
   }
 
-  // --- GET BOOKINGS: Profile page ke liye ---
-  getUserBookings(email: string): Observable<any> {
-    // Agar component se email nahi aaya, toh localStorage se uthao
-    if (!email && isPlatformBrowser(this.platformId)) {
-      email = localStorage.getItem('userEmail') || '';
+  // --- Bookings ---
+
+  saveBooking(data: any): Observable<any> {
+    return this.http.post(`${this.bookingUrl}/save`, data);
+  }
+
+  getUserBookings(email?: string): Observable<any> {
+    let userEmail = email;
+
+    // Fallback to localStorage if email isn't provided
+    if (!userEmail && isPlatformBrowser(this.platformId)) {
+      userEmail = localStorage.getItem('userEmail') || '';
     }
-    
-    if (!email) return of([]); 
-    
-    // Backend route match: /api/bookings/my-bookings/:email
-    return this.http.get(`${this.bookingUrl}/my-bookings/${email}`);
+
+    if (!userEmail) return of([]);
+
+    return this.http.get(`${this.bookingUrl}/my-bookings/${userEmail}`);
   }
 
-  // --- CANCEL BOOKING: Backend route match: /api/bookings/cancel/:id ---
   cancelBooking(id: string): Observable<any> {
     return this.http.delete(`${this.bookingUrl}/cancel/${id}`);
   }
 
-  getUserCount(): Observable<{ count: number }> {
-    return this.http.get<{ count: number }>(`${this.apiUrl}/user-count`);
+  // --- Notifications ---
+
+  setupNotification(data: any): Observable<any> {
+    return this.http.post(this.notifyUrl, data);
   }
 
-  saveBooking(data: any): Observable<any> {
-    return this.http.post(`${this.bookingUrl}/save`, data);
+  // --- Admin & Statistics ---
+
+  getUserCount(): Observable<{ count: number }> {
+    return this.http.get<{ count: number }>(`${this.authUrl}/user-count`);
   }
 
   getBookingCount(): Observable<{ count: number }> {
     return this.http.get<{ count: number }>(`${this.bookingUrl}/count`);
   }
 
-<<<<<<< HEAD
-  getDashboardStats(page: number, limit: number): Observable<any> {
-    return this.http.get(`${this.bookingUrl}/stats`);
-
-=======
   getDashboardStats(): Observable<any> {
     return this.http.get(`${this.bookingUrl}/stats`);
->>>>>>> c9a99afddf2c4fb1e40f0c7c7b95597819e4b740
   }
 
   getPagedBookings(page: number, limit: number): Observable<any> {
-    return this.http.get(`${this.bookingUrl}/stats?page=${page}&limit=${limit}`);
+    return this.http.get(`${this.bookingUrl}/stats`, {
+      params: { page: page.toString(), limit: limit.toString() },
+    });
   }
-
-  // getAllUsers(): Observable<any> {
-  //   return this.http.get(`${this.apiUrl}/all-users`);
-  // }
 }
