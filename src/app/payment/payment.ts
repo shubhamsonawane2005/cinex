@@ -100,15 +100,21 @@ export class PaymentComponent implements OnInit {
       createdAt: new Date()
     };
 
-    console.log("Data being sent to DB:", bookingData); // Check this in F12 Console
+    console.log("Data being sent to DB:", bookingData);
 
     this.authService.saveBooking(bookingData).subscribe({
       next: (res: any) => {
         console.log("Server Success Response:", res);
-        alert('Booking Successful! Ticket saved to your profile.');
+        
+        // 1. PDF generate start karo
         this.generatePDF(bookingData); 
+        
+        // 2. Alert dikhao
+        alert('Booking Successful! Ticket has been downloaded.');
+        
+        // 3. HOME PAGE pe redirect karo (yahan change kiya hai)
         setTimeout(() => {
-            this.router.navigate(['/profile']);
+            this.router.navigate(['/']); 
         }, 1000);
       },
       error: (err: any) => {
@@ -182,10 +188,18 @@ export class PaymentComponent implements OnInit {
     doc.text(`Rs. ${data.totalAmount}.00`, 65, yPos + 15);
     doc.text(data.paymentStatus.toUpperCase(), 65, yPos + 28);
 
-    yPos += 60;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.bookingId}`;
-    doc.addImage(qrUrl, 'PNG', (pageWidth/2)-22, yPos, 45, 45);
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = qrUrl;
+    
+    img.onload = () => {
+      doc.addImage(img, 'PNG', (pageWidth/2)-22, yPos + 60, 45, 45);
+      doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
+    };
 
-    doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
+    img.onerror = () => {
+      doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
+    };
   }
 }
