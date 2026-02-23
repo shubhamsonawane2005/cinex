@@ -22,13 +22,13 @@
 
       <div class="btn-area">
         <button *ngIf="!isExpired(booking?.showDate, booking?.showTime)" 
-                (click)="cancelTicket(booking?._id)" 
+                (click)="cancelTicket(booking?._id || booking?.id)" 
                 class="btn-cancel">
           Cancel Ticket
         </button>
 
         <span *ngIf="isExpired(booking?.showDate, booking?.showTime)" class="tag-expired">
-          Show Ended (Cannot Cancel)
+          Show Ended (Expired)
         </span>
       </div>
 
