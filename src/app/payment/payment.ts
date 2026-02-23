@@ -1,8 +1,7 @@
-
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import jsPDF from 'jspdf';
 
@@ -11,19 +10,19 @@ import jsPDF from 'jspdf';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './payment.html',
-  styleUrls: ['./payment.css']
+  styleUrls: ['./payment.css'],
 })
 export class PaymentComponent implements OnInit {
   movieTitle: string = '';
   theaterName: string = '';
-  showTime: string = ''; 
+  showTime: string = '';
   seats: string = '';
   totalPrice: number = 0;
-  showDate: string = ''; 
-  
+  showDate: string = '';
+
   selectedMethod: string = 'card';
   isUpiVerified: boolean = false;
-  convenienceFee: number = 0; 
+  convenienceFee: number = 0;
 
   cardNumber: string = '';
   expiry: string = '';
@@ -35,10 +34,10 @@ export class PaymentComponent implements OnInit {
   private authService = inject(AuthService);
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.movieTitle = params['movie'] || 'Unknown Movie';
       this.theaterName = params['theater'] || 'Unknown Theater';
-      this.showTime = params['time'] || ''; 
+      this.showTime = params['time'] || '';
       this.seats = params['seats'] || '';
       this.totalPrice = Number(params['price']) || 0;
       this.showDate = params['date'] || new Date().toISOString().split('T')[0];
@@ -54,9 +53,9 @@ export class PaymentComponent implements OnInit {
     this.isUpiVerified = false;
   }
 
-  verifyUPI() { 
+  verifyUPI() {
     if (this.upiId.includes('@')) {
-      this.isUpiVerified = true; 
+      this.isUpiVerified = true;
       alert('UPI Verified successfully!');
     } else {
       alert('Invalid UPI ID!');
@@ -68,67 +67,78 @@ export class PaymentComponent implements OnInit {
   }
 
   async processPayment() {
-    if (this.selectedMethod === 'card' && !this.isCardValid()) {
-        alert('Please fill correct card details!');
-        return;
-    }
-
-    if (this.selectedMethod === 'upi' && !this.isUpiVerified) {
-      alert('Please verify UPI first!');
-      return;
-    }
-
-    const bookingId = 'TKT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    const userEmail = localStorage.getItem('userEmail');
-
-    if (!userEmail) {
-      alert("Session expired! Please Login again.");
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    const bookingData = {
-      movieTitle: this.movieTitle,      
-      userEmail: userEmail, 
-      theaterName: this.theaterName,    
-      showTime: this.showTime,          
-      showDate: this.showDate,
-      seats: this.seats,
-      totalAmount: this.finalAmount,    
-      paymentStatus: this.selectedMethod === 'offline' ? 'Pending' : 'Paid',
-      bookingId: bookingId,
-      createdAt: new Date()
-    };
-
-    console.log("Data being sent to DB:", bookingData); // Check this in F12 Console
-
-    this.authService.saveBooking(bookingData).subscribe({
-      next: (res: any) => {
-        console.log("Server Success Response:", res);
-        alert('Booking Successful! Ticket saved to your profile.');
-        this.generatePDF(bookingData); 
-        setTimeout(() => {
-            this.router.navigate(['/profile']);
-        }, 1000);
-      },
-      error: (err: any) => {
-        console.error("Critical Save Error:", err);
-        alert('Database Error! Terminal check karo.');
-      }
-    });
+  if (this.selectedMethod === 'card' && !this.isCardValid()) {
+    alert('Please fill correct card details!');
+    return;
   }
 
+  if (this.selectedMethod === 'upi' && !this.isUpiVerified) {
+    alert('Please verify UPI first!');
+    return;
+  }
+
+  const bookingId = 'TKT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+  
+  // 1. Get BOTH email and name from localStorage
+  const userEmail = localStorage.getItem('userEmail');
+  const userName = localStorage.getItem('userName'); // Ensure this key matches your login storage key
+
+  if (!userEmail) {
+    alert('Session expired! Please Login again.');
+    this.router.navigate(['/login']);
+    return;
+  }
+
+  let finalStatus = 'Pending';
+  if (this.selectedMethod === 'card' || this.selectedMethod === 'upi') {
+    finalStatus = 'Paid';
+  } else if (this.selectedMethod === 'offline') {
+    finalStatus = 'Pending';
+  }
+
+  // 2. Include userName in the bookingData object
+  const bookingData = {
+    movieTitle: this.movieTitle,
+    userEmail: userEmail,
+    userName: userName || 'Customer', // Fallback to 'Customer' if name is missing
+    theaterName: this.theaterName,
+    showTime: this.showTime,
+    showDate: this.showDate,
+    seats: this.seats,
+    totalAmount: this.finalAmount,
+    paymentStatus: finalStatus,
+    bookingId: bookingId,
+    createdAt: new Date(),
+  };
+
+  console.log('Data being sent to DB:', bookingData);
+
+  this.authService.saveBooking(bookingData).subscribe({
+    next: (res: any) => {
+      console.log('Server Success Response:', res);
+      alert('Booking Successful! Ticket saved to your profile.');
+      this.generatePDF(bookingData);
+      setTimeout(() => {
+        this.router.navigate(['/profile']);
+      }, 1000);
+    },
+    error: (err: any) => {
+      console.error('Critical Save Error:', err);
+      alert('Database Error! Check if the Model and Frontend fields match.');
+    },
+  });
+}
   generatePDF(data: any) {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
-    
-    doc.setFillColor(229, 9, 20); 
+
+    doc.setFillColor(229, 9, 20);
     doc.rect(0, 0, pageWidth, 60, 'F');
     doc.setFontSize(45);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
     doc.text('CINEX', 20, 35);
-    
+
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.text('PREMIUM MOVIE TICKET', 21, 45);
@@ -146,7 +156,7 @@ export class PaymentComponent implements OnInit {
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(26);
     doc.text(data.movieTitle.toUpperCase(), 20, yPos);
-    
+
     doc.setDrawColor(229, 9, 20);
     doc.setLineWidth(1.5);
     doc.line(20, yPos + 4, 80, yPos + 4);
@@ -169,13 +179,13 @@ export class PaymentComponent implements OnInit {
     yPos += 25;
     doc.setFillColor(248, 248, 248);
     doc.roundedRect(15, yPos, pageWidth - 30, 40, 4, 4, 'F');
-    
+
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100, 100, 100);
     doc.text('Total Amount:', 25, yPos + 15);
     doc.text('Payment Status:', 25, yPos + 28);
-    
+
     doc.setFontSize(13);
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'bold');
@@ -184,7 +194,7 @@ export class PaymentComponent implements OnInit {
 
     yPos += 60;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.bookingId}`;
-    doc.addImage(qrUrl, 'PNG', (pageWidth/2)-22, yPos, 45, 45);
+    doc.addImage(qrUrl, 'PNG', pageWidth / 2 - 22, yPos, 45, 45);
 
     doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
   }

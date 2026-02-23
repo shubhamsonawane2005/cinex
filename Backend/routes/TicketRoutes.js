@@ -20,9 +20,11 @@ router.post('/save', async (req, res) => {
       movieTitle: req.body.movieTitle,
       theaterName: req.body.theaterName,
       userEmail: req.body.userEmail,
+      userName:req.body.userName,
       showTime: req.body.showTime,
       seats: req.body.seats,
       totalAmount: Number(req.body.totalAmount) || 0,
+      paymentStatus: req.body.paymentStatus || 'Paid',
       bookingId: req.body.bookingId || 'BKT-' + Date.now(),
     });
 
@@ -96,7 +98,27 @@ router.get('/stats', async (req, res) => {
       MovieTicket.aggregate([{ $group: { _id: null, total: { $sum: '$totalAmount' } } }]),
     ]);
 
-    const bookings = await MovieTicket.find().sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const bookings =await MovieTicket.aggregate([
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: 'users',          
+          localField: 'userEmail',  
+          foreignField: 'email',    
+          as: 'userDetails'         
+        }
+      },
+      {
+        $addFields: {
+          userName: { $arrayElemAt: ['$userDetails.username', 0] } 
+        }
+      },
+      {
+        $project: { userDetails: 0 } 
+      }
+    ]);
 
     res.status(200).json({
       success: true,

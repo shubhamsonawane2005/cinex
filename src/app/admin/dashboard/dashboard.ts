@@ -8,9 +8,8 @@ import { interval, Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  styleUrl: './dashboard.css',
 })
-
 export class DashboardComponent implements OnInit, OnDestroy {
   private pollingSubscription?: Subscription;
   currentPage: number = 1;
@@ -24,13 +23,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     newUsers: 0,
   };
 
-
   // 2. The Recent Bookings Data
   bookings: any[] = [];
 
   constructor(
     private adminService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -56,19 +54,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadUserCount() {
     this.adminService.getUserCount().subscribe({
       next: (res: any) => {
-        console.log("Data received from Backend:", typeof res);
+        console.log('Data received from Backend:', typeof res);
         if (typeof res === 'number') {
           this.stats.newUsers = res;
-        }
-        else if (res && res.count !== undefined) {
+        } else if (res && res.count !== undefined) {
           this.stats.newUsers = res.count;
         }
         this.cdr.detectChanges();
-        console.log(this.stats.newUsers)
+        console.log(this.stats.newUsers);
       },
       error: (err) => {
-        console.error("User count fetch karne mein dikkat aayi:", err);
-      }
+        console.error('User count fetch karne mein dikkat aayi:', err);
+      },
     });
   }
 
@@ -80,14 +77,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         }
       },
-      error: (err) => console.error("Booking count error:", err)
+      error: (err) => console.error('Booking count error:', err),
     });
   }
 
- loadDashboardData(page: number) {
+  loadDashboardData(page: number) {
     this.adminService.getPagedBookings(page, this.limit).subscribe({
       next: (res: any) => {
-        console.log("Backend Response:", res);
+        console.log('Backend Response:', res);
         if (res && res.success) {
           // Stats hamesha total hi dikhenge
           this.stats.totalBookings = res.totalBookings || 0;
@@ -96,24 +93,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.currentPage = res.currentPage || page;
 
           if (res.data && Array.isArray(res.data)) {
-          this.bookings = res.data.map((b: any) => ({
-            id: b.bookingId,
-            user: b.userName || 'Customer', // Agar user name backend mein hai
-            movie: b.movieTitle,
-            amount: b.totalAmount,
-            status: b.paymentStatus || 'Confirmed'
-          }));
-        }else{
-          console.warn("Data array nahi mili, empty array set kar rahe hain");
-          this.bookings = [];
-        }
+            this.bookings = res.data.map((b: any) => ({
+              id: b.bookingId,
+              user: b.userName || 'Customer',
+              movie: b.movieTitle,
+              amount: b.totalAmount,
+              status: b.paymentStatus || 'Paid',
+            }));
+          } else {
+            console.warn('Data array nahi mili, empty array set kar rahe hain');
+            this.bookings = [];
+          }
 
           this.cdr.detectChanges();
         }
       },
-      error: (err) =>{ console.error("Stats fetch error:", err);
+      error: (err) => {
+        console.error('Stats fetch error:', err);
         this.bookings = [];
-      }
+      },
     });
   }
 
@@ -128,10 +126,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // 3. Helper to set color classes based on status
   getStatusClass(status: string) {
     switch (status) {
-      case 'Confirmed': return 'success'; // Green
-      case 'Pending': return 'pending';   // Yellow
-      case 'Cancelled': return 'failed';  // Red
-      default: return '';
+      case 'Paid':
+      case 'Confirmed':
+        return 'success'; // This will apply the green CSS class
+      case 'Pending':
+        return 'pending'; // This will apply the yellow CSS class
+      case 'Cancelled':
+        return 'failed'; // This will apply the red CSS class
+      default:
+        return 'pending';
     }
   }
 }
