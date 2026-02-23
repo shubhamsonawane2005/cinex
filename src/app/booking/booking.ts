@@ -1,3 +1,130 @@
+// import { Component, OnInit, inject } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { ActivatedRoute, RouterModule, Router } from '@angular/router'; 
+// import { FormsModule } from '@angular/forms'; 
+// import { MovieService } from '../services/movie'; 
+
+// @Component({
+//   selector: 'app-booking',
+//   standalone: true,
+//   imports: [CommonModule, RouterModule, FormsModule], 
+//   templateUrl: './booking.html',
+//   styleUrl: './booking.css'
+// })
+// export class BookingComponent implements OnInit {
+//   // Dependency Injection
+//   private route = inject(ActivatedRoute);
+//   private movieService = inject(MovieService);
+//   private router = inject(Router);
+
+//   // Booking Data
+//   movieTitle: string = ""; 
+//   theaterName: string = ""; 
+//   selectedSeats: string[] = [];
+//   totalPrice: number = 0;
+//   ticketPrice: number = 200; 
+
+//   // Selection Controls
+//   seatsToBook: number = 1; 
+//   bookedSeats: string[] = ['A2', 'C5', 'E1']; // Simulated from DB
+//   times: string[] = []; 
+//   selectedTime: string = ""; 
+//   selectedDate: string = ""; 
+
+//   // Grid Layout
+//   rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+//   seatsPerRow: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+//   ngOnInit() {
+//     this.route.paramMap.subscribe(params => {
+//       const movieId = params.get('movieId');
+//       const theaterId = params.get('theaterId');
+//       const timeFromPath = params.get('time');
+
+//       // 1. Resolve Theater Name
+//       const theaterMap: Record<string, string> = {
+//         '1': 'PVR: Rahul Raj Mall',
+//         '2': 'INOX: VR Mall',
+//         '3': 'Cinépolis: Imperial Square',
+//         '4': 'Rajhans Multiplex'
+//       };
+
+//       if (theaterId && theaterMap[theaterId]) {
+//         this.theaterName = theaterMap[theaterId];
+//       } else {
+//         this.theaterName = this.route.snapshot.queryParams['theater'] || "PVR: Rahul Raj Mall"; 
+//       }
+
+//       // 2. Resolve Time
+//       if (timeFromPath) {
+//         this.selectedTime = decodeURIComponent(timeFromPath);
+//         this.times = [this.selectedTime]; 
+//       }
+
+//       // 3. Resolve Date (Default to today)
+//       this.selectedDate = this.route.snapshot.queryParams['date'] || new Date().toISOString().split('T')[0];
+
+//       // 4. Resolve Movie Title
+//       if (movieId) {
+//         this.movieService.getMovieById(Number(movieId)).subscribe(movie => {
+//           if (movie) this.movieTitle = movie.title;
+//         });
+//       }
+//     });
+//   }
+
+//   // --- Methods ---
+
+//   toggleSeat(row: string, seatNum: number) {
+//     const newSelection: string[] = [];
+    
+//     // Logic to select consecutive seats based on 'seatsToBook' count
+//     for (let i = 0; i < this.seatsToBook; i++) {
+//       const currentSeatNum = seatNum + i;
+//       const seatId = `${row}${currentSeatNum}`;
+
+//       // Check if seat is within row bounds and not already booked
+//       if (currentSeatNum <= 9 && !this.isBooked(row, currentSeatNum)) {
+//         newSelection.push(seatId);
+//       } else {
+//         break; // Stop selecting if we hit a booked seat or wall
+//       }
+//     }
+
+//     this.selectedSeats = newSelection;
+//     this.totalPrice = this.selectedSeats.length * this.ticketPrice;
+//   }
+
+//   isSelected(row: string, seatNum: number): boolean {
+//     return this.selectedSeats.includes(row + seatNum);
+//   }
+
+//   isBooked(row: string, seatNum: number): boolean {
+//     return this.bookedSeats.includes(row + seatNum);
+//   }
+
+//   selectTime(time: string) {
+//     this.selectedTime = time; 
+//   }
+
+//   goToPayment() {
+//     if (this.selectedSeats.length === 0) {
+//       alert("Please select at least one seat!");
+//       return;
+//     }
+
+//     this.router.navigate(['/payment'], {
+//       queryParams: {
+//         movie: this.movieTitle,
+//         price: this.totalPrice,
+//         seats: this.selectedSeats.join(', '),
+//         time: this.selectedTime,   
+//         theater: this.theaterName,
+//         date: this.selectedDate 
+//       }
+//     });
+//   }
+// }
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router'; 
@@ -12,26 +139,22 @@ import { MovieService } from '../services/movie';
   styleUrl: './booking.css'
 })
 export class BookingComponent implements OnInit {
-  // Dependency Injection
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
   private router = inject(Router);
 
-  // Booking Data
   movieTitle: string = ""; 
   theaterName: string = ""; 
   selectedSeats: string[] = [];
   totalPrice: number = 0;
   ticketPrice: number = 200; 
 
-  // Selection Controls
-  seatsToBook: number = 1; 
-  bookedSeats: string[] = ['A2', 'C5', 'E1']; // Simulated from DB
+  seatsToBook: number = 2; 
+  bookedSeats: string[] = ['A2', 'C5', 'E1']; 
   times: string[] = []; 
   selectedTime: string = ""; 
   selectedDate: string = ""; 
 
-  // Grid Layout
   rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   seatsPerRow: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -41,7 +164,6 @@ export class BookingComponent implements OnInit {
       const theaterId = params.get('theaterId');
       const timeFromPath = params.get('time');
 
-      // 1. Resolve Theater Name
       const theaterMap: Record<string, string> = {
         '1': 'PVR: Rahul Raj Mall',
         '2': 'INOX: VR Mall',
@@ -55,16 +177,13 @@ export class BookingComponent implements OnInit {
         this.theaterName = this.route.snapshot.queryParams['theater'] || "PVR: Rahul Raj Mall"; 
       }
 
-      // 2. Resolve Time
       if (timeFromPath) {
         this.selectedTime = decodeURIComponent(timeFromPath);
         this.times = [this.selectedTime]; 
       }
 
-      // 3. Resolve Date (Default to today)
       this.selectedDate = this.route.snapshot.queryParams['date'] || new Date().toISOString().split('T')[0];
 
-      // 4. Resolve Movie Title
       if (movieId) {
         this.movieService.getMovieById(Number(movieId)).subscribe(movie => {
           if (movie) this.movieTitle = movie.title;
@@ -73,22 +192,37 @@ export class BookingComponent implements OnInit {
     });
   }
 
-  // --- Methods ---
-
+  // --- SMART DYNAMIC SELECTION LOGIC (FIXED) ---
   toggleSeat(row: string, seatNum: number) {
-    const newSelection: string[] = [];
+    const seatId = `${row}${seatNum}`;
     
-    // Logic to select consecutive seats based on 'seatsToBook' count
-    for (let i = 0; i < this.seatsToBook; i++) {
-      const currentSeatNum = seatNum + i;
-      const seatId = `${row}${currentSeatNum}`;
+    if (this.selectedSeats.includes(seatId)) {
+      this.selectedSeats = [];
+      this.totalPrice = 0;
+      return;
+    }
 
-      // Check if seat is within row bounds and not already booked
-      if (currentSeatNum <= 9 && !this.isBooked(row, currentSeatNum)) {
-        newSelection.push(seatId);
-      } else {
-        break; // Stop selecting if we hit a booked seat or wall
+    const newSelection: string[] = [];
+    let currentSeat = seatNum;
+
+    // FIX: Jab tak hamesha 'seatsToBook' ke barabar seat na mil jaye tab tak dhundo
+    // 'break' ki jagah hum 'continue' ya loop flow change karenge
+    while (newSelection.length < this.seatsToBook && currentSeat <= 9) {
+      if (!this.isBooked(row, currentSeat)) {
+        newSelection.push(`${row}${currentSeat}`);
       }
+      currentSeat++; // Agli seat par jao (Booked ho toh bhi skip karo)
+    }
+
+    // Agar aage seats khatam ho gayi aur count pura nahi hua, toh peeche ki seats check karo
+    if (newSelection.length < this.seatsToBook) {
+        let backSeat = seatNum - 1;
+        while (newSelection.length < this.seatsToBook && backSeat >= 1) {
+            if (!this.isBooked(row, backSeat) && !newSelection.includes(`${row}${backSeat}`)) {
+                newSelection.unshift(`${row}${backSeat}`);
+            }
+            backSeat--;
+        }
     }
 
     this.selectedSeats = newSelection;
