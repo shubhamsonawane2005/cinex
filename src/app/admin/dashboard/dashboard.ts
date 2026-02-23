@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { interval, Subscription } from 'rxjs';
+import { MovieService } from '../../services/movie';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,38 +12,35 @@ import { interval, Subscription } from 'rxjs';
   styleUrl: './dashboard.css',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  // Services
+  private movieService = inject(MovieService);
+  private adminService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
+  // Subscriptions & Pagination
   private pollingSubscription?: Subscription;
   currentPage: number = 1;
   totalPages: number = 1;
   limit: number = 5;
-  // Dynamic Stats
+
+  // Dashboard Stats
   stats = {
     totalBookings: 0,
-    activeMovies: 8,
+    activeMovies: 0,
     totalRevenue: 0,
     newUsers: 0,
   };
 
-  // 2. The Recent Bookings Data
+  // Recent Bookings Data
   bookings: any[] = [];
-
-  constructor(
-    private adminService: AuthService,
-    private cdr: ChangeDetectorRef,
-  ) {}
 
   ngOnInit() {
     this.refreshAllData();
 
+    // Har 10 second mein data refresh hoga
     this.pollingSubscription = interval(10000).subscribe(() => {
       this.refreshAllData();
     });
-  }
-
-  refreshAllData() {
-    this.loadUserCount();
-    this.loadBookingCount();
-    this.loadDashboardData(this.currentPage);
   }
 
   ngOnDestroy() {
@@ -51,21 +49,81 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  refreshAllData() {
+    this.loadUserCount();
+    this.loadBookingCount();
+    this.loadDashboardData(this.currentPage);
+    this.calculateActiveMovies();
+  }
+
+  // --- Helper Logic for Active Movies ---
+
+  isTimePassed(timeStr: string): boolean {
+    const now = new Date();
+    let hours: number, minutes: number;
+
+    if (timeStr.includes('AM') || timeStr.includes('PM')) {
+      const [time, modifier] = timeStr.split(' ');
+      let [h, m] = time.split(':').map(Number);
+      if (modifier === 'PM' && h < 12) h += 12;
+      if (modifier === 'AM' && h === 12) h = 0;
+      hours = h;
+      minutes = m;
+    } else {
+      [hours, minutes] = timeStr.split(':').map(Number);
+    }
+
+    const showTime = new Date();
+    showTime.setHours(hours, minutes, 0, 0);
+    return showTime < now;
+  }
+
+  calculateActiveMovies() {
+    this.movieService.getMovies().subscribe({
+      next: (movies) => {
+        const liveMovies = movies.filter((movie) => {
+          const showtimes = [{ times: ['10:00 AM', '02:00 PM', '09:00 PM'] }];
+
+          let totalShows = 0;
+          let passedShows = 0;
+
+          showtimes.forEach((s) => {
+            s.times.forEach((t) => {
+              totalShows++;
+              if (this.isTimePassed(t)) passedShows++;
+            });
+          });
+
+          
+          return totalShows > passedShows;
+        });
+        // --- DEBUGGING CONSOLE LOGS ---
+      console.log('--- Active Movies Check ---');
+      console.log('Total Movies from Service:', movies.length);
+      console.log('Active (Live) Movies Count:', liveMovies.length);
+      console.log('List of Active Movies:', liveMovies.map(m => m.title));
+      console.log('---------------------------');
+
+        this.stats.activeMovies = liveMovies.length;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Active movies fetch error:', err),
+    });
+  }
+
+  // --- Stats Loading Methods ---
+
   loadUserCount() {
     this.adminService.getUserCount().subscribe({
       next: (res: any) => {
-        console.log('Data received from Backend:', typeof res);
         if (typeof res === 'number') {
           this.stats.newUsers = res;
         } else if (res && res.count !== undefined) {
           this.stats.newUsers = res.count;
         }
         this.cdr.detectChanges();
-        console.log(this.stats.newUsers);
       },
-      error: (err) => {
-        console.error('User count fetch karne mein dikkat aayi:', err);
-      },
+      error: (err) => console.error('User count error:', err),
     });
   }
 
@@ -84,9 +142,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadDashboardData(page: number) {
     this.adminService.getPagedBookings(page, this.limit).subscribe({
       next: (res: any) => {
-        console.log('Backend Response:', res);
         if (res && res.success) {
-          // Stats hamesha total hi dikhenge
           this.stats.totalBookings = res.totalBookings || 0;
           this.stats.totalRevenue = res.totalRevenue || 0;
           this.totalPages = res.totalPages || 1;
@@ -101,38 +157,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
               status: b.paymentStatus || 'Paid',
             }));
           } else {
-            console.warn('Data array nahi mili, empty array set kar rahe hain');
             this.bookings = [];
           }
-
           this.cdr.detectChanges();
         }
       },
       error: (err) => {
-        console.error('Stats fetch error:', err);
+        console.error('Dashboard data fetch error:', err);
         this.bookings = [];
       },
     });
   }
 
+  // --- UI Helpers ---
+
   changePage(newPage: number) {
-    // console.log('Button clicked! New page:', newPage);
     if (newPage >= 1 && newPage <= this.totalPages) {
       this.currentPage = newPage;
       this.loadDashboardData(this.currentPage);
     }
   }
 
-  // 3. Helper to set color classes based on status
   getStatusClass(status: string) {
     switch (status) {
       case 'Paid':
       case 'Confirmed':
-        return 'success'; // This will apply the green CSS class
+        return 'success';
       case 'Pending':
-        return 'pending'; // This will apply the yellow CSS class
+        return 'pending';
       case 'Cancelled':
-        return 'failed'; // This will apply the red CSS class
+        return 'failed';
       default:
         return 'pending';
     }
