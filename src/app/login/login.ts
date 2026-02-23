@@ -1,3 +1,4 @@
+
 import { Component, inject, PLATFORM_ID, OnInit } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -41,6 +42,7 @@ export class LoginComponent implements OnInit {
       );
     }
   }
+
   handleLogin(response: any) {
     const payload = JSON.parse(atob(response.credential.split('.')[1])); // Token decode
     console.log("Google User:", payload);
@@ -60,6 +62,8 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('token', response.credential);
           localStorage.setItem('role', 'user');
           localStorage.setItem('userName', payload.name);
+          // --- FIX 1: Google login ke liye email save kiya ---
+          localStorage.setItem('userEmail', payload.email);
 
           alert(`Welcome ${payload.name}!`);
           this.router.navigate(['/']);
@@ -83,6 +87,7 @@ export class LoginComponent implements OnInit {
       if (isBrowser) {
         localStorage.setItem('token', 'admin-secret-token');
         localStorage.setItem('role', 'admin');
+        localStorage.setItem('userEmail', 'admin@gmail.com');
       }
       alert("Welcome Admin!");
       this.router.navigate(['/admin/dashboard']);
@@ -97,6 +102,9 @@ export class LoginComponent implements OnInit {
         if (isBrowser) {
           localStorage.setItem('token', response.token);
           localStorage.setItem('role', 'user');
+          // --- FIX 2: Normal login ke liye email save kiya ---
+          localStorage.setItem('userEmail', response.user.email);
+          localStorage.setItem('userName', response.user.username);
         }
         alert("Welcome Back!");
         this.router.navigate(['/']); // Normal user home page jayega

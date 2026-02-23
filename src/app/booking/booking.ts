@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> c9a99afddf2c4fb1e40f0c7c7b95597819e4b740
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router'; 
@@ -22,10 +26,10 @@ export class BookingComponent implements OnInit {
   seatsToBook: number = 1; 
   bookedSeats: string[] = ['A2', 'C5', 'E1']; 
 
-  // List ko khali rakha hai taaki sirf selected time hi isme aaye
   times: string[] = []; 
   selectedTime: string = ""; 
-  
+  selectedDate: string = ""; 
+
   rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   seatsPerRow: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   
@@ -34,7 +38,6 @@ export class BookingComponent implements OnInit {
   private router = inject(Router);
 
   ngOnInit() {
-    // Path Params se data uthana (movieId, theaterId, time)
     this.route.paramMap.subscribe(params => {
       const movieId = params.get('movieId');
       const theaterId = params.get('theaterId');
@@ -47,7 +50,6 @@ export class BookingComponent implements OnInit {
         '4': 'Rajhans Multiplex'
       };
 
-      // 1. Theater Name set karo ID ke basis par
       if (theaterId && theaterMap[theaterId]) {
         this.theaterName = theaterMap[theaterId];
       } else {
@@ -55,16 +57,15 @@ export class BookingComponent implements OnInit {
         this.theaterName = qTheater || "PVR: Rahul Raj Mall"; 
       }
 
-      // 2. TIME SELECTION FIX: Ab sirf wahi time aayega jo pichle page se aaya hai
       if (timeFromPath) {
         const decodedTime = decodeURIComponent(timeFromPath);
         this.selectedTime = decodedTime;
-        
-        // Isse sidebar mein sirf wahi ek button dikhega jo user ne select kiya tha
         this.times = [decodedTime]; 
       }
 
-      // 3. Movie details fetch karo
+      // Aaj ki date set karna agar query mein na ho
+      this.selectedDate = this.route.snapshot.queryParams['date'] || new Date().toISOString().split('T')[0];
+
       if (movieId) {
         this.movieService.getMovieById(Number(movieId)).subscribe(movie => {
           if (movie) this.movieTitle = movie.title;
@@ -74,14 +75,20 @@ export class BookingComponent implements OnInit {
   }
 
   goToPayment() {
-    // Payment page par data transfer
+    if (this.selectedSeats.length === 0) {
+      alert("Bhai, pehle seat toh select kar le!");
+      return;
+    }
+
+    // Yahan saara data payment page ko transfer ho raha hai
     this.router.navigate(['/payment'], {
       queryParams: {
         movie: this.movieTitle,
         price: this.totalPrice,
         seats: this.selectedSeats.join(', '),
         time: this.selectedTime,   
-        theater: this.theaterName  
+        theater: this.theaterName,
+        date: this.selectedDate 
       }
     });
   }

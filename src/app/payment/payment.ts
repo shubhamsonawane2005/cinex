@@ -19,12 +19,12 @@ export class PaymentComponent implements OnInit {
   showTime: string = ''; 
   seats: string = '';
   totalPrice: number = 0;
+  showDate: string = ''; 
   
   selectedMethod: string = 'card';
   isUpiVerified: boolean = false;
   convenienceFee: number = 0; 
 
-  // Validation variables
   cardNumber: string = '';
   expiry: string = '';
   cvv: string = '';
@@ -41,6 +41,7 @@ export class PaymentComponent implements OnInit {
       this.showTime = params['time'] || ''; 
       this.seats = params['seats'] || '';
       this.totalPrice = Number(params['price']) || 0;
+      this.showDate = params['date'] || new Date().toISOString().split('T')[0];
     });
   }
 
@@ -58,41 +59,40 @@ export class PaymentComponent implements OnInit {
       this.isUpiVerified = true; 
       alert('UPI Verified successfully!');
     } else {
-      alert('Invalid UPI ID! Please include "@" in your ID.');
+      alert('Invalid UPI ID!');
     }
   }
 
   isCardValid(): boolean {
-    return this.cardNumber.length === 16 && 
-           this.expiry.length === 5 && 
-           this.cvv.length === 3;
+    return this.cardNumber.length === 16 && this.expiry.length === 5 && this.cvv.length === 3;
   }
 
   async processPayment() {
-    // 1. Validation Logic with English Alerts
-    if (this.selectedMethod === 'card') {
-      if (!this.cardNumber || !this.expiry || !this.cvv) {
-        alert('Please fill in all card details before proceeding.');
+    if (this.selectedMethod === 'card' && !this.isCardValid()) {
+        alert('Please fill correct card details!');
         return;
-      }
-      if (!this.isCardValid()) {
-        alert('Invalid Details! Card must be 16 digits, Expiry MM/YY, and CVV 3 digits.');
-        return;
-      }
     }
 
     if (this.selectedMethod === 'upi' && !this.isUpiVerified) {
-      alert('UPI not verified! Please enter your UPI ID and click "Verify" first.');
+      alert('Please verify UPI first!');
       return;
     }
 
-    // 2. Booking Data Creation
     const bookingId = 'TKT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    const userEmail = localStorage.getItem('userEmail');
+
+    if (!userEmail) {
+      alert("Session expired! Please Login again.");
+      this.router.navigate(['/login']);
+      return;
+    }
 
     const bookingData = {
       movieTitle: this.movieTitle,      
+      userEmail: userEmail, 
       theaterName: this.theaterName,    
       showTime: this.showTime,          
+      showDate: this.showDate,
       seats: this.seats,
       totalAmount: this.finalAmount,    
       paymentStatus: this.selectedMethod === 'offline' ? 'Pending' : 'Paid',
@@ -100,27 +100,30 @@ export class PaymentComponent implements OnInit {
       createdAt: new Date()
     };
 
-    // 3. Save to Database
+    console.log("Data being sent to DB:", bookingData); // Check this in F12 Console
+
     this.authService.saveBooking(bookingData).subscribe({
-      next: (res) => {
-        alert('Booking Successful! Your ticket has been saved.');
+      next: (res: any) => {
+        console.log("Server Success Response:", res);
+        alert('Booking Successful! Ticket saved to your profile.');
         this.generatePDF(bookingData); 
-        this.router.navigate(['/']);
+        setTimeout(() => {
+            this.router.navigate(['/profile']);
+        }, 1000);
       },
-      error: (err) => alert('Database Error! Unable to save booking.')
+      error: (err: any) => {
+        console.error("Critical Save Error:", err);
+        alert('Database Error! Terminal check karo.');
+      }
     });
   }
 
-  // 4. Professional Movie Ticket PDF Logic
   generatePDF(data: any) {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     
-    // --- TOP RED HEADER ---
     doc.setFillColor(229, 9, 20); 
     doc.rect(0, 0, pageWidth, 60, 'F');
-    
-    // CINEX LOGO
     doc.setFontSize(45);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
@@ -130,7 +133,6 @@ export class PaymentComponent implements OnInit {
     doc.setFont('helvetica', 'normal');
     doc.text('PREMIUM MOVIE TICKET', 21, 45);
 
-    // BOOKING ID BADGE (Right Side)
     doc.setFillColor(255, 255, 255);
     doc.roundedRect(pageWidth - 75, 15, 60, 25, 3, 3, 'F');
     doc.setTextColor(229, 9, 20);
@@ -140,18 +142,15 @@ export class PaymentComponent implements OnInit {
     doc.setFont('helvetica', 'bold');
     doc.text(data.bookingId, pageWidth - 70, 35);
 
-    // --- MOVIE TITLE ---
     let yPos = 85;
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(26);
     doc.text(data.movieTitle.toUpperCase(), 20, yPos);
     
-    // RED UNDERLINE
     doc.setDrawColor(229, 9, 20);
     doc.setLineWidth(1.5);
     doc.line(20, yPos + 4, 80, yPos + 4);
 
-    // --- INFO SECTION ---
     yPos += 25;
     doc.setFontSize(10);
     doc.setTextColor(150, 150, 150);
@@ -167,7 +166,6 @@ export class PaymentComponent implements OnInit {
     doc.text(data.showTime, 85, yPos);
     doc.text(data.seats, 150, yPos);
 
-    // --- PAYMENT SUMMARY BOX ---
     yPos += 25;
     doc.setFillColor(248, 248, 248);
     doc.roundedRect(15, yPos, pageWidth - 30, 40, 4, 4, 'F');
@@ -182,40 +180,12 @@ export class PaymentComponent implements OnInit {
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'bold');
     doc.text(`Rs. ${data.totalAmount}.00`, 65, yPos + 15);
-    
-    // Status Color: Green for Paid, Red for Pending
-    if(data.paymentStatus === 'Paid') {
-      doc.setTextColor(34, 139, 34); // Green
-    } else {
-      doc.setTextColor(229, 9, 20); // Red
-    }
     doc.text(data.paymentStatus.toUpperCase(), 65, yPos + 28);
 
-    // --- QR CODE SECTION ---
     yPos += 60;
-    const qrSize = 45;
-    const qrX = (pageWidth / 2) - (qrSize / 2);
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.bookingId}`;
-    
-    doc.addImage(qrUrl, 'PNG', qrX, yPos, qrSize, qrSize);
-    
-    doc.setFontSize(9);
-    doc.setTextColor(150, 150, 150);
-    doc.setFont('helvetica', 'normal');
-    doc.text('SCAN THIS QR AT THE CINEMA ENTRANCE', pageWidth / 2, yPos + qrSize + 8, { align: 'center' });
+    doc.addImage(qrUrl, 'PNG', (pageWidth/2)-22, yPos, 45, 45);
 
-    // --- DASHED LINE (TICKET CUT) ---
-    doc.setLineDashPattern([2, 2], 0);
-    doc.setDrawColor(200, 200, 200);
-    doc.line(10, 265, pageWidth - 10, 265);
-
-    // --- FOOTER ---
-    doc.setFontSize(10);
-    doc.setTextColor(120, 120, 120);
-    doc.setFont('helvetica', 'italic');
-    doc.text('Thank you for booking with Cinex! Enjoy your movie.', pageWidth / 2, 280, { align: 'center' });
-
-    // --- SAVE PDF ---
     doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
   }
 }
