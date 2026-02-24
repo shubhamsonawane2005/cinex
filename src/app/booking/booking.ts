@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ export class BookingComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   movieTitle: string = '';
   theaterName: string = '';
@@ -75,6 +76,7 @@ export class BookingComponent implements OnInit {
       .subscribe({
         next: (seats) => {
           this.bookedSeats = seats; 
+          this.cdr.detectChanges();
         },
         error: (err) => console.error('Error fetching seats', err),
       });

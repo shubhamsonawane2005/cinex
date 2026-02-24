@@ -130,19 +130,19 @@
 
 /* Booked Seat Styling */
 .seat.booked {
-  background-color: #1a1a1a !important; 
-  border-color: #222 !important;
-  color: #333 !important; 
+  background-color: #ff4d4d !important; 
+  border-color: #ff0000 !important;
+  color: white !important; 
   cursor: not-allowed;
-  opacity: 0.3;
+  opacity: 1;
 }
 
 /* Selected Seat Styling */
 .seat.selected {
-  background-color: #ff3e3e !important;
-  border-color: #ff3e3e !important;
+  background-color: #4caf50 !important;
+  border-color: #45a049 !important;
   color: white !important;
-  box-shadow: 0 0 15px rgba(255, 62, 62, 0.5);
+  box-shadow: 0 0 15px rgba(80, 255, 85, 0.5);
   transform: scale(1.1);
 }
 

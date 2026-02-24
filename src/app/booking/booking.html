@@ -47,7 +47,8 @@
                 class="seat" 
                 [class.selected]="isSelected(row, seat)"
                 [class.booked]="isBooked(row, seat)"
-                (click)="!isBooked(row, seat) && toggleSeat(row, seat)">
+                [style.pointer-events]="isBooked(row, seat) ? 'none' : 'auto'"  
+                (click)="toggleSeat(row, seat)">
             {{ row }}{{ seat }}
           </div>
         </div>
