@@ -43,6 +43,9 @@
                 title="Click to view seat map"
               >
                 {{ t.time }}
+                <span class="occupancy-text"
+                  >({{ t.bookedCount }}/{{ t.totalSeats }})</span
+                >
                 <span
                   class="occupancy-dot"
                   [style.background-color]="getOccupancyColor(t.time)"

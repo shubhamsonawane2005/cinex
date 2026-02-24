@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MovieService } from '../../services/movie'; // Service import karein
+import { MovieService } from '../../services/movie';
+import { AuthService } from '../../services/auth.service';
 
 // --- INTERFACES ---
 interface ScheduledMovie {
@@ -27,6 +28,10 @@ interface Theater {
 })
 export class ManageTheatersComponent implements OnInit {
   private movieService = inject(MovieService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
+  todayDate: string = new Date().toISOString().split('T')[0];
 
   // --- UI STATE ---
   showInspector = false;
@@ -82,18 +87,56 @@ export class ManageTheatersComponent implements OnInit {
 
   loadRealMoviesToTheaters() {
     this.movieService.getMovies().subscribe((realMovies) => {
-      console.log('✅ Step 2: Movies Received:', realMovies.length, 'movies found.');
-      this.theaters.forEach((theater, index) => {
-        const slicedMovies = realMovies.slice(0, 2);
+      const now = new Date();
 
-        theater.movies = slicedMovies.map((m) => ({
-          title: m.title,
-          image: m.image,
-          times: [
-            { time: '10:30 AM', bookedCount: Math.floor(Math.random() * 20), totalSeats: 48 },
-            { time: '04:00 PM', bookedCount: Math.floor(Math.random() * 48), totalSeats: 48 },
-          ],
-        }));
+      this.theaters.forEach((theater) => {
+        // Har theater ke apne specific times define karein (User panel ki tarah)
+        let theaterSpecificTimes: string[] = [];
+
+        if (theater.name.includes('PVR')) {
+          theaterSpecificTimes = ['10:00 AM', '01:30 PM', '05:00 PM', '09:00 PM'];
+        } else if (theater.name.includes('INOX')) {
+          theaterSpecificTimes = ['11:00 AM', '02:00 PM', '06:15 PM', '10:30 PM'];
+        } else if (theater.name.includes('Cinépolis')) {
+          theaterSpecificTimes = ['09:30 AM', '12:45 PM', '04:30 PM', '08:15 PM'];
+        } else {
+          theaterSpecificTimes = ['10:15 AM', '01:45 PM', '05:30 PM', '09:45 PM'];
+        }
+
+        theater.movies = realMovies.map((m) => {
+          // Sirf wahi shows dikhayein jo abhi baki hain
+          const futureTimes = theaterSpecificTimes.filter((timeStr) => {
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            if (modifier === 'PM' && hours < 12) hours += 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+
+            const showDateTime = new Date();
+            showDateTime.setHours(hours, minutes, 0, 0);
+            return showDateTime > now;
+          });
+
+          return {
+            title: m.title,
+            image: m.image,
+            times: futureTimes.map((t) => ({
+              time: t,
+              bookedCount: 0,
+              totalSeats: 48,
+            })),
+          };
+        });
+
+        // Database se real counts fetch karein
+        theater.movies.forEach((movie) => {
+          movie.times.forEach((timeSlot) => {
+            this.authService
+              .getBookedSeats(movie.title, theater.name, this.todayDate, timeSlot.time)
+              .subscribe((seats) => {
+                timeSlot.bookedCount = seats.length;
+              });
+          });
+        });
       });
     });
   }
@@ -131,11 +174,35 @@ export class ManageTheatersComponent implements OnInit {
   }
 
   openInspector(theaterName: string, movieTitle: string, timeData: any) {
+    this.authService.getBookedSeats(
+      this.inspectMovieTitle.trim(),
+      this.inspectTheaterName.trim(),
+      this.todayDate,
+      this.inspectTime.trim(),
+    );
+    this.bookedSeats = [];
     this.inspectTheaterName = theaterName;
     this.inspectMovieTitle = movieTitle;
     this.inspectTime = timeData.time;
     this.showInspector = true;
-    this.generateMockSeatMap(timeData.bookedCount);
+    // this.generateMockSeatMap(timeData.bookedCount);
+
+    this.authService.getBookedSeats(movieTitle, theaterName, this.todayDate, timeData.time)
+    .subscribe({
+        next: (seats: string[]) => {
+          this.bookedSeats = [...seats];
+          console.log('Admin Inspector - Real Seats Loaded:', this.bookedSeats);
+          this.cdr.detectChanges();
+
+          setTimeout(() => {
+          this.cdr.markForCheck();
+        }, 100);
+        },
+        error: (err) => {
+          console.error('Admin Inspector - Error:', err);
+          this.bookedSeats = [];
+        },
+      });
   }
 
   closeInspector() {
@@ -156,8 +223,10 @@ export class ManageTheatersComponent implements OnInit {
     this.bookedSeats = allSeats.slice(0, count);
   }
 
-  isBooked(row: string, num: number): boolean {
-    return this.bookedSeats.includes(row + num);
+  isBooked(row: string, s: number): boolean {
+    if (!this.bookedSeats || this.bookedSeats.length === 0) return false;
+    const seatId = row.trim() + s.toString().trim();
+    return this.bookedSeats.includes(seatId);
   }
 
   isTimePassed(timeStr: string): boolean {
