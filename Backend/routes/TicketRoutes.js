@@ -22,6 +22,7 @@ router.post('/save', async (req, res) => {
       userEmail: req.body.userEmail,
       userName:req.body.userName,
       showTime: req.body.showTime,
+      showDate: req.body.showDate,
       seats: req.body.seats,
       totalAmount: Number(req.body.totalAmount) || 0,
       paymentStatus: req.body.paymentStatus || 'Paid',
@@ -130,6 +131,40 @@ router.get('/stats', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// --- GET: Fetch already booked seats for a specific show ---
+router.get('/booked-seats', async (req, res) => {
+  try {
+    const { movie, theater, date, time } = req.query;
+
+    console.log(`\n🔍 Checking bookings for: ${movie} at ${theater} (${time})`);
+
+    const bookings = await MovieTicket.find({
+      movieTitle: movie,
+      theaterName: theater,
+      showTime: time,
+      showDate: date
+    });
+
+    let bookedSeatsArray = [];
+    bookings.forEach((booking) => {
+      if (booking.seats) {
+        const individualSeats = booking.seats.split(', ');
+        bookedSeatsArray = [...bookedSeatsArray, ...individualSeats];
+      }
+    });
+
+    console.log("========================================");
+    console.log(`✅ TOTAL BOOKED SEATS FOUND: ${bookedSeatsArray.length}`);
+    console.log(`💺 SEAT LIST: [ ${bookedSeatsArray.join(' | ')} ]`);
+    console.log("========================================\n");
+
+    res.status(200).json(bookedSeatsArray);
+  } catch (error) {
+    console.error('Error fetching booked seats:', error);
+    res.status(500).json({ success: false, message: 'Could not fetch seats' });
   }
 });
 

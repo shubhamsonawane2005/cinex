@@ -1,220 +1,3 @@
-// import { Component, OnInit, inject } from '@angular/core';
-// import { ActivatedRoute, Router } from '@angular/router';
-// import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
-// import { AuthService } from '../services/auth.service';
-// import jsPDF from 'jspdf';
-
-// @Component({
-//   selector: 'app-payment',
-//   standalone: true,
-//   imports: [CommonModule, FormsModule],
-//   templateUrl: './payment.html',
-//   styleUrls: ['./payment.css'],
-// })
-// export class PaymentComponent implements OnInit {
-//   movieTitle: string = '';
-//   theaterName: string = '';
-//   showTime: string = '';
-//   seats: string = '';
-//   totalPrice: number = 0;
-//   showDate: string = '';
-
-//   selectedMethod: string = 'card';
-//   isUpiVerified: boolean = false;
-//   convenienceFee: number = 0;
-
-//   cardNumber: string = '';
-//   expiry: string = '';
-//   cvv: string = '';
-//   upiId: string = '';
-
-//   private route = inject(ActivatedRoute);
-//   private router = inject(Router);
-//   private authService = inject(AuthService);
-
-//   ngOnInit() {
-//     this.route.queryParams.subscribe((params) => {
-//       this.movieTitle = params['movie'] || 'Unknown Movie';
-//       this.theaterName = params['theater'] || 'Unknown Theater';
-//       this.showTime = params['time'] || '';
-//       this.seats = params['seats'] || '';
-//       this.totalPrice = Number(params['price']) || 0;
-//       this.showDate = params['date'] || new Date().toISOString().split('T')[0];
-//     });
-//   }
-
-//   get finalAmount() {
-//     return this.totalPrice + this.convenienceFee;
-//   }
-
-//   setPaymentMethod(method: string) {
-//     this.selectedMethod = method;
-//     this.isUpiVerified = false;
-//   }
-
-//   verifyUPI() {
-//     if (this.upiId.includes('@')) {
-//       this.isUpiVerified = true;
-//       alert('UPI Verified successfully!');
-//     } else {
-//       alert('Invalid UPI ID!');
-//     }
-//   }
-
-//   isCardValid(): boolean {
-//     return this.cardNumber.length === 16 && this.expiry.length === 5 && this.cvv.length === 3;
-//   }
-
-//   async processPayment() {
-//     // 1. Validation Logic
-//     if (this.selectedMethod === 'card' && !this.isCardValid()) {
-//       alert('Please fill correct card details!');
-//       return;
-//     }
-
-//     if (this.selectedMethod === 'upi' && !this.isUpiVerified) {
-//       alert('Please verify UPI first!');
-//       return;
-//     }
-
-//     // 2. Data Preparation
-//     const bookingId = 'TKT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-//     const userEmail = localStorage.getItem('userEmail');
-//     const userName = localStorage.getItem('userName');
-
-//     if (!userEmail) {
-//       alert('Session expired! Please Login again.');
-//       this.router.navigate(['/login']);
-//       return;
-//     }
-
-//     let finalStatus = 'Pending';
-//     if (this.selectedMethod === 'card' || this.selectedMethod === 'upi') {
-//       finalStatus = 'Paid';
-//     }
-
-//     const bookingData = {
-//       movieTitle: this.movieTitle,
-//       userEmail: userEmail,
-//       userName: userName || 'Customer',
-//       theaterName: this.theaterName,
-//       showTime: this.showTime,
-//       showDate: this.showDate,
-//       seats: this.seats,
-//       totalAmount: this.finalAmount,
-//       paymentStatus: finalStatus,
-//       bookingId: bookingId,
-//       createdAt: new Date(),
-//     };
-
-//     console.log('Sending data to backend:', bookingData);
-
-//     // 3. API Call
-//     this.authService.saveBooking(bookingData).subscribe({
-//       next: (res: any) => {
-//         console.log('Success:', res);
-        
-//         // PDF generate and save
-//         this.generatePDF(bookingData);
-        
-//         alert('Booking Successful! Your ticket has been downloaded.');
-        
-//         setTimeout(() => {
-//           this.router.navigate(['/profile']);
-//         }, 1000);
-//       },
-//       error: (err: any) => {
-//         console.error('Critical Save Error:', err);
-//         alert('Database Error! Please check your backend terminal.');
-//       },
-//     });
-//   }
-
-//   generatePDF(data: any) {
-//     const doc = new jsPDF();
-//     const pageWidth = doc.internal.pageSize.getWidth();
-
-//     // Header Red Bar
-//     doc.setFillColor(229, 9, 20);
-//     doc.rect(0, 0, pageWidth, 60, 'F');
-//     doc.setFontSize(45);
-//     doc.setTextColor(255, 255, 255);
-//     doc.setFont('helvetica', 'bold');
-//     doc.text('CINEX', 20, 35);
-
-//     doc.setFontSize(10);
-//     doc.setFont('helvetica', 'normal');
-//     doc.text('PREMIUM MOVIE TICKET', 21, 45);
-
-//     // Booking ID Box
-//     doc.setFillColor(255, 255, 255);
-//     doc.roundedRect(pageWidth - 75, 15, 60, 25, 3, 3, 'F');
-//     doc.setTextColor(229, 9, 20);
-//     doc.setFontSize(9);
-//     doc.text('BOOKING ID', pageWidth - 70, 25);
-//     doc.setFontSize(13);
-//     doc.text(data.bookingId, pageWidth - 70, 35);
-
-//     // Movie Details
-//     let yPos = 85;
-//     doc.setTextColor(0, 0, 0);
-//     doc.setFontSize(26);
-//     doc.text(data.movieTitle.toUpperCase(), 20, yPos);
-
-//     doc.setDrawColor(229, 9, 20);
-//     doc.setLineWidth(1.5);
-//     doc.line(20, yPos + 4, 80, yPos + 4);
-
-//     yPos += 25;
-//     doc.setFontSize(10);
-//     doc.setTextColor(150, 150, 150);
-//     doc.text('THEATER', 20, yPos);
-//     doc.text('SHOW TIME', 85, yPos);
-//     doc.text('SEATS', 150, yPos);
-
-//     yPos += 8;
-//     doc.setFontSize(12);
-//     doc.setTextColor(0, 0, 0);
-//     doc.setFont('helvetica', 'bold');
-//     doc.text(data.theaterName, 20, yPos);
-//     doc.text(data.showTime, 85, yPos);
-//     doc.text(data.seats, 150, yPos);
-
-//     // Amount Section
-//     yPos += 25;
-//     doc.setFillColor(248, 248, 248);
-//     doc.roundedRect(15, yPos, pageWidth - 30, 40, 4, 4, 'F');
-
-//     doc.setFontSize(10);
-//     doc.setFont('helvetica', 'normal');
-//     doc.setTextColor(100, 100, 100);
-//     doc.text('Total Amount:', 25, yPos + 15);
-//     doc.text('Payment Status:', 25, yPos + 28);
-
-//     doc.setFontSize(13);
-//     doc.setTextColor(0, 0, 0);
-//     doc.setFont('helvetica', 'bold');
-//     doc.text(`Rs. ${data.totalAmount}.00`, 65, yPos + 15);
-//     doc.text(data.paymentStatus.toUpperCase(), 65, yPos + 28);
-
-//     // QR Code Integration
-//     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.bookingId}`;
-//     const img = new Image();
-//     img.crossOrigin = 'Anonymous';
-//     img.src = qrUrl;
-    
-//     img.onload = () => {
-//       doc.addImage(img, 'PNG', (pageWidth/2)-22, yPos + 50, 45, 45);
-//       doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
-//     };
-
-//     img.onerror = () => {
-//       // Save even if QR fails
-//       doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
-//     };
-//   }
-// }
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -257,6 +40,7 @@ export class PaymentComponent implements OnInit {
       this.showTime = params['time'] || '';
       this.seats = params['seats'] || '';
       this.totalPrice = Number(params['price']) || 0;
+      // Date ko ensure karein ki query se aaye ya aaj ki date ho
       this.showDate = params['date'] || new Date().toISOString().split('T')[0];
     });
   }
@@ -284,7 +68,6 @@ export class PaymentComponent implements OnInit {
   }
 
   async processPayment() {
-    // 1. Validation Logic
     if (this.selectedMethod === 'card' && !this.isCardValid()) {
       alert('Please fill correct card details!');
       return;
@@ -295,140 +78,90 @@ export class PaymentComponent implements OnInit {
       return;
     }
 
-    // 2. Data Preparation
     const bookingId = 'TKT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
     const userEmail = localStorage.getItem('userEmail');
-    const userName = localStorage.getItem('userName');
+    const userName = localStorage.getItem('userName') || 'Customer';
 
     if (!userEmail) {
       alert('Session expired! Please Login again.');
       this.router.navigate(['/login']);
       return;
     }
-
-    let finalStatus = 'Pending';
-    if (this.selectedMethod === 'card' || this.selectedMethod === 'upi') {
-      finalStatus = 'Paid';
-    }
-
+    
     const bookingData = {
       movieTitle: this.movieTitle,
-      userEmail: userEmail,
-      userName: userName || 'Customer',
       theaterName: this.theaterName,
+      userEmail: userEmail,
+      userName: userName,
       showTime: this.showTime,
-      showDate: this.showDate,
+      showDate: this.showDate, 
       seats: this.seats,
       totalAmount: this.finalAmount,
-      paymentStatus: finalStatus,
-      bookingId: bookingId,
-      createdAt: new Date(),
+      paymentStatus: 'Paid',
+      bookingId: bookingId
     };
 
-    console.log('Sending data to backend:', bookingData);
+    console.log('Final data to Backend:', bookingData);
 
-    // 3. API Call
     this.authService.saveBooking(bookingData).subscribe({
       next: (res: any) => {
-        console.log('Success:', res);
-        
-        // PDF generate and save
-        this.generatePDF(bookingData);
-        
-        alert('Booking Successful! Your ticket has been downloaded.');
-        
-        // REDIRECT TO HOME PAGE ('/')
-        setTimeout(() => {
-          this.router.navigate(['/']); 
-        }, 2000); // 2 seconds delay to allow PDF download
+        alert('Booking Successful! Ticket is generating...');
+        // PDF download hone ke baad redirect hoga
+        this.generatePDF(bookingData, () => {
+          this.router.navigate(['/']);
+        });
       },
       error: (err: any) => {
-        console.error('Critical Save Error:', err);
-        alert('Database Error! Please check your backend terminal.');
+        console.error('Backend Error:', err);
+        // Error message agar backend se aa raha hai toh use print karein
+        const errMsg = err.error?.message || 'Database connection failed';
+        alert(`Error: ${errMsg}`);
       },
     });
   }
 
-  generatePDF(data: any) {
+  generatePDF(data: any, onComplete: () => void) {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Header Red Bar
+    // Red Header
     doc.setFillColor(229, 9, 20);
-    doc.rect(0, 0, pageWidth, 60, 'F');
-    doc.setFontSize(45);
+    doc.rect(0, 0, pageWidth, 50, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(40);
     doc.text('CINEX', 20, 35);
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('PREMIUM MOVIE TICKET', 21, 45);
-
-    // Booking ID Box
-    doc.setFillColor(255, 255, 255);
-    doc.roundedRect(pageWidth - 75, 15, 60, 25, 3, 3, 'F');
-    doc.setTextColor(229, 9, 20);
-    doc.setFontSize(9);
-    doc.text('BOOKING ID', pageWidth - 70, 25);
-    doc.setFontSize(13);
-    doc.text(data.bookingId, pageWidth - 70, 35);
-
-    // Movie Details
-    let yPos = 85;
+    // Ticket Details
     doc.setTextColor(0, 0, 0);
-    doc.setFontSize(26);
-    doc.text(data.movieTitle.toUpperCase(), 20, yPos);
-
-    doc.setDrawColor(229, 9, 20);
-    doc.setLineWidth(1.5);
-    doc.line(20, yPos + 4, 80, yPos + 4);
-
-    yPos += 25;
-    doc.setFontSize(10);
-    doc.setTextColor(150, 150, 150);
-    doc.text('THEATER', 20, yPos);
-    doc.text('SHOW TIME', 85, yPos);
-    doc.text('SEATS', 150, yPos);
-
-    yPos += 8;
+    doc.setFontSize(22);
+    doc.text(data.movieTitle.toUpperCase(), 20, 70);
+    
     doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'bold');
-    doc.text(data.theaterName, 20, yPos);
-    doc.text(data.showTime, 85, yPos);
-    doc.text(data.seats, 150, yPos);
+    doc.text(`Theater: ${data.theaterName}`, 20, 85);
+    doc.text(`Date: ${data.showDate}`, 20, 95);
+    doc.text(`Time: ${data.showTime}`, 80, 95);
+    doc.text(`Seats: ${data.seats}`, 140, 95);
 
-    // Amount Section
-    yPos += 25;
-    doc.setFillColor(248, 248, 248);
-    doc.roundedRect(15, yPos, pageWidth - 30, 40, 4, 4, 'F');
+    doc.setFontSize(14);
+    doc.text(`Booking ID: ${data.bookingId}`, 20, 115);
+    doc.text(`Total Paid: Rs. ${data.totalAmount}`, 20, 125);
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text('Total Amount:', 25, yPos + 15);
-    doc.text('Payment Status:', 25, yPos + 28);
-
-    doc.setFontSize(13);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`Rs. ${data.totalAmount}.00`, 65, yPos + 15);
-    doc.text(data.paymentStatus.toUpperCase(), 65, yPos + 28);
-
-    // QR Code Integration
+    // QR Code
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.bookingId}`;
     const img = new Image();
     img.crossOrigin = 'Anonymous';
     img.src = qrUrl;
-    
+
     img.onload = () => {
-      doc.addImage(img, 'PNG', (pageWidth/2)-22, yPos + 50, 45, 45);
-      doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
+      doc.addImage(img, 'PNG', (pageWidth / 2) - 25, 140, 50, 50);
+      doc.save(`Cinex_${data.bookingId}.pdf`);
+      onComplete(); // Navigation trigger karein
     };
 
     img.onerror = () => {
-      doc.save(`Cinex_Ticket_${data.bookingId}.pdf`);
+      console.warn("QR code failed to load, saving PDF without it.");
+      doc.save(`Cinex_${data.bookingId}.pdf`);
+      onComplete();
     };
   }
 }

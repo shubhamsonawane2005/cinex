@@ -90,4 +90,10 @@ export class AuthService {
       params: { page: page.toString(), limit: limit.toString() },
     });
   }
+
+  getBookedSeats(movie: string, theater: string, date: string, time: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.bookingUrl}/booked-seats`, {
+      params: { movie, theater, date, time },
+    });
+  }
 }
