@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { MovieService } from '../../services/movie';
 import { AuthService } from '../../services/auth.service';
 
-// --- INTERFACES ---
 interface ScheduledMovie {
   title: string;
   image: string;
@@ -32,12 +31,9 @@ export class ManageTheatersComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   todayDate: string = new Date().toISOString().split('T')[0];
-
-  // --- UI STATE ---
   showInspector = false;
   showForm = false;
 
-  // --- INSPECTOR VARIABLES ---
   inspectTheaterName: string = '';
   inspectMovieTitle: string = '';
   inspectTime: string = '';
@@ -49,7 +45,6 @@ export class ManageTheatersComponent implements OnInit {
 
   theaterForm: Theater = { id: 0, name: '', location: '', facilities: '', movies: [] };
 
-  // --- THEATER DATA ---
   theaters: Theater[] = [
     {
       id: 1,
@@ -87,10 +82,7 @@ export class ManageTheatersComponent implements OnInit {
 
   loadRealMoviesToTheaters() {
     this.movieService.getMovies().subscribe((realMovies) => {
-      const now = new Date();
-
       this.theaters.forEach((theater) => {
-        // Har theater ke apne specific times define karein (User panel ki tarah)
         let theaterSpecificTimes: string[] = [];
 
         if (theater.name.includes('PVR')) {
@@ -103,31 +95,18 @@ export class ManageTheatersComponent implements OnInit {
           theaterSpecificTimes = ['10:15 AM', '01:45 PM', '05:30 PM', '09:45 PM'];
         }
 
-        theater.movies = realMovies.map((m) => {
-          // Sirf wahi shows dikhayein jo abhi baki hain
-          const futureTimes = theaterSpecificTimes.filter((timeStr) => {
-            const [time, modifier] = timeStr.split(' ');
-            let [hours, minutes] = time.split(':').map(Number);
-            if (modifier === 'PM' && hours < 12) hours += 12;
-            if (modifier === 'AM' && hours === 12) hours = 0;
+        // UPDATE: Ab hum filter nahi kar rahe, saare times ko load kar rahe hain
+        theater.movies = realMovies.map((m) => ({
+          title: m.title,
+          image: m.image,
+          times: theaterSpecificTimes.map((t) => ({
+            time: t,
+            bookedCount: 0,
+            totalSeats: 48,
+          })),
+        }));
 
-            const showDateTime = new Date();
-            showDateTime.setHours(hours, minutes, 0, 0);
-            return showDateTime > now;
-          });
-
-          return {
-            title: m.title,
-            image: m.image,
-            times: futureTimes.map((t) => ({
-              time: t,
-              bookedCount: 0,
-              totalSeats: 48,
-            })),
-          };
-        });
-
-        // Database se real counts fetch karein
+        // Fetch real booked counts
         theater.movies.forEach((movie) => {
           movie.times.forEach((timeSlot) => {
             this.authService
@@ -139,6 +118,51 @@ export class ManageTheatersComponent implements OnInit {
         });
       });
     });
+  }
+
+  // --- HELPER LOGIC ---
+
+  isTimePassed(timeStr: string): boolean {
+    const now = new Date();
+    let hours: number, minutes: number;
+
+    const [time, modifier] = timeStr.split(' ');
+    let [h, m] = time.split(':').map(Number);
+    if (modifier === 'PM' && h < 12) h += 12;
+    if (modifier === 'AM' && h === 12) h = 0;
+
+    const showTime = new Date();
+    showTime.setHours(h, m, 0, 0);
+    return showTime < now;
+  }
+
+  // individual Movie Finished Logic
+  isMovieFinished(movie: ScheduledMovie): boolean {
+    if (!movie.times || movie.times.length === 0) return false;
+    return movie.times.every((slot) => this.isTimePassed(slot.time));
+  }
+
+  // Overall Theater Status
+  isTheaterClosed(theater: Theater): boolean {
+    if (!theater.movies || theater.movies.length === 0) return false;
+    // Agar theater ki saari movies ke saare shows khatam ho gaye hain
+    return theater.movies.every((movie) => this.isMovieFinished(movie));
+  }
+
+  getOccupancyColor(timeStr: string): string {
+    const now = new Date();
+    const [timePart, modifier] = timeStr.split(' ');
+    let [h, m] = timePart.split(':').map(Number);
+    if (modifier === 'PM' && h < 12) h += 12;
+    if (modifier === 'AM' && h === 12) h = 0;
+
+    const showStartTime = new Date();
+    showStartTime.setHours(h, m, 0, 0);
+    const showEndTime = new Date(showStartTime.getTime() + 3 * 60 * 60 * 1000);
+
+    if (now > showEndTime) return '#dc3545'; // Red: Finished
+    if (now >= showStartTime && now <= showEndTime) return '#28a745'; // Green: Running
+    return '#ffc107'; // Yellow: Upcoming
   }
 
   // --- ACTIONS ---
@@ -154,7 +178,6 @@ export class ManageTheatersComponent implements OnInit {
   saveTheater() {
     if (this.theaterForm.name && this.theaterForm.location) {
       this.theaterForm.id = Date.now();
-      // Naye theater ko bhi default movies assign kar dete hain
       this.movieService.getMovies().subscribe((res) => {
         this.theaterForm.movies = res.slice(0, 1).map((m) => ({
           title: m.title,
@@ -174,33 +197,18 @@ export class ManageTheatersComponent implements OnInit {
   }
 
   openInspector(theaterName: string, movieTitle: string, timeData: any) {
-    this.authService.getBookedSeats(
-      this.inspectMovieTitle.trim(),
-      this.inspectTheaterName.trim(),
-      this.todayDate,
-      this.inspectTime.trim(),
-    );
-    this.bookedSeats = [];
     this.inspectTheaterName = theaterName;
     this.inspectMovieTitle = movieTitle;
     this.inspectTime = timeData.time;
     this.showInspector = true;
-    // this.generateMockSeatMap(timeData.bookedCount);
+    this.bookedSeats = [];
 
-    this.authService.getBookedSeats(movieTitle, theaterName, this.todayDate, timeData.time)
-    .subscribe({
+    this.authService
+      .getBookedSeats(movieTitle, theaterName, this.todayDate, timeData.time)
+      .subscribe({
         next: (seats: string[]) => {
           this.bookedSeats = [...seats];
-          console.log('Admin Inspector - Real Seats Loaded:', this.bookedSeats);
           this.cdr.detectChanges();
-
-          setTimeout(() => {
-          this.cdr.markForCheck();
-        }, 100);
-        },
-        error: (err) => {
-          console.error('Admin Inspector - Error:', err);
-          this.bookedSeats = [];
         },
       });
   }
@@ -210,65 +218,8 @@ export class ManageTheatersComponent implements OnInit {
     this.bookedSeats = [];
   }
 
-  generateMockSeatMap(count: number) {
-    this.bookedSeats = [];
-    const allSeats: string[] = [];
-    this.rows.forEach((r) => {
-      [...this.leftSeats, ...this.rightSeats].forEach((n) => allSeats.push(r + n));
-    });
-    for (let i = allSeats.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [allSeats[i], allSeats[j]] = [allSeats[j], allSeats[i]];
-    }
-    this.bookedSeats = allSeats.slice(0, count);
-  }
-
   isBooked(row: string, s: number): boolean {
-    if (!this.bookedSeats || this.bookedSeats.length === 0) return false;
     const seatId = row.trim() + s.toString().trim();
     return this.bookedSeats.includes(seatId);
-  }
-
-  isTimePassed(timeStr: string): boolean {
-    const now = new Date();
-    let hours: number, minutes: number;
-
-    if (timeStr.includes('AM') || timeStr.includes('PM')) {
-      const [time, modifier] = timeStr.split(' ');
-      let [h, m] = time.split(':').map(Number);
-      if (modifier === 'PM' && h < 12) h += 12;
-      if (modifier === 'AM' && h === 12) h = 0;
-      hours = h;
-      minutes = m;
-    } else {
-      [hours, minutes] = timeStr.split(':').map(Number);
-    }
-
-    const showTime = new Date();
-    showTime.setHours(hours, minutes, 0, 0);
-    return showTime < now;
-  }
-
-  getOccupancyColor(timeStr: string): string {
-    const now = new Date();
-    const isPast = this.isTimePassed(timeStr);
-
-    const [timePart, modifier] = timeStr.split(' ');
-    let [h, m] = timePart.split(':').map(Number);
-    if (modifier === 'PM' && h < 12) h += 12;
-    if (modifier === 'AM' && h === 12) h = 0;
-
-    const showTime = new Date();
-    showTime.setHours(h, m, 0, 0);
-
-    const showEndTime = new Date(showTime.getTime() + 3 * 60 * 60 * 1000);
-
-    if (now > showEndTime) {
-      return '#dc3545';
-    } else if (now >= showTime && now <= showEndTime) {
-      return '#28a745';
-    } else {
-      return '#ffc107';
-    }
   }
 }

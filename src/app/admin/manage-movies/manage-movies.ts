@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MovieService, Movie as ServiceMovie } from '../../services/movie'; // Service import karein
 import { Observable, forkJoin } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 // Manage Movies ki local interface (Showtimes ke liye)
 interface Showtime {
@@ -26,6 +27,10 @@ export interface ManageMovie extends ServiceMovie {
 })
 export class ManageMoviesComponent implements OnInit {
   private movieService = inject(MovieService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
+  todayDate: string = new Date().toISOString().split('T')[0];
 
   allMovies: ManageMovie[] = [];
   activeTab: 'released' | 'upcoming' = 'released';
@@ -45,18 +50,33 @@ export class ManageMoviesComponent implements OnInit {
       released: this.movieService.getMovies(),
       upcoming: this.movieService.getUpcomingMovies(),
     }).subscribe(({ released, upcoming }) => {
-      const releasedMapped: ManageMovie[] = released.map((m) => ({
-        ...m,
-        id: Number(m.id),
-        status: 'released',
-        showtimes: [
+      const releasedMapped: ManageMovie[] = released.map((m) => {
+        const theaterShowtimes = [
           {
             theaterId: 1,
             theaterName: 'PVR: Rahul Raj Mall',
-            times: ['10:00 AM', '02:00 PM', '09:00 PM'],
+            times: ['10:00 AM', '01:30 PM', '05:00 PM', '09:00 PM'].map((t) => ({
+              time: t,
+              bookedCount: 0,
+            })),
           },
-        ],
-      }));
+          {
+            theaterId: 2,
+            theaterName: 'INOX: VR Mall',
+            times: ['11:00 AM', '02:00 PM', '06:15 PM', '10:30 PM'].map((t) => ({
+              time: t,
+              bookedCount: 0,
+            })),
+          },
+        ];
+
+        return {
+          ...m,
+          id: Number(m.id),
+          status: 'released',
+          showtimes: theaterShowtimes,
+        };
+      });
 
       const upcomingMapped: ManageMovie[] = upcoming.map((m) => ({
         ...m,
@@ -66,9 +86,26 @@ export class ManageMoviesComponent implements OnInit {
       }));
 
       this.allMovies = [...releasedMapped, ...upcomingMapped];
+
+      this.fetchAllBookingCounts();
     });
   }
-
+  fetchAllBookingCounts() {
+    this.allMovies.forEach((movie) => {
+      if (movie.status === 'released') {
+        movie.showtimes.forEach((theater) => {
+          theater.times.forEach((timeSlot: any) => {
+            this.authService
+              .getBookedSeats(movie.title, theater.theaterName, this.todayDate, timeSlot.time)
+              .subscribe((seats) => {
+                timeSlot.bookedCount = seats.length;
+                this.cdr.detectChanges(); // UI refresh
+              });
+          });
+        });
+      }
+    });
+  }
   // --- CRUD FORM LOGIC ---
 
   // Show the form
@@ -114,7 +151,9 @@ export class ManageMoviesComponent implements OnInit {
   }
 
   // --- TIME CALCULATION LOGIC ---
-  isTimePassed(timeStr: string): boolean {
+  isTimePassed(timeStr: any): boolean {
+    if (!timeStr || typeof timeStr !== 'string') return false; // Safety check
+
     const now = new Date();
     let hours: number, minutes: number;
 
@@ -139,9 +178,11 @@ export class ManageMoviesComponent implements OnInit {
     let passedShows = 0;
 
     movie.showtimes.forEach((s: any) => {
-      s.times.forEach((t: string) => {
+      s.times.forEach((t: any) => {
+        // Change to any
         totalShows++;
-        if (this.isTimePassed(t)) passedShows++;
+        // t.time pass karein kyunki t ab ek object hai
+        if (this.isTimePassed(t.time)) passedShows++;
       });
     });
 

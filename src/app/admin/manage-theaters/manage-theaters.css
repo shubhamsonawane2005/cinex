@@ -440,3 +440,65 @@
 .dot.booked {
   background: #e50914;
 }
+
+
+.theater-card-footer {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status-badge.closed {
+  background: #fff1f0;
+  color: #cf1322;
+  border: 1px solid #ffa39e;
+}
+
+.status-badge.open {
+  background: #ffa39e;
+  color: #cf1322;
+  border: 1px solid #b7eb8f;
+}
+
+.grayscale {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+.individual-movie-status {
+  padding: 4px 10px;
+  margin-left: 60px; /* Thumbnail image ke baad se start ho */
+  margin-top: -5px;
+  margin-bottom: 10px;
+}
+
+.status-text-closed {
+  color: #ff4d4f;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.grayscale {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+.time-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background: #333 !important;
+}
