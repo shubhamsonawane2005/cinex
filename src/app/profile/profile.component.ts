@@ -39,9 +39,7 @@ export class ProfileComponent implements OnInit {
               allBookings = res.data;
             }
 
-            // Error fix yahan hai: (ticket: any) add kar diya
-            this.myBookings = allBookings.filter((ticket: any) => !this.isExpired(ticket.showDate, ticket.showTime));
-            
+            this.myBookings = allBookings;
             this.cdr.detectChanges(); 
           },
           error: (err: any) => {
@@ -54,18 +52,58 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  isExpired(showDate: string, showTime: string): boolean {
-    if (!showDate || !showTime) return false;
+ 
+  isExpired(showDate: any, showTime: string, createdAt?: any): boolean {
+    if (!showTime) return false;
     try {
       const now = new Date();
-      // Browser compatibility ke liye space replace aur date string handle
-      const showDateTime = new Date(`${showDate} ${showTime}`);
       
-      if (isNaN(showDateTime.getTime())) {
-          return false; 
+      
+      const todayNum = parseInt(
+        now.getFullYear().toString() + 
+        String(now.getMonth() + 1).padStart(2, '0') + 
+        String(now.getDate()).padStart(2, '0')
+      );
+
+      
+      const dateToUse = showDate || createdAt;
+      if (!dateToUse) return false;
+
+      const tDate = new Date(dateToUse);
+      const ticketNum = parseInt(
+        tDate.getFullYear().toString() + 
+        String(tDate.getMonth() + 1).padStart(2, '0') + 
+        String(tDate.getDate()).padStart(2, '0')
+      );
+
+     
+      if (ticketNum < todayNum) {
+        return true; 
       }
 
-      return now.getTime() > showDateTime.getTime();
+     
+      if (ticketNum === todayNum) {
+        const timeClean = showTime.trim().toUpperCase();
+        const parts = timeClean.split(/\s+/); 
+        const hhmm = parts[0].split(':');
+        
+        let hours = parseInt(hhmm[0]);
+        const minutes = parseInt(hhmm[1]);
+        const modifier = timeClean.includes('PM') ? 'PM' : 'AM';
+
+       
+        if (modifier === 'PM' && hours < 12) hours += 12;
+        if (modifier === 'AM' && hours === 12) hours = 0;
+
+        const currentHours = now.getHours();
+        const currentMinutes = now.getMinutes();
+
+      
+        if (currentHours > hours) return true;
+        if (currentHours === hours && currentMinutes >= minutes) return true;
+      }
+
+      return false; 
     } catch (e) {
       return false;
     }
@@ -73,7 +111,7 @@ export class ProfileComponent implements OnInit {
 
   cancelTicket(id: string) {
     if (!id) return;
-    if (confirm("Do you want to cancel the ticket")) {
+    if (confirm("Do you want to cancel the ticket?")) {
       this.authService.cancelBooking(id).subscribe({
         next: () => {
           alert("Ticket Cancelled!");
