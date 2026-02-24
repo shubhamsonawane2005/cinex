@@ -1,11 +1,11 @@
-/* Container Styling */
+
 .profile-container {
     max-width: 1100px;
     margin: 40px auto;
     padding: 20px;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: #ffffff;
-    background-color: #0f0f0f; /* Dark background like Cinema */
+    background-color: #0f0f0f; 
     border-radius: 15px;
 }
 
@@ -13,27 +13,26 @@
     font-size: 2.2rem;
     font-weight: 700;
     margin-bottom: 30px;
-    border-left: 5px solid #e50914; /* Netflix Red accent */
+    border-left: 5px solid #e50914; 
     padding-left: 15px;
     color: #fff;
 }
 
-/* Empty State Styling */
 .empty-state {
     background: #1a1a1a;
     padding: 40px;
     border-radius: 12px;
     border: 1px dashed #444;
+    text-align: center;
 }
 
-/* Grid Layout for Tickets */
 .booking-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 25px;
 }
 
-/* Individual Ticket Card */
+
 .b-card {
     background: #1f1f1f;
     border-radius: 15px;
@@ -51,7 +50,6 @@
     border-color: #e50914;
 }
 
-/* Movie Title Area */
 .movie-name {
     font-size: 1.4rem;
     font-weight: 600;
@@ -62,7 +60,7 @@
     border-bottom: 1px solid #333;
 }
 
-/* Details Section */
+
 .movie-detail {
     padding: 20px;
 }
@@ -79,7 +77,7 @@
     color: #888;
 }
 
-/* Seat and Price Styling */
+
 .seat-badge {
     background: #333;
     color: #fff;
@@ -95,7 +93,7 @@
     font-size: 1.1rem;
 }
 
-/* Button & Status Area */
+
 .btn-area {
     padding: 15px 20px;
     background: #181818;
@@ -123,10 +121,13 @@
 
 .tag-expired {
     display: block;
-    color: #666;
+    color: #ff4d4d; 
     font-size: 0.9rem;
-    font-style: italic;
-    border: 1px solid #333;
-    padding: 8px;
+    font-weight: bold;
+    border: 1px solid rgba(255, 77, 77, 0.3);
+    background: rgba(255, 77, 77, 0.05);
+    padding: 10px;
     border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }

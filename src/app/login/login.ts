@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
 
   private router = inject(Router);
   private http = inject(HttpClient);
-  // SSR error se bachne ke liye PLATFORM_ID inject karein
+
   private platformId = inject(PLATFORM_ID);
 
   loginData = {

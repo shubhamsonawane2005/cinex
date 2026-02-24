@@ -1,12 +1,12 @@
 import { Component, inject  } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common'; // <--- ngIf ke liye ye zaroori hai
+import { CommonModule } from '@angular/common'; 
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterModule, FormsModule, CommonModule], // <--- CommonModule add kiya
+  imports: [RouterModule, FormsModule, CommonModule], 
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
@@ -18,7 +18,7 @@ export class NavbarComponent {
  
   get isLoggedIn(): boolean {
     if (typeof window !== 'undefined') {
-      return !!localStorage.getItem('token'); // !! string ko boolean mein badal deta hai
+      return !!localStorage.getItem('token'); 
     }
     return false; 
   }
@@ -38,8 +38,8 @@ export class NavbarComponent {
 
   // Logout function
   logout() {
-    localStorage.removeItem('token'); // Token khatam
+    localStorage.removeItem('token'); 
     alert("Logged out successfully!");
-    this.router.navigate(['/login']); // Login pe wapas
+    this.router.navigate(['/login']); 
   }
 }
