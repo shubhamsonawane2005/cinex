@@ -3,20 +3,17 @@
 
   <div class="movies-grid">
     <div class="movie-card" *ngFor="let movie of movies" [routerLink]="['/movie', movie.id]">
-      
       <div class="card-image">
-        <img [src]="movie.image" [alt]="movie.title">
+        <img [src]="movie.image" [alt]="movie.title" />
       </div>
 
       <div class="card-content">
         <h3 class="movie-title">{{ movie.title }}</h3>
         <p class="movie-info">{{ movie.year || '2025' }} • {{ movie.genre }}</p>
-        
+
         <div class="card-footer">
           <button class="btn-buy">View Details</button>
-          <div class="rating">
-             <i class="fa-solid fa-star"></i> {{ movie.rating }}
-          </div>
+          <div class="rating"><i class="fa-solid fa-star"></i> {{ movie.rating }}</div>
         </div>
       </div>
     </div>

@@ -53,12 +53,13 @@
           </div>
           <div class="card-info">
             <h3>{{ movie.title }}</h3>
-            <select [(ngModel)]="movie.selectedTheater" 
+            <p class="movie-info">{{ movie.year || '2025' }} • {{ movie.genre }}</p>
+            <!-- <select [(ngModel)]="movie.selectedTheater" 
                     style="width: 100%; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px; padding: 5px; margin-top: 5px;">
               <option value="PVR: Rahul Raj Mall">PVR: Rahul Raj Mall</option>
               <option value="INOX: VR Mall">INOX: VR Mall</option>
               <option value="Cinepolis: Imperial">Cinepolis: Imperial</option>
-            </select>
+            </select> -->
           </div>
         </div>
         }

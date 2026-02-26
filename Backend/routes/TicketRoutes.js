@@ -20,7 +20,7 @@ router.post('/save', async (req, res) => {
       movieTitle: req.body.movieTitle,
       theaterName: req.body.theaterName,
       userEmail: req.body.userEmail,
-      userName:req.body.userName,
+      userName: req.body.userName,
       showTime: req.body.showTime,
       showDate: req.body.showDate,
       seats: req.body.seats,
@@ -36,8 +36,12 @@ router.post('/save', async (req, res) => {
     res.status(200).json({ success: true, data: savedBooking });
   } catch (error) {
     console.error('CRITICAL SAVE ERROR:', error.message);
-    if (error.errors) {
-      console.log('Validation Details:', Object.keys(error.errors));
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Data format galat hai!',
+        details: error.message,
+      });
     }
     res.status(500).json({ success: false, message: error.message });
   }
@@ -99,26 +103,26 @@ router.get('/stats', async (req, res) => {
       MovieTicket.aggregate([{ $group: { _id: null, total: { $sum: '$totalAmount' } } }]),
     ]);
 
-    const bookings =await MovieTicket.aggregate([
+    const bookings = await MovieTicket.aggregate([
       { $sort: { createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
       {
         $lookup: {
-          from: 'users',          
-          localField: 'userEmail',  
-          foreignField: 'email',    
-          as: 'userDetails'         
-        }
+          from: 'users',
+          localField: 'userEmail',
+          foreignField: 'email',
+          as: 'userDetails',
+        },
       },
       {
         $addFields: {
-          userName: { $arrayElemAt: ['$userDetails.username', 0] } 
-        }
+          userName: { $arrayElemAt: ['$userDetails.username', 0] },
+        },
       },
       {
-        $project: { userDetails: 0 } 
-      }
+        $project: { userDetails: 0 },
+      },
     ]);
 
     res.status(200).json({
@@ -145,7 +149,7 @@ router.get('/booked-seats', async (req, res) => {
       movieTitle: movie,
       theaterName: theater,
       showTime: time,
-      showDate: date
+      showDate: date,
     });
 
     let bookedSeatsArray = [];
@@ -156,10 +160,10 @@ router.get('/booked-seats', async (req, res) => {
       }
     });
 
-    console.log("========================================");
+    console.log('========================================');
     console.log(`✅ TOTAL BOOKED SEATS FOUND: ${bookedSeatsArray.length}`);
     console.log(`💺 SEAT LIST: [ ${bookedSeatsArray.join(' | ')} ]`);
-    console.log("========================================\n");
+    console.log('========================================\n');
 
     res.status(200).json(bookedSeatsArray);
   } catch (error) {

@@ -19,18 +19,16 @@ export class MoviesComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   ngOnInit() {
-    // 1. Pehle saari movies load karo
     this.movieService.getMovies().subscribe((data) => {
       this.allMovies = data;
       this.movies = data; 
 
-      // 2. Movies load hone ke BAAD check karo URL mein search term 'q' hai ya nahi
       this.route.queryParams.subscribe(params => {
         const searchTerm = params['q'];
         if (searchTerm) {
           this.filterMovies(searchTerm);
         } else {
-          this.movies = [...this.allMovies]; // Reset to all movies if search is cleared
+          this.movies = [...this.allMovies]; 
         }
       });
     });

@@ -95,7 +95,7 @@ export class PaymentComponent implements OnInit {
       userName: userName,
       showTime: this.showTime,
       showDate: this.showDate, 
-      seats: typeof this.seats === 'string' ? this.seats.split(',') : this.seats,
+      seats: Array.isArray(this.seats) ? this.seats.join(', ') : String(this.seats),
       totalAmount: this.finalAmount,
       paymentStatus: 'Paid',
       bookingId: bookingId
