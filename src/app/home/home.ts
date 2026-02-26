@@ -9,13 +9,13 @@ import { MoviesRelese, ReleseMovie } from './relese.movie';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule], // <-- FormsModule yahan dalo
+  imports: [CommonModule, RouterModule, FormsModule], 
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
 export class HomeComponent implements OnInit {
   
-  movies: any[] = []; // Movie[] ki jagah any[] kiya taaki theaterName add ho sake
+  movies: any[] = []; 
   private movieService = inject(MovieService);
   
   relese: MoviesRelese[] = [];
@@ -26,7 +26,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.movieService.getMovies().subscribe((data) => {
-      // Har movie ke liye ek default theater set kar rahe hain
       this.movies = data.map(m => ({...m, theaterName: 'PVR: Rahul Raj Mall'}));
       this.slides = data; 
     });

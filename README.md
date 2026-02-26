@@ -61,17 +61,10 @@ For more information on using the Angular CLI, including detailed command refere
 
 
 <!-- what change task -->
-1. sit booking page in available time change 
-2. and default selected users selected time, and after user can change the time
-3. change css in selected sit "process to checkout 
-3. select sit option. and when user select seet then autometic select another seet
-
-<!-- advance task -->
-4. booked seet are show disable or also different color.
-5. payment page in add "Pay at Cinema" option.
-6. relese movie work notification 
-
-<!-- admin panel -->
-7. dashboard on status in show how  to pay fees user.
-8. manage movie in show the how many seet booked today and which movie live now?.
-9. up to comming ....
+1. footer handle 
+2. when project start then login problen on navbar 
+3. cast photo add 
+4. manage movies in occupancy 
+5. Theaters in can't show the how many seat booked today problem 
+6. Documentation 
+7. ppt
