@@ -30,7 +30,7 @@ export class MoviesComponent implements OnInit {
         } else {
           this.movies = [...this.allMovies]; 
         }
-      });
+      });//enfe
     });
   }
 
