@@ -1,17 +1,22 @@
-/* --- 1. GLOBAL CONTAINER & HEADER --- */
+/* ===============================
+   1. GLOBAL CONTAINER
+================================= */
 .admin-container {
   padding: 30px;
   max-width: 1200px;
   margin: 0 auto;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #121212;
+  background-color: #0f0f0f;
   min-height: 100vh;
   color: #ffffff;
 }
 
+/* ===============================
+   2. HEADER
+================================= */
 .page-header {
   margin-bottom: 30px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #222;
   padding-bottom: 20px;
   display: flex;
   justify-content: space-between;
@@ -20,7 +25,7 @@
 
 .header-content h1 {
   margin: 0;
-  color: #e50914; /* Netflix Red */
+  color: #e50914;
   font-size: 2rem;
   font-weight: 800;
 }
@@ -30,21 +35,28 @@
   color: #888;
 }
 
-/* Add Theater Button (Blue) */
 .btn-add {
-  background-color: #e02312;
+  background: linear-gradient(135deg, #e50914, #b20710);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 1rem;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 0.95rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
+  transition: 0.3s ease;
 }
 
-/* --- 2. THEATER GRID & CARDS --- */
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
+}
+
+/* ===============================
+   3. THEATER GRID
+================================= */
 .theater-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -52,36 +64,36 @@
 }
 
 .theater-card {
-  background: #1f1f1f;
-  border: 1px solid #333;
-  border-radius: 10px;
+  background: #181818;
+  border: 1px solid #222;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .theater-card:hover {
-  transform: translateY(-5px);
-  border-color: #444;
+  transform: translateY(-6px);
+  border-color: #333;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
 }
 
-/* Card Header */
+/* ===============================
+   4. CARD HEADER
+================================= */
 .card-header {
-  background: #252525;
+  background: #202020;
   padding: 20px;
   display: flex;
   align-items: center;
   gap: 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #222;
 }
 
 .header-icon {
   width: 45px;
   height: 45px;
-  background: #333;
-  border-radius: 8px;
+  background: #2a2a2a;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,30 +107,31 @@
 
 .header-info h2 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #fff;
 }
 
 .sub-text {
   font-size: 0.8rem;
-  color: #999;
+  color: #777;
 }
 
-/* Trash Icon (Card Header) */
 .btn-icon-del {
   background: none;
   border: none;
   color: #555;
   cursor: pointer;
   font-size: 1rem;
-  transition: color 0.2s ease;
+  transition: 0.3s ease;
 }
 
 .btn-icon-del:hover {
-  color: #dc3545;
+  color: #ff4d4f;
 }
 
-/* --- 3. MOVIE ROWS (Inside Card) --- */
+/* ===============================
+   5. MOVIE ROW
+================================= */
 .movies-list {
   padding: 15px;
 }
@@ -126,9 +139,9 @@
 .movie-row {
   display: flex;
   gap: 15px;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #222;
 }
 
 .movie-row:last-child {
@@ -138,20 +151,22 @@
 }
 
 .thumb {
-  width: 50px;
-  height: 75px;
+  width: 55px;
+  height: 80px;
   object-fit: cover;
-  border-radius: 4px;
-  background: #333;
+  border-radius: 6px;
+  background: #2a2a2a;
 }
 
 .movie-info h4 {
-  margin: 0 0 8px 0;
-  font-size: 1rem;
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
   color: #ddd;
 }
 
-/* Time Slot Buttons */
+/* ===============================
+   6. TIME BUTTONS
+================================= */
 .time-chips {
   display: flex;
   flex-wrap: wrap;
@@ -161,48 +176,82 @@
 .time-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  white-space: nowrap;
   padding: 8px 12px;
-  background: #2a2a2a;
-  border: 1px solid #444;
+  background: #252525;
+  border: 1px solid #333;
   border-radius: 20px;
-  color: white;
-  transition: all 0.3s ease;
+  color: #fff;
+  font-size: 0.8rem;
   min-width: 140px;
+  transition: 0.3s ease;
 }
 
 .time-btn:hover {
-  background: #3a3a3a;
-  border-color: #666;
+  background: #303030;
+  border-color: #444;
+}
+
+.time-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #222;
 }
 
 .occupancy-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
+
 .occupancy-text {
   font-size: 0.75rem;
-  color: #bbb;
-  font-weight: normal;
+  color: #aaa;
 }
 
-.empty-theater {
-  text-align: center;
-  padding: 30px;
-  color: #555;
+/* ===============================
+   7. FOOTER STATUS
+================================= */
+.theater-card-footer {
+  padding: 15px;
+  border-top: 1px solid #222;
+  background: #181818;
 }
 
-/* --- 4. MODAL OVERLAYS --- */
+.status-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status-badge.closed {
+  background: rgba(220, 53, 69, 0.15);
+  color: #ff4d4f;
+  border: 1px solid #ff4d4f;
+}
+
+.status-badge.open {
+  background: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+  border: 1px solid #28a745;
+}
+
+.grayscale {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+/* ===============================
+   8. MODAL
+================================= */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(4px);
   display: flex;
@@ -211,29 +260,33 @@
   z-index: 2000;
 }
 
-/* Form Box (Add Theater) */
-.form-box {
+.form-box,
+.inspector-box {
   background: #1a1a1a;
-  width: 500px;
-  max-width: 90vw;
-  border-radius: 10px;
-  border: 1px solid #333;
+  border-radius: 16px;
+  border: 1px solid #222;
   overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
 }
 
-.modal-header {
+.form-box {
+  width: 500px;
+  max-width: 90vw;
+}
+
+.inspector-box {
+  width: 550px;
+  max-width: 95vw;
+}
+
+.modal-header,
+.inspector-header {
   padding: 20px;
-  background: #222;
-  border-bottom: 1px solid #333;
+  background: #202020;
+  border-bottom: 1px solid #222;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.modal-header h2 {
-  margin: 0;
-  color: white;
-  font-size: 1.2rem;
 }
 
 .btn-close {
@@ -242,9 +295,11 @@
   color: #fff;
   font-size: 1.5rem;
   cursor: pointer;
-  line-height: 1;
 }
 
+/* ===============================
+   9. FORM
+================================= */
 .modal-body {
   padding: 25px;
 }
@@ -264,19 +319,14 @@
   width: 100%;
   padding: 12px;
   background: #222;
-  border: 1px solid #444;
+  border: 1px solid #333;
   color: white;
-  border-radius: 6px;
-  box-sizing: border-box;
+  border-radius: 8px;
 }
 
 .form-group input:focus {
-  border-color: #007bff;
+  border-color: #e50914;
   outline: none;
-}
-
-.req {
-  color: #e50914;
 }
 
 .modal-actions {
@@ -296,7 +346,7 @@
 }
 
 .btn-save {
-  background: #007bff;
+  background: linear-gradient(135deg, #e50914, #b20710);
   color: white;
   padding: 10px 20px;
   border-radius: 6px;
@@ -310,49 +360,15 @@
   cursor: not-allowed;
 }
 
-/* --- 5. BOOKING INSPECTOR (Seat Map) --- */
-.inspector-box {
-  background: #1a1a1a;
-  width: 550px;
-  max-width: 95vw;
-  border-radius: 12px;
-  border: 1px solid #333;
-  overflow: hidden;
-}
-
-.inspector-header {
-  padding: 20px;
-  background: #222;
-  border-bottom: 1px solid #333;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.insp-info h3 {
-  margin: 0;
-  color: #fff;
-  font-size: 1.2rem;
-}
-
-.insp-info p {
-  margin: 5px 0 0;
-  color: #888;
-  font-size: 0.9rem;
-}
-
-.highlight {
-  color: #e50914;
-  font-weight: bold;
-}
-
-/* Visual Seat Map Styling */
+/* ===============================
+   10. SEAT MAP
+================================= */
 .visual-map {
   padding: 35px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #0b0b0b;
+  background: #0a0a0a;
 }
 
 .screen {
@@ -361,13 +377,6 @@
   border-top: 4px solid #fff;
   border-radius: 50% 50% 0 0;
   margin-bottom: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  color: #555;
-  font-size: 0.7rem;
-  letter-spacing: 3px;
-  box-shadow: 0 -10px 20px rgba(255, 255, 255, 0.1);
 }
 
 .seat-grid {
@@ -378,7 +387,7 @@
 
 .row {
   display: flex;
-  gap: 40px; /* This creates the Aisle Gap */
+  gap: 40px;
 }
 
 .seat-group {
@@ -392,22 +401,17 @@
   background: #333;
   border-radius: 6px;
   font-size: 0.7rem;
-  color: #666;
+  color: #777;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #444;
-  cursor: default;
-  transition: all 0.2s ease;
-  pointer-events: none;
-  user-select: none;
 }
 
 .seat.booked {
   background: #e50914;
   color: white;
   border-color: #e50914;
-  pointer-events: none;
   box-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
 }
 
@@ -419,14 +423,7 @@
   color: #aaa;
 }
 
-.legend span {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .dot {
-  display: inline-block;
   width: 12px;
   height: 12px;
   border-radius: 3px;
@@ -439,66 +436,4 @@
 
 .dot.booked {
   background: #e50914;
-}
-
-
-.theater-card-footer {
-  padding: 15px;
-  border-top: 1px solid #eee;
-  background: #fafafa;
-}
-
-.status-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.status-badge.closed {
-  background: #fff1f0;
-  color: #cf1322;
-  border: 1px solid #ffa39e;
-}
-
-.status-badge.open {
-  background: #ffa39e;
-  color: #cf1322;
-  border: 1px solid #b7eb8f;
-}
-
-.grayscale {
-  filter: grayscale(1);
-  opacity: 0.6;
-}
-
-.individual-movie-status {
-  padding: 4px 10px;
-  margin-left: 60px; /* Thumbnail image ke baad se start ho */
-  margin-top: -5px;
-  margin-bottom: 10px;
-}
-
-.status-text-closed {
-  color: #ff4d4f;
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.grayscale {
-  filter: grayscale(1);
-  opacity: 0.5;
-}
-
-.time-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-  background: #333 !important;
 }

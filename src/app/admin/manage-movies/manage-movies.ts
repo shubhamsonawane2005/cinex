@@ -151,6 +151,7 @@ export class ManageMoviesComponent implements OnInit {
 
     action$.subscribe({
       next: () => {
+        this.movieService.refreshMovies();
         this.loadMoviesFromService(); // Reload data
         this.closeForm();
       },
