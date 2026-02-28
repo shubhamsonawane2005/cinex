@@ -6,16 +6,22 @@ import { Observable, forkJoin } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 // Manage Movies ki local interface (Showtimes ke liye)
-interface Showtime {
-  theaterId: number;
-  theaterName: string;
-  times: string[];
+interface ShowtimeSlot {
+  time: string;
+  bookedCount: number;
 }
 
+interface TheaterShowtime {
+  theaterId: number;
+  theaterName: string;
+  times: ShowtimeSlot[];
+}
+
+// Backend se aane wale Movie data ke saath local status aur showtimes jodna
 export interface ManageMovie extends ServiceMovie {
   _id: string;
   status: 'released' | 'upcoming';
-  showtimes: any[];
+  showtimes: TheaterShowtime[];
 }
 
 @Component({
@@ -35,80 +41,13 @@ export class ManageMoviesComponent implements OnInit {
   allMovies: ManageMovie[] = [];
   activeTab: 'released' | 'upcoming' = 'released';
   viewMode: 'grid' | 'list' = 'grid';
-
+  
   showInspector: boolean = false;
   inspectMovie: ManageMovie | null = null;
   inspectTheaterId: number | null = null;
   inspectTime: string = '';
 
-  ngOnInit() {
-    this.loadMoviesFromService();
-  }
-
-  loadMoviesFromService() {
-    forkJoin({
-      released: this.movieService.getMovies(),
-      upcoming: this.movieService.getUpComingMovies(),
-    }).subscribe(({ released, upcoming }) => {
-      const releasedMapped: ManageMovie[] = released.map((m) => {
-        const theaterShowtimes = [
-          {
-            theaterId: 1,
-            theaterName: 'PVR: Rahul Raj Mall',
-            times: ['10:00 AM', '01:30 PM', '05:00 PM', '09:00 PM'].map((t) => ({
-              time: t,
-              bookedCount: 0,
-            })),
-          },
-          {
-            theaterId: 2,
-            theaterName: 'INOX: VR Mall',
-            times: ['11:00 AM', '02:00 PM', '06:15 PM', '10:30 PM'].map((t) => ({
-              time: t,
-              bookedCount: 0,
-            })),
-          },
-        ];
-
-        return {
-          ...m,
-          id: Number(m._id),
-          status: 'released',
-          showtimes: theaterShowtimes,
-        };
-      });
-
-      const upcomingMapped: ManageMovie[] = upcoming.map((m) => ({
-        ...m,
-        id: m._id,
-        status: 'upcoming',
-        showtimes: [],
-      }));
-
-      this.allMovies = [...releasedMapped, ...upcomingMapped];
-
-      this.fetchAllBookingCounts();
-    });
-  }
-  fetchAllBookingCounts() {
-    this.allMovies.forEach((movie) => {
-      if (movie.status === 'released') {
-        movie.showtimes.forEach((theater) => {
-          theater.times.forEach((timeSlot: any) => {
-            this.authService
-              .getBookedSeats(movie.title, theater.theaterName, this.todayDate, timeSlot.time)
-              .subscribe((seats) => {
-                timeSlot.bookedCount = seats.length;
-                this.cdr.detectChanges(); // UI refresh
-              });
-          });
-        });
-      }
-    });
-  }
-  // --- CRUD FORM LOGIC ---
-
-  // Show the form
+  // Form Management
   showForm = false;
   isEditing = false;
   movieForm: any = {
@@ -119,7 +58,71 @@ export class ManageMoviesComponent implements OnInit {
     showtimes: [],
   };
 
-  // 1. Ffor open the form
+  constructor() {}
+
+  ngOnInit() {
+    this.loadMoviesFromService();
+  }
+
+  // --- DATA LOADING LOGIC ---
+  loadMoviesFromService() {
+    // Parallel API calls to fetch both statuses
+    forkJoin({
+      released: this.movieService.getMovies(),
+      upcoming: this.movieService.getUpComingMovies(),
+    }).subscribe({
+      next: ({ released, upcoming }) => {
+        // 1. Map Released Movies
+        const releasedMapped: ManageMovie[] = released.map((m) => ({
+          ...m,
+          _id: m._id, // Ensure _id is used
+          status: 'released',
+          showtimes: this.getDefaultShowtimes(),
+        }));
+
+        // 2. Map Upcoming Movies
+        const upcomingMapped: ManageMovie[] = upcoming.map((m) => ({
+          ...m,
+          _id: m._id,
+          status: 'upcoming',
+          showtimes: [], // Upcoming movies don't have showtimes yet
+        }));
+
+        // 3. Combine and remove potential duplicates based on _id
+        const combinedMovies = [...releasedMapped, ...upcomingMapped];
+        this.allMovies = combinedMovies.filter(
+          (movie, index, self) => index === self.findIndex((m) => m._id === movie._id),
+        );
+
+        console.log('Total Movies Loaded:', this.allMovies);
+        this.fetchAllBookingCounts();
+        this.cdr.detectChanges(); // Ensure UI updates
+      },
+      error: (err) => console.error('Error loading movies', err),
+    });
+  }
+
+  // --- BOOKING LOGIC ---
+  fetchAllBookingCounts() {
+    this.allMovies.forEach((movie) => {
+      // Only fetch bookings for released movies
+      if (movie.status === 'released') {
+        movie.showtimes.forEach((theater) => {
+          theater.times.forEach((timeSlot: ShowtimeSlot) => {
+            this.authService
+              .getBookedSeats(movie.title, theater.theaterName, this.todayDate, timeSlot.time)
+              .subscribe((seats) => {
+                timeSlot.bookedCount = seats.length;
+                this.cdr.detectChanges(); // Update count in UI
+              });
+          });
+        });
+      }
+    });
+  }
+
+  // --- CRUD FORM LOGIC ---
+
   openAddForm() {
     this.showForm = true;
     this.isEditing = false;
@@ -132,45 +135,84 @@ export class ManageMoviesComponent implements OnInit {
     };
   }
 
-  // 2. for close the form
   closeForm() {
     this.showForm = false;
   }
 
-  // 3. for save the form
   saveMovie() {
     const movieData = { ...this.movieForm };
+    console.log('Saving movie:', movieData);
+
     const action$: Observable<any> = this.isEditing
       ? this.movieService.updateMovie(movieData)
       : movieData.status === 'upcoming'
-        ? this.movieService.addUpcomingMovie(movieData) // Assume this exists
-        : this.movieService.addMovie(movieData); // Existing add method
+        ? this.movieService.addUpcomingMovie(movieData) // Backend saves with status 'upcoming'
+        : this.movieService.addMovie(movieData); // Backend saves with status 'released'
 
     action$.subscribe({
       next: () => {
-        this.loadMoviesFromService();
+        this.loadMoviesFromService(); // Reload data
         this.closeForm();
       },
       error: (err) => console.error('Operation failed', err),
     });
   }
 
-  // --- TIME CALCULATION LOGIC ---
-  isTimePassed(timeStr: any): boolean {
-    if (!timeStr || typeof timeStr !== 'string') return false; // Safety check
+  editMovie(movie: ManageMovie) {
+    this.isEditing = true;
+    this.showForm = true;
+    this.movieForm = { ...movie };
+    console.log('Editing Movie:', movie.title);
+  }
 
-    const now = new Date();
-    let hours: number, minutes: number;
-
-    if (timeStr.includes('AM') || timeStr.includes('PM')) {
-      const [time, modifier] = timeStr.split(' ');
-      [hours, minutes] = time.split(':').map(Number);
-      if (modifier === 'PM' && hours < 12) hours += 12;
-      if (modifier === 'AM' && hours === 12) hours = 0;
-    } else {
-      [hours, minutes] = timeStr.split(':').map(Number);
+  deleteMovie(id: string) {
+    if (confirm('Are you sure you want to delete this movie?')) {
+      this.movieService.deleteMovie(id).subscribe({
+        next: () => {
+          this.loadMoviesFromService(); // Reload data immediately
+        },
+        error: (err) => console.error('Delete Failed', err),
+      });
     }
+  }
 
+  // --- TIME & UI HELPERS ---
+
+  // Hardcoded showtimes as per previous logic
+  private getDefaultShowtimes(): TheaterShowtime[] {
+    return [
+      {
+        theaterId: 1,
+        theaterName: 'PVR: Rahul Raj Mall',
+        times: ['10:00 AM', '01:30 PM', '05:00 PM', '09:00 PM'].map((t) => ({
+          time: t,
+          bookedCount: 0,
+        })),
+      },
+      {
+        theaterId: 2,
+        theaterName: 'INOX: VR Mall',
+        times: ['11:00 AM', '02:00 PM', '06:15 PM', '10:30 PM'].map((t) => ({
+          time: t,
+          bookedCount: 0,
+        })),
+      },
+    ];
+  }
+
+  get filteredMovies() {
+    const filtered = this.allMovies.filter((m) => m.status === this.activeTab);
+    console.log(`Filtered for ${this.activeTab}:`, filtered);
+    return filtered;
+  }
+
+  isTimePassed(timeStr: string): boolean {
+    if (!timeStr) return false;
+    const now = new Date();
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    if (modifier === 'PM' && hours < 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
     const showTime = new Date();
     showTime.setHours(hours, minutes, 0, 0);
     return showTime < now;
@@ -178,60 +220,30 @@ export class ManageMoviesComponent implements OnInit {
 
   isMovieOver(movie: ManageMovie): boolean {
     if (movie.status === 'upcoming' || !movie.showtimes.length) return false;
-
     let totalShows = 0;
     let passedShows = 0;
-
-    movie.showtimes.forEach((s: any) => {
-      s.times.forEach((t: any) => {
-        // Change to any
+    movie.showtimes.forEach((s) => {
+      s.times.forEach((t) => {
         totalShows++;
         if (this.isTimePassed(t.time)) passedShows++;
       });
     });
-
     return totalShows > 0 && totalShows === passedShows;
-  }
-
-  get filteredMovies() {
-    return this.allMovies.filter((m) => m.status === this.activeTab);
-  }
-
-  deleteMovie(id: string) {
-    if (confirm('DO you want to delete?')) {
-      this.movieService.deleteMovie(id).subscribe({
-        next: () => {
-          this.loadMoviesFromService();
-        },
-        error: (err) => console.error('Delete Faild', err),
-      });
-    }
-  }
-
-  editMovie(movie: ManageMovie) {
-    this.isEditing = true;
-    this.showForm = true;
-    this.movieForm = { ...movie };
-    console.log('Editing Movie:', movie.title, 'ID:', this.movieForm._id);
   }
 
   openInspector(movie: ManageMovie) {
     this.showInspector = true;
     this.inspectMovie = movie;
-
     if (movie.showtimes && movie.showtimes.length > 0) {
-      const firstShow = movie.showtimes[0] as Showtime;
-
-      this.inspectTheaterId = firstShow.theaterId;
-
-      if (firstShow.times && firstShow.times.length > 0) {
-        this.inspectTime = firstShow.times[0];
+      this.inspectTheaterId = movie.showtimes[0].theaterId;
+      if (movie.showtimes[0].times && movie.showtimes[0].times.length > 0) {
+        this.inspectTime = movie.showtimes[0].times[0].time;
         this.loadBookings();
       }
     }
   }
+
   loadBookings() {
-    // Yahan bookings load karne ka logic aayega
     console.log('Loading seats for:', this.inspectTime);
   }
 }

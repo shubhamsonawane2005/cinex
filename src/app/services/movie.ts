@@ -26,12 +26,12 @@ export class MovieService {
 
   // get All movie
   getMovies(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(`${this.apiUrl}?status=released`);
+    return this.http.get<Movie[]>(this.apiUrl);
   }
 
   // Get upcomming movie
   getUpComingMovies(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(`${this.apiUrl}?status=upcoming`);
+    return this.http.get<Movie[]>(`${this.apiUrl}/upcoming`);
   }
 
   addUpcomingMovie(movie: Movie): Observable<Movie> {

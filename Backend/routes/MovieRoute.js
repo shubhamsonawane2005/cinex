@@ -5,13 +5,18 @@ const router = express.Router();
 
 // Get All movie
 router.get('/', async(req, res) => {
-    const movies = await Movie.find();
+    const movies = await Movie.find({ 
+        status: 'released'
+    });
     res.json(movies);
 })
 
 // Add Movie
 router.post('/', async(req, res) => {
-    const newMovie = new Movie(req.body);
+    const newMovie = new Movie({
+        ...req.body,
+        status: 'released'
+    });
     await newMovie.save();
     res.status(201).json(newMovie);
 })
