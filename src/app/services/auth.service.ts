@@ -34,6 +34,14 @@ export class AuthService {
     return false;
   }
 
+  getCurrentUser(): any {
+    if (isPlatformBrowser(this.platformId)) {
+      const user = localStorage.getItem('user'); 
+      return user ? JSON.parse(user) : null;
+    }
+    return null;
+  }
+
   getUserDetails(email: string): Observable<any> {
     return this.http.get(`${this.authUrl}/user/${email}`);
   }

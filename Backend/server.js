@@ -3,6 +3,9 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const connectDB = require('./config/db.js');
 require('dotenv').config();
+// import '@angular/compiler'
+require('@angular/compiler');
+
 
 // Route Imports
 const MovieRoute = require('./routes/MovieRoute.js');

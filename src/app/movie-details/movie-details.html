@@ -116,7 +116,7 @@
   <div class="section-container">
     <h3>You May Also Like</h3>
     <div class="similar-grid">
-      <div class="movie-card-small" *ngFor="let m of similarMovies" [routerLink]="['/movie', m.id]">
+      <div class="movie-card-small" *ngFor="let m of similarMovies" [routerLink]="['/movie', m._id]">
         <img [src]="m.image" [alt]="m.title">
         <div class="card-title">{{ m.title }}</div> 
         <div class="card-rating">⭐ {{ m.rating }}</div>

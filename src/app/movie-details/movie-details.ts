@@ -33,7 +33,7 @@ export class MovieDetailsComponent implements OnInit {
   ngOnInit() {
     this.generateLiveDates();
     this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
+      const id = params.get('id');
       if (id) { this.loadMovie(id); }
     });
   }
@@ -79,9 +79,10 @@ export class MovieDetailsComponent implements OnInit {
     { id: 4, name: 'Rajhans Multiplex', address: 'Pal Hazira Road, Adajan, Surat', timings: ['10:15 AM', '01:45 PM', '05:30 PM', '09:45 PM'], mapUrl: 'https://www.google.com/maps/search/?api=1&query=Rajhans+Cinema+Pal+Adajan+Surat' }
   ];
 
-  loadMovie(id: number) {
+  loadMovie(id: string) {
     this.movieService.getMovieById(id).subscribe(data => { this.movie = data; });
-    this.movieService.getMovies().subscribe(data => { this.similarMovies = data.filter(m => m.id !== id); });
+    this.movieService.getMovies().subscribe(data => { 
+      this.similarMovies = data.filter(m => m._id !== id); });
   }
 
   selectDate(index: number) {
@@ -104,12 +105,12 @@ export class MovieDetailsComponent implements OnInit {
       // Hum URL mein MovieId, TheaterId aur SelectedTime teeno bhej rahe hain
       this.router.navigate([
         '/booking', 
-        this.movie.id, 
+        this.movie._id, 
         this.selectedTheater, 
         this.selectedTime
       ]);
 
-      console.log("Navigating with:", this.movie.id, this.selectedTheater, this.selectedTime);
+      console.log("Navigating with:", this.movie._id, this.selectedTheater, this.selectedTime);
 
     } else {
       alert('Please select a theater and a showtime first.');

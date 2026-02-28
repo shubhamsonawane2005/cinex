@@ -68,7 +68,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let movie of filteredMovies" [class.row-dimmed]="isMovieOver(movie)">
-          <td>#{{ movie.id }}</td>
+          <td>#{{ movie._id }}</td>
           <td><img [src]="movie.image" class="table-poster" /></td>
           <td>
             <strong>{{ movie.title }}</strong
@@ -97,7 +97,7 @@
               <i class="fa-solid fa-pen"></i>
             </button>
 
-            <button class="btn-icon delete" (click)="deleteMovie(movie.id!)">
+            <button class="btn-icon delete" (click)="deleteMovie(movie._id!)">
               <i class="fa-solid fa-trash"></i>
             </button>
           </td>

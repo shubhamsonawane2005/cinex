@@ -2,7 +2,7 @@
   <h2 class="page-title">Now Showing</h2>
 
   <div class="movies-grid">
-    <div class="movie-card" *ngFor="let movie of movies" [routerLink]="['/movie', movie.id]">
+    <div class="movie-card" *ngFor="let movie of movies" [routerLink]="['/movie', movie._id]">
       <div class="card-image">
         <img [src]="movie.image" [alt]="movie.title" />
       </div>

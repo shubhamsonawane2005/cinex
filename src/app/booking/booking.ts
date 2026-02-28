@@ -58,7 +58,7 @@ export class BookingComponent implements OnInit {
 
     // 3. Movie Title fetch after seats load .
     if (movieId) {
-      this.movieService.getMovieById(Number(movieId)).subscribe(movie => {
+      this.movieService.getMovieById(movieId).subscribe(movie => {
         if (movie) {
           this.movieTitle = movie.title;
           this.fetchBookedSeats();

@@ -13,7 +13,7 @@ interface Showtime {
 }
 
 export interface ManageMovie extends ServiceMovie {
-  id: number;
+  _id: string;
   status: 'released' | 'upcoming';
   showtimes: any[];
 }
@@ -48,7 +48,7 @@ export class ManageMoviesComponent implements OnInit {
   loadMoviesFromService() {
     forkJoin({
       released: this.movieService.getMovies(),
-      upcoming: this.movieService.getUpcomingMovies(),
+      upcoming: this.movieService.getUpComingMovies(),
     }).subscribe(({ released, upcoming }) => {
       const releasedMapped: ManageMovie[] = released.map((m) => {
         const theaterShowtimes = [
@@ -72,7 +72,7 @@ export class ManageMoviesComponent implements OnInit {
 
         return {
           ...m,
-          id: Number(m.id),
+          id: Number(m._id),
           status: 'released',
           showtimes: theaterShowtimes,
         };
@@ -80,7 +80,7 @@ export class ManageMoviesComponent implements OnInit {
 
       const upcomingMapped: ManageMovie[] = upcoming.map((m) => ({
         ...m,
-        id: Number(m.id),
+        id: m._id,
         status: 'upcoming',
         showtimes: [],
       }));
@@ -139,15 +139,20 @@ export class ManageMoviesComponent implements OnInit {
 
   // 3. for save the form
   saveMovie() {
-    if (this.isEditing) {
-      this.allMovies = this.allMovies.map((m) =>
-        m.id === this.movieForm.id ? { ...this.movieForm } : m,
-      );
-    } else {
-      this.movieForm.id = Date.now(); // Temporary unique ID
-      this.allMovies.push({ ...this.movieForm });
-    }
-    this.closeForm();
+    const movieData = { ...this.movieForm };
+    const action$: Observable<any> = this.isEditing
+      ? this.movieService.updateMovie(movieData)
+      : movieData.status === 'upcoming'
+        ? this.movieService.addUpcomingMovie(movieData) // Assume this exists
+        : this.movieService.addMovie(movieData); // Existing add method
+
+    action$.subscribe({
+      next: () => {
+        this.loadMoviesFromService();
+        this.closeForm();
+      },
+      error: (err) => console.error('Operation failed', err),
+    });
   }
 
   // --- TIME CALCULATION LOGIC ---
@@ -181,7 +186,6 @@ export class ManageMoviesComponent implements OnInit {
       s.times.forEach((t: any) => {
         // Change to any
         totalShows++;
-        // t.time pass karein kyunki t ab ek object hai
         if (this.isTimePassed(t.time)) passedShows++;
       });
     });
@@ -193,9 +197,14 @@ export class ManageMoviesComponent implements OnInit {
     return this.allMovies.filter((m) => m.status === this.activeTab);
   }
 
-  deleteMovie(id: number) {
-    if (confirm('Kya aap is movie ko delete karna chahte hain?')) {
-      this.allMovies = this.allMovies.filter((m) => m.id !== id);
+  deleteMovie(id: string) {
+    if (confirm('DO you want to delete?')) {
+      this.movieService.deleteMovie(id).subscribe({
+        next: () => {
+          this.loadMoviesFromService();
+        },
+        error: (err) => console.error('Delete Faild', err),
+      });
     }
   }
 
@@ -203,7 +212,7 @@ export class ManageMoviesComponent implements OnInit {
     this.isEditing = true;
     this.showForm = true;
     this.movieForm = { ...movie };
-    console.log('Editing Movie:', movie.title);
+    console.log('Editing Movie:', movie.title, 'ID:', this.movieForm._id);
   }
 
   openInspector(movie: ManageMovie) {
