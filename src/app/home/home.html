@@ -1,39 +1,49 @@
+<div class="home-container" *ngIf="movies$ | async as moviesList">
+  <!-- ====== SLIDER ====== -->
+  <div class="slider-container" *ngIf="moviesList.length > 0">
+    <button class="arrow left-arrow" (click)="prev()">‹</button>
 
-<div class="home-container">
-  <div class="home-container">
-    <div class="slider-container" *ngIf="slides.length > 0">
-      <button class="arrow left-arrow" (click)="prev()">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-      <button class="arrow right-arrow" (click)="next()">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-      <div class="slider-viewport">
-        @for (reles of relese; track reles.id; let i = $index) {
-        <div class="slide" [class.active]="i === currentIndex">
-          <img [src]="reles.backdrop || reles.image" [alt]="reles.title" class="relese-image">
-          <div class="slide-content">
-            <h1 class="slide-title">{{ reles.title }}</h1>
-            <p class="slide-desc">{{reles.description}}</p>
-            <div class="slide-content-detail">
-              <p class="slide-genre">Genre : {{ reles.genre }}</p>
-              <p class="slide-duration">Duration : {{ reles.Duration }}</p>
-              <p class="slide-Relese">Relese : {{ reles.year }}</p>
-              <p class="slide-rating">Rating : {{ reles.rating }}</p>
-            </div>
+    <button class="arrow right-arrow" (click)="next()">›</button>
+
+    <div class="slider-viewport">
+      <div
+        class="slide"
+        *ngFor="let movie of slides; let i = index"
+        [class.active]="i === currentIndex"
+      >
+        <img
+          [src]="movie.image || 'assets/no-image.jpg'"
+          [alt]="movie.title"
+          class="release-image"
+        />
+
+        <div class="slide-content">
+          <h1>{{ movie.title }}</h1>
+
+          <p class="slide-desc">
+            {{ getDescription(movie) }}
+          </p>
+
+          <div class="slide-details">
+            <p>Genre: {{ movie.genre }}</p>
+            <p *ngIf="movie.year">Release: {{ movie.year }}</p>
+            <p *ngIf="movie.rating">Rating: {{ movie.rating }}</p>
           </div>
         </div>
-        }
       </div>
-      <div class="pagination">
-        @for (s of slides; track $index) {
-        <span class="dot" [class.active-dot]="$index === currentIndex" (click)="goToSlide($index)"></span>
-        }
-      </div>
+    </div>
+
+    <div class="pagination">
+      <span
+        class="dot"
+        *ngFor="let s of slides; let i = index"
+        [class.active-dot]="i === currentIndex"
+        (click)="goToSlide(i)"
+      ></span>
     </div>
   </div>
 
-  <div class="movies-section">
+  <div class="movies-section" *ngIf="movies.length > 0">
     <div class="section-header">
       <h3>Now Showing</h3>
       <a routerLink="/movies" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
@@ -41,19 +51,23 @@
 
     <div class="slider-wrapper">
       <div class="movie-track">
-
-        @for (movie of movies; track movie.id) {
-        <div class="movie-card-slider">
-          <div class="card-image" [routerLink]="['/movie', movie.id]" 
-               [queryParams]="{ name: movie.title, theater: movie.selectedTheater || 'PVR: Rahul Raj Mall', time: '10:00 PM' }">
-            <img [src]="movie.image" [alt]="movie.title">
-            <div class="rating-badge">
-              <i class="fa-solid fa-star"></i> {{ movie.rating }}
-            </div>
+        <!-- @for (movie of movies; track movie.id) { -->
+        <div class="movie-card-slider" *ngFor="let movie of movies">
+          <div
+            class="card-image"
+            [routerLink]="['/movie', movie._id]"
+            [queryParams]="{
+              name: movie.title,
+              theater: movie.selectedTheater || 'PVR: Rahul Raj Mall',
+              time: '10:00 PM',
+            }"
+          >
+            <img [src]="movie.image" [alt]="movie.title" />
+            <div class="rating-badge"><i class="fa-solid fa-star"></i> {{ movie.rating }}</div>
           </div>
           <div class="card-info">
             <h3>{{ movie.title }}</h3>
-            <p class="movie-info">{{ movie.year || '2025' }} • {{ movie.genre }}</p>
+            <p class="movie-info">{{ movie.year || '2026' }} • {{ movie.genre || 'Drama' }}</p>
             <!-- <select [(ngModel)]="movie.selectedTheater" 
                     style="width: 100%; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px; padding: 5px; margin-top: 5px;">
               <option value="PVR: Rahul Raj Mall">PVR: Rahul Raj Mall</option>
@@ -62,29 +76,30 @@
             </select> -->
           </div>
         </div>
-        }
+        <!-- } -->
 
-        @for (movie of movies; track 'dup-' + movie.id) {
-        <div class="movie-card-slider">
-          <div class="card-image" [routerLink]="['/movie', movie.id]" 
-               [queryParams]="{ name: movie.title, theater: movie.selectedTheater || 'PVR: Rahul Raj Mall', time: '10:00 PM' }">
-            <img [src]="movie.image" [alt]="movie.title">
-            <div class="rating-badge">
-              <i class="fa-solid fa-star"></i> {{ movie.rating }}
+        @for (movie of movies; track 'dup-' + movie._id) {
+          <div class="movie-card-slider">
+            <div
+              class="card-image"
+              [routerLink]="['/movie', movie._id]"
+              [queryParams]="{
+                name: movie.title,
+                theater: movie.selectedTheater || 'PVR: Rahul Raj Mall',
+                time: '10:00 PM',
+              }"
+            >
+              <img [src]="movie.image" [alt]="movie.title" />
+              <div class="rating-badge"><i class="fa-solid fa-star"></i> {{ movie.rating }}</div>
+            </div>
+            <div class="card-info">
+              <h3>{{ movie.title }}</h3>
+              <p class="movie-info">{{ movie.year || '2025' }} • {{ movie.genre }}</p>
             </div>
           </div>
-          <div class="card-info">
-            <h3>{{ movie.title }}</h3>
-            <select [(ngModel)]="movie.selectedTheater" 
-                    style="width: 100%; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px; padding: 5px; margin-top: 5px;">
-              <option value="PVR: Rahul Raj Mall">PVR: Rahul Raj Mall</option>
-              <option value="INOX: VR Mall">INOX: VR Mall</option>
-            </select>
-          </div>
-        </div>
         }
-
       </div>
     </div>
   </div>
+  <!-- </div> -->
 </div>

@@ -11,15 +11,10 @@ router.get('/', async(req, res) => {
     res.json(movies);
 })
 
-// Add Movie
-router.post('/', async(req, res) => {
-    const newMovie = new Movie({
-        ...req.body,
-        status: 'released'
-    });
-    await newMovie.save();
-    res.status(201).json(newMovie);
-})
+router.get('/upcoming', async(req, res) => {
+    const upcomingMovies = await Movie.find({ status: 'upcoming' });
+    res.json(upcomingMovies);
+});
 
 router.post('/upcoming', async(req, res) => {
     // Assuming your 'Movie' model has a 'status' field to differentiate
@@ -31,9 +26,27 @@ router.post('/upcoming', async(req, res) => {
     res.status(201).json(newUpcomingMovie);
 });
 
-router.get('/upcoming', async(req, res) => {
-    const upcomingMovies = await Movie.find({ status: 'upcoming' });
-    res.json(upcomingMovies);
+// Add Movie
+router.post('/', async(req, res) => {
+    const newMovie = new Movie({
+        ...req.body,
+        status: 'released'
+    });
+    await newMovie.save();
+    res.status(201).json(newMovie);
+})
+
+// get single movie
+router.get('/:id', async (req, res) => {
+    try {
+        const movie = await Movie.findById(req.params.id);
+        if (!movie) {
+            return res.status(404).json({ message: "Movie not found" });
+        }
+        res.json(movie);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
 });
 
 router.put("/:id", async(req, res) => {

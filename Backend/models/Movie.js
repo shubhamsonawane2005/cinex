@@ -9,9 +9,9 @@ const movieSchema = mongoose.Schema({
         type: String, 
         enum: ['released', 'upcoming'], 
         default: 'released'              
-    }
-    // year: { type: Number, required: true },
+    },
     // description: String,
+    // year: { type: Number, required: true },
     // rating: Number
 }, { timestamps: true });
 

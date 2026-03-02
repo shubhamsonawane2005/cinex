@@ -22,6 +22,7 @@ import { ManageTheatersComponent } from './admin/manage-theaters/manage-theaters
 export const routes: Routes = [
   // User Routes
   { path: '', component: HomeComponent },
+  { path: 'home', component: HomeComponent },
   { path: 'movies', component: MoviesComponent },
   
   // 1. PEHLE YE KAREGA (Date/Time selection isi page par aayegi)
