@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DialogAlertService } from '../services/dialog-alert.service';
 
 @Component({
   selector: 'app-navbar',
@@ -13,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class NavbarComponent {
   searchTerm: string = '';
   private router = inject(Router);
+  private dialogAlertService = inject(DialogAlertService);
 
   get isLoggedIn(): boolean {
     if (typeof window !== 'undefined') {
@@ -53,7 +55,8 @@ export class NavbarComponent {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('userName'); // Username bhi remove karein
-    alert('Logged out successfully!');
+    // alert('Logged out successfully!');
+    this.dialogAlertService.showAlert('Logged out successfully');
     this.router.navigate(['/login']);
   }
 }

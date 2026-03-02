@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { DialogAlertService } from '../services/dialog-alert.service';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class LoginComponent implements OnInit {
   private http = inject(HttpClient);
 
   private platformId = inject(PLATFORM_ID);
+  private dialogAlertService = inject(DialogAlertService);
 
   loginData = {
     email: '',
@@ -65,13 +67,15 @@ export class LoginComponent implements OnInit {
           // --- FIX 1: Google login ke liye email save kiya ---
           localStorage.setItem('userEmail', payload.email);
 
-          alert(`Welcome ${payload.name}!`);
+          // alert(`Welcome ${payload.name}!`);
+          this.dialogAlertService.showAlert(`Welcome ${payload.name}!`)
           this.router.navigate(['/']);
         }
       },
       error: (err) => {
         console.error("Google Auth Error:", err);
-        alert("Google login failed to sync with database.");
+        // alert("Google login failed to sync with database.");
+        this.dialogAlertService.showAlert("Google login failed to sync with database!")
       }
     });
   }
@@ -89,7 +93,8 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('role', 'admin');
         localStorage.setItem('userEmail', 'admin@gmail.com');
       }
-      alert("Welcome Admin!");
+      // alert("Welcome Admin!");
+      this.dialogAlertService.showAlert("Welcome Admin!")
       this.router.navigate(['/admin/dashboard']);
       return;
     }
@@ -106,12 +111,14 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('userEmail', response.user.email);
           localStorage.setItem('userName', response.user.username);
         }
-        alert("Welcome Back!");
-        this.router.navigate(['/']); // Normal user home page jayega
+        // alert("Welcome Back!");
+        this.dialogAlertService.showAlert("Welcome Back!")
+        this.router.navigate(['/']); 
       },
       error: (err) => {
         console.error("Login Error:", err);
-        alert("Invalid Email or Password!");
+        // alert("Invalid Email or Password!");
+        this.dialogAlertService.showAlert("Invalid Email or Password!")
       }
     });
   }
