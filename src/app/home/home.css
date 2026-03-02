@@ -117,24 +117,28 @@
 
 /* ================= MOVIES ================= */
 .movies-section {
-  padding: 50px 70px;
+  padding: 40px 70px; /* Padding adjust ki */
+  margin-top: 50px;
 }
 
 /* Header */
 .section-header {
   display: flex;
   justify-content: space-between;
+  align-items: center; /* ✅ Alignment sahi ki */
   margin-bottom: 25px;
 }
 
 .section-header h3 {
   font-size: 26px;
+  margin: 0; /* Margin reset */
 }
 
 .view-all {
   color: #bbb;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: bolder;
 }
 
 .view-all:hover {
@@ -159,9 +163,9 @@
 
 /* Cards */
 .movie-card-slider {
-  width: 230px;
+  width: 250px; 
   flex-shrink: 0;
-  margin: 0 15px;
+  margin: 0 10px; 
   background: #1a1a1a;
   border-radius: 12px;
   overflow: hidden;
@@ -173,7 +177,7 @@
 }
 
 .movie-card-slider .card-image {
-  height: 340px;
+  height: 280px; /* ✅ Image height kam ki */
   position: relative;
 }
 
@@ -199,11 +203,11 @@
 
 /* Info */
 .card-info {
-  padding: 14px;
+  padding: 12px;
 }
 
 .card-info h3 {
-  font-size: 15px;
+  font-size: 14px; /* ✅ Font size chhota kiya */
   margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -211,7 +215,7 @@
 }
 
 .movie-info {
-  font-size: 13px;
+  font-size: 15px; /* ✅ Font size chhota kiya */
   color: #8b949e;
 }
 

@@ -31,51 +31,57 @@ export class BookingComponent implements OnInit {
   selectedTime: string = '';
   selectedDate: string = '';
 
+  movieId: string | null = null;
+  theaterId: string | null = null;
+
   rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   seatsPerRow: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   ngOnInit() {
-  this.route.paramMap.subscribe((params) => {
-    const movieId = params.get('movieId');
-    const theaterId = params.get('theaterId');
-    const timeFromPath = params.get('time');
+    this.route.paramMap.subscribe((params) => {
+      const movieId = params.get('movieId');
+      const theaterId = params.get('theaterId');
+      const timeFromPath = params.get('time');
 
-    // 1. Theater Name Set 
-    const theaterMap: Record<string, string> = {
-      '1': 'PVR: Rahul Raj Mall',
-      '2': 'INOX: VR Mall',
-      '3': 'Cinépolis: Imperial Square',
-      '4': 'Rajhans Multiplex'
-    };
-    this.theaterName = theaterId ? theaterMap[theaterId] : (this.route.snapshot.queryParams['theater'] || "PVR: Rahul Raj Mall");
+      // 1. Theater Name Set
+      const theaterMap: Record<string, string> = {
+        '1': 'PVR: Rahul Raj Mall',
+        '2': 'INOX: VR Mall',
+        '3': 'Cinépolis: Imperial Square',
+        '4': 'Rajhans Multiplex',
+      };
+      this.theaterName = theaterId
+        ? theaterMap[theaterId]
+        : this.route.snapshot.queryParams['theater'] || 'PVR: Rahul Raj Mall';
 
-    // 2. Time and Date Set 
-    if (timeFromPath) {
-      this.selectedTime = decodeURIComponent(timeFromPath);
-      this.times = [this.selectedTime];
-    }
-    this.selectedDate = this.route.snapshot.queryParams['date'] || new Date().toISOString().split('T')[0];
+      // 2. Time and Date Set
+      if (timeFromPath) {
+        this.selectedTime = decodeURIComponent(timeFromPath);
+        this.times = [this.selectedTime];
+      }
+      this.selectedDate =
+        this.route.snapshot.queryParams['date'] || new Date().toISOString().split('T')[0];
 
-    // 3. Movie Title fetch after seats load .
-    if (movieId) {
-      this.movieService.getMovieById(movieId).subscribe(movie => {
-        if (movie) {
-          this.movieTitle = movie.title;
-          this.fetchBookedSeats();
-        }
-      });
-    } else {
-      this.fetchBookedSeats();
-    }
-  });
-}
+      // 3. Movie Title fetch after seats load .
+      if (movieId) {
+        this.movieService.getMovieById(movieId).subscribe((movie) => {
+          if (movie) {
+            this.movieTitle = movie.title;
+            this.fetchBookedSeats();
+          }
+        });
+      } else {
+        this.fetchBookedSeats();
+      }
+    });
+  }
 
   fetchBookedSeats() {
     this.authService
       .getBookedSeats(this.movieTitle, this.theaterName, this.selectedDate, this.selectedTime)
       .subscribe({
         next: (seats) => {
-          this.bookedSeats = seats; 
+          this.bookedSeats = seats;
           this.cdr.detectChanges();
         },
         error: (err) => console.error('Error fetching seats', err),
@@ -99,7 +105,7 @@ export class BookingComponent implements OnInit {
       if (!this.isBooked(row, currentSeat)) {
         newSelection.push(`${row}${currentSeat}`);
       }
-      currentSeat++; 
+      currentSeat++;
     }
 
     if (newSelection.length < this.seatsToBook) {

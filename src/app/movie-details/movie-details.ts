@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { MovieService, Movie } from '../services/movie';
@@ -19,6 +19,7 @@ export class MovieDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private movieService = inject(MovieService);
+  private cdr = inject(ChangeDetectorRef);
   dates: any[] = [];
   similarMovies: Movie[] = [];
 
@@ -80,9 +81,10 @@ export class MovieDetailsComponent implements OnInit {
   ];
 
   loadMovie(id: string) {
-    this.movieService.getMovieById(id).subscribe(data => { this.movie = data; });
+    this.movieService.getMovieById(id).subscribe(data => { this.movie = data; this.cdr.detectChanges() });
     this.movieService.getMovies().subscribe(data => { 
       this.similarMovies = data.filter(m => m._id !== id); });
+      this.cdr.detectChanges();
   }
 
   selectDate(index: number) {

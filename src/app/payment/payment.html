@@ -78,7 +78,7 @@
 
       <div *ngIf="isUpiVerified" class="qr-container">
         <p>Scan this QR to pay <strong>Rs. {{ finalAmount }}</strong></p>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PaymentForMovie" alt="UPI QR Code" class="qr-code">
+        <img [src]=" 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + movieTitle + '-RS' + finalAmount" alt="UPI QR Code" class="qr-code">
         <button (click)="processPayment()" class="btn-pay">I have paid</button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MovieService, Movie } from '../services/movie';
 import { AuthService } from '../services/auth.service'; // 1. AuthService import kiya
@@ -14,11 +14,13 @@ export class ReleasesComponent implements OnInit {
   upcomingMovies: Movie[] = [];
   private movieService = inject(MovieService);
   private authService = inject(AuthService); // 2. AuthService inject kiya
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.movieService.getUpComingMovies().subscribe({
       next: (data) => {
         this.upcomingMovies = data;
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Could not load upcoming movies', err),
     });
