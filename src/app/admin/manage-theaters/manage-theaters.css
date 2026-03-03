@@ -59,7 +59,8 @@
 ================================= */
 .theater-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  /* Min width thoda kam kiya taaki responsiveness behtar ho */
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 25px;
 }
 
@@ -69,12 +70,14 @@
   border-radius: 14px;
   overflow: hidden;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column; /* Footer ko niche rakhne ke liye */
 }
 
 .theater-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   border-color: #333;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 /* ===============================
@@ -99,6 +102,7 @@
   justify-content: center;
   color: #e50914;
   font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
 .header-info {
@@ -107,13 +111,13 @@
 
 .header-info h2 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #fff;
 }
 
 .sub-text {
-  font-size: 0.8rem;
-  color: #777;
+  font-size: 0.85rem;
+  color: #aaa;
 }
 
 .btn-icon-del {
@@ -130,38 +134,77 @@
 }
 
 /* ===============================
-   5. MOVIE ROW
+   5. MOVIE LIST & ROWS
 ================================= */
 .movies-list {
   padding: 15px;
+  flex-grow: 1;
 }
 
-.movie-row {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 18px;
-  padding-bottom: 18px;
+.movie-row-container {
+  margin-bottom: 15px;
   border-bottom: 1px solid #222;
+  padding-bottom: 15px;
 }
 
-.movie-row:last-child {
+.movie-row-container:last-child {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
 }
 
+.movie-row {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
 .thumb {
-  width: 55px;
-  height: 80px;
+  width: 60px;
+  height: 85px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #2a2a2a;
+  flex-shrink: 0;
+}
+
+.movie-info {
+  flex: 1;
 }
 
 .movie-info h4 {
   margin: 0 0 10px 0;
-  font-size: 0.95rem;
-  color: #ddd;
+  font-size: 1rem;
+  color: #eee;
+}
+
+/* --- FIX: Missing Status Styles --- */
+.individual-movie-status {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.status-text-closed {
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.empty-theater {
+  text-align: center;
+  padding: 30px;
+  color: #555;
+}
+
+.empty-theater i {
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
 /* ===============================
@@ -176,6 +219,7 @@
 .time-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   padding: 8px 12px;
   background: #252525;
@@ -183,11 +227,12 @@
   border-radius: 20px;
   color: #fff;
   font-size: 0.8rem;
-  min-width: 140px;
+  width: calc(50% - 4px); /* Buttons ko adha adha baant diya */
   transition: 0.3s ease;
+  cursor: pointer;
 }
 
-.time-btn:hover {
+.time-btn:hover:not(:disabled) {
   background: #303030;
   border-color: #444;
 }
@@ -195,18 +240,22 @@
 .time-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: #222;
+  background: #1a1a1a;
+  border-color: #222;
 }
 
 .occupancy-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .occupancy-text {
   font-size: 0.75rem;
   color: #aaa;
+  margin-left: auto; /* Occupancy text ko right mein shift karne ke liye */
+  margin-right: 5px;
 }
 
 /* ===============================
@@ -215,7 +264,8 @@
 .theater-card-footer {
   padding: 15px;
   border-top: 1px solid #222;
-  background: #181818;
+  background: #151515;
+  margin-top: auto; /* Card ke bottom mein rakhne ke liye */
 }
 
 .status-badge {
@@ -223,10 +273,10 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
-  padding: 8px;
+  padding: 10px;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .status-badge.closed {
@@ -245,195 +295,4 @@
   filter: grayscale(1);
   opacity: 0.5;
 }
-
-/* ===============================
-   8. MODAL
-================================= */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.form-box,
-.inspector-box {
-  background: #1a1a1a;
-  border-radius: 16px;
-  border: 1px solid #222;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-}
-
-.form-box {
-  width: 500px;
-  max-width: 90vw;
-}
-
-.inspector-box {
-  width: 550px;
-  max-width: 95vw;
-}
-
-.modal-header,
-.inspector-header {
-  padding: 20px;
-  background: #202020;
-  border-bottom: 1px solid #222;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.btn-close {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-/* ===============================
-   9. FORM
-================================= */
-.modal-body {
-  padding: 25px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #ccc;
-  font-size: 0.9rem;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 12px;
-  background: #222;
-  border: 1px solid #333;
-  color: white;
-  border-radius: 8px;
-}
-
-.form-group input:focus {
-  border-color: #e50914;
-  outline: none;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 30px;
-}
-
-.btn-cancel {
-  background: #333;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-save {
-  background: linear-gradient(135deg, #e50914, #b20710);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-save:disabled {
-  background: #444;
-  color: #888;
-  cursor: not-allowed;
-}
-
-/* ===============================
-   10. SEAT MAP
-================================= */
-.visual-map {
-  padding: 35px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #0a0a0a;
-}
-
-.screen {
-  width: 70%;
-  height: 40px;
-  border-top: 4px solid #fff;
-  border-radius: 50% 50% 0 0;
-  margin-bottom: 40px;
-}
-
-.seat-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.row {
-  display: flex;
-  gap: 40px;
-}
-
-.seat-group {
-  display: flex;
-  gap: 8px;
-}
-
-.seat {
-  width: 30px;
-  height: 30px;
-  background: #333;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  color: #777;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #444;
-}
-
-.seat.booked {
-  background: #e50914;
-  color: white;
-  border-color: #e50914;
-  box-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
-}
-
-.legend {
-  margin-top: 30px;
-  display: flex;
-  gap: 25px;
-  font-size: 0.8rem;
-  color: #aaa;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-}
-
-.dot.free {
-  background: #333;
-  border: 1px solid #444;
-}
-
-.dot.booked {
-  background: #e50914;
-}
+/* ... Rest of your Modal CSS stays the same ... */

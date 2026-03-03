@@ -17,9 +17,9 @@
           <h2>{{ theater.name }}</h2>
           <span class="sub-text">{{ theater.location }}</span>
         </div>
-        <button class="btn-icon-del" (click)="deleteTheater(theater.id)" title="Remove Theater">
+        <!-- <button class="btn-icon-del" (click)="deleteTheater(theater.id)" title="Remove Theater">
           <i class="fa-solid fa-trash"></i>
-        </button>
+        </button> -->
       </div>
 
       <div class="movies-list">
@@ -48,7 +48,7 @@
               </div>
             </div>
           </div>
-
+          
           <div class="individual-movie-status" *ngIf="isMovieFinished(movie)">
             <span class="status-text-closed">
               <i class="fa-solid fa-circle-xmark"></i> Shows Finished for this Movie

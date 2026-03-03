@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MovieService, Movie as ServiceMovie } from '../../services/movie'; // Service import karein
 import { Observable, forkJoin } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { TheaterService } from '../../services/theater.service';
 
 // Manage Movies ki local interface (Showtimes ke liye)
 interface ShowtimeSlot {
@@ -34,6 +35,7 @@ export interface ManageMovie extends ServiceMovie {
 export class ManageMoviesComponent implements OnInit {
   private movieService = inject(MovieService);
   private authService = inject(AuthService);
+  private theaterService = inject(TheaterService);
   private cdr = inject(ChangeDetectorRef);
 
   todayDate: string = new Date().toISOString().split('T')[0];
@@ -41,7 +43,7 @@ export class ManageMoviesComponent implements OnInit {
   allMovies: ManageMovie[] = [];
   activeTab: 'released' | 'upcoming' = 'released';
   viewMode: 'grid' | 'list' = 'grid';
-  
+
   showInspector: boolean = false;
   inspectMovie: ManageMovie | null = null;
   inspectTheaterId: number | null = null;
@@ -67,6 +69,7 @@ export class ManageMoviesComponent implements OnInit {
   // --- DATA LOADING LOGIC ---
   loadMoviesFromService() {
     // Parallel API calls to fetch both statuses
+    const currentTheaters = this.theaterService.getTheaters();
     forkJoin({
       released: this.movieService.getMovies(),
       upcoming: this.movieService.getUpComingMovies(),
@@ -77,7 +80,14 @@ export class ManageMoviesComponent implements OnInit {
           ...m,
           _id: m._id, // Ensure _id is used
           status: 'released',
-          showtimes: this.getDefaultShowtimes(),
+          showtimes: currentTheaters.map((t: any) => ({
+            theaterId: t.id,
+            theaterName: t.name,
+            times: this.getTimesForTheater(t.name).map((time) => ({
+              time: time,
+              bookedCount: 0,
+            })),
+          })),
         }));
 
         // 2. Map Upcoming Movies
@@ -94,12 +104,32 @@ export class ManageMoviesComponent implements OnInit {
           (movie, index, self) => index === self.findIndex((m) => m._id === movie._id),
         );
 
-        console.log('Total Movies Loaded:', this.allMovies);
+        console.log('Total Movies Loaded:', JSON.stringify(this.allMovies, null, 2));
         this.fetchAllBookingCounts();
         this.cdr.detectChanges(); // Ensure UI updates
       },
       error: (err) => console.error('Error loading movies', err),
     });
+  }
+
+  private getTimesForTheater(name: string): string[] {
+    if (name.includes('PVR')) {
+      return ['10:00 AM', '01:30 PM', '05:00 PM', '09:00 PM'];
+    }
+    // 2. INOX ke liye
+    if (name.includes('INOX')) {
+      return ['11:00 AM', '02:00 PM', '06:15 PM', '10:30 PM'];
+    }
+    // 3. Cinépolis ke liye
+    if (name.includes('Cinépolis')) {
+      return ['09:30 AM', '12:45 PM', '04:30 PM', '08:15 PM'];
+    }
+    // 4. Rajhans ke liye (Naya block)
+    if (name.includes('Rajhans')) {
+      return ['10:30 AM', '02:15 PM', '06:00 PM', '09:30 PM'];
+    }
+    // Default slots agar koi naya theater add ho
+    return ['10:15 AM', '01:45 PM', '05:30 PM', '09:45 PM'];
   }
 
   // --- BOOKING LOGIC ---
@@ -179,28 +209,6 @@ export class ManageMoviesComponent implements OnInit {
 
   // --- TIME & UI HELPERS ---
 
-  // Hardcoded showtimes as per previous logic
-  private getDefaultShowtimes(): TheaterShowtime[] {
-    return [
-      {
-        theaterId: 1,
-        theaterName: 'PVR: Rahul Raj Mall',
-        times: ['10:00 AM', '01:30 PM', '05:00 PM', '09:00 PM'].map((t) => ({
-          time: t,
-          bookedCount: 0,
-        })),
-      },
-      {
-        theaterId: 2,
-        theaterName: 'INOX: VR Mall',
-        times: ['11:00 AM', '02:00 PM', '06:15 PM', '10:30 PM'].map((t) => ({
-          time: t,
-          bookedCount: 0,
-        })),
-      },
-    ];
-  }
-
   get filteredMovies() {
     const filtered = this.allMovies.filter((m) => m.status === this.activeTab);
     console.log(`Filtered for ${this.activeTab}:`, filtered);
@@ -246,5 +254,30 @@ export class ManageMoviesComponent implements OnInit {
 
   loadBookings() {
     console.log('Loading seats for:', this.inspectTime);
+  }
+
+  getOccupancyStats() {
+    if (!this.inspectMovie || !this.inspectMovie.showtimes) {
+      return { parentage: 0, booked: 0, total: 0 };
+    }
+
+    let totalBooked = 0;
+    let totalCapacity = 0;
+    const SEAT_PER_SHOW = 200;
+
+    this.inspectMovie.showtimes.forEach((theater) => {
+      theater.times.forEach((slot) => {
+        totalBooked += slot.bookedCount || 0;
+        totalCapacity += SEAT_PER_SHOW;
+      });
+    });
+
+    const percentage = totalCapacity > 0 ? Math.round((totalBooked / totalCapacity) * 100) : 0;
+
+    return {
+      percentage,
+      booked: totalBooked,
+      total: totalCapacity,
+    };
   }
 }

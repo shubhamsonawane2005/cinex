@@ -112,25 +112,43 @@
         <h2><i class="fa-solid fa-chart-line"></i> Occupancy Report</h2>
         <button class="btn-close-x" (click)="showInspector = false">&times;</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" *ngIf="inspectMovie">
         <div class="movie-info-header">
-          <img [src]="inspectMovie?.image" class="mini-poster" />
+          <img [src]="inspectMovie.image" class="mini-poster" />
           <div>
-            <h3>{{ inspectMovie?.title }}</h3>
-            <span class="time-badge">{{ inspectTime }}</span>
+            <h3>{{ inspectMovie.title }}</h3>
+            <p class="genre-text">{{ inspectMovie.genre }}</p>
+            <!-- <span class="time-badge">{{ inspectTime }}</span> -->
           </div>
         </div>
-        <div class="occupancy-stats">
-          <div class="progress-label">Total Occupancy: 75%</div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" style="width: 75%"></div>
+        <ng-container *ngIf="getOccupancyStats() as stats">
+          <div class="occupancy-stats">
+            <div class="progress-label">Current Occupancy: <strong>{{stats.percentage}}%</strong></div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" [style.width.%]="stats.percentage"></div>
+            </div>
+            <p class="stat-help">{{ stats.booked }} tickets sold out of {{ stats.total }} total capacity (All Shows)</p>
           </div>
-          <p class="stat-help">150 seats booked out of 200</p>
-        </div>
+          <hr class="divider" />
+          <div class="breakdown-section">
+            <h4>Showtime Performance</h4>
+            <div *ngFor="let theater of inspectMovie.showtimes" class="theater-report-card">
+              <p class="theater-name">
+                <strong>{{ theater.theaterName }}</strong>
+              </p>
+              <div class="slots-grid">
+                <div *ngFor="let slot of theater.times" class="slot-stat">
+                  <span>{{ slot.time }}</span>
+                  <span class="count-badge">{{ slot.bookedCount }} / 200</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
       </div>
-      <div class="modal-footer">
+      <!-- <div class="modal-footer">
         <button class="btn-modal-close" (click)="showInspector = false">Close Report</button>
-      </div>
+      </div> -->
     </div>
   </div>
 

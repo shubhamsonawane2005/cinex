@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, inject ,PLATFORM_ID} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MovieService } from '../../services/movie';
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
+import { TheaterService } from '../../services/theater.service';
+import { isPlatformBrowser } from '@angular/common';
 
 interface ScheduledMovie {
   title: string;
@@ -29,10 +31,13 @@ interface Theater {
 export class ManageTheatersComponent implements OnInit, OnDestroy {
   private movieService = inject(MovieService);
   private authService = inject(AuthService);
+  private theaterService = inject(TheaterService);
   private cdr = inject(ChangeDetectorRef);
+  private platformId = inject(PLATFORM_ID);
 
   private movieSub?: Subscription;
   private eventHandler = () => this.loadRealMoviesToTheaters();
+  
 
   todayDate: string = new Date().toISOString().split('T')[0];
   showInspector = false;
@@ -55,47 +60,23 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
     movies: [],
   };
 
-  theaters: Theater[] = [
-    {
-      id: 1,
-      name: 'PVR: Rahul Raj Mall',
-      location: 'Piplod, Surat',
-      facilities: 'Dolby Atmos, Recliners',
-      movies: [],
-    },
-    {
-      id: 2,
-      name: 'INOX: VR Mall',
-      location: 'Dumas Rd, Surat',
-      facilities: 'IMAX, Laser',
-      movies: [],
-    },
-    {
-      id: 3,
-      name: 'Cinépolis: Imperial Square',
-      location: 'Adajan, Surat',
-      facilities: '4DX, Coffee Shop',
-      movies: [],
-    },
-    {
-      id: 4,
-      name: 'Rajhans Multiplex',
-      location: 'Pal, Surat',
-      facilities: 'Budget Friendly',
-      movies: [],
-    },
-  ];
+  theaters: Theater[] = [];
 
   // ---------------- INIT ----------------
 
   ngOnInit() {
+    this.theaters= this.theaterService.getTheaters();
     this.loadRealMoviesToTheaters();
-    window.addEventListener('movieUpdated', this.eventHandler);
+    if (isPlatformBrowser(this.platformId)) {
+      window.addEventListener('movieUpdated', this.eventHandler);
+    }
   }
 
   ngOnDestroy() {
     this.movieSub?.unsubscribe();
-    window.removeEventListener('movieUpdated', this.eventHandler);
+    if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('movieUpdated', this.eventHandler);
+    }
   }
 
   // ---------------- LOAD MOVIES ----------------
@@ -237,14 +218,22 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
   saveTheater() {
     if (!this.theaterForm.name || !this.theaterForm.location) return;
 
-    this.theaterForm.id = Date.now();
-    this.theaters.push({ ...this.theaterForm });
-    this.closeForm();
+    const newTheater = { 
+    ...this.theaterForm, 
+    id: Date.now(),
+    movies: [] // Initialize empty movies array
+  };
+
+  // this.theaterService.addTheater(newTheater);
+  this.theaters = this.theaterService.getTheaters();
+  this.loadRealMoviesToTheaters();
+  this.closeForm();
   }
 
-  deleteTheater(id: number) {
-    if (confirm('Are you sure?')) {
-      this.theaters = this.theaters.filter((t) => t.id !== id);
-    }
-  }
+  // deleteTheater(id: number) {
+  //   if (confirm('Are you sure?')) {
+  //     this.theaterService.deleteTheater(id);
+  //     this.theaters = this.theaterService.getTheaters();
+  //   }
+  // }
 }
