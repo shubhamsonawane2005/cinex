@@ -48,7 +48,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="individual-movie-status" *ngIf="isMovieFinished(movie)">
             <span class="status-text-closed">
               <i class="fa-solid fa-circle-xmark"></i> Shows Finished for this Movie
@@ -70,6 +70,64 @@
         <div *ngIf="!isTheaterClosed(theater)" class="status-badge open">
           <i class="fa-solid fa-circle-check"></i>
           <span>Theater is Open</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="inspector-overlay" *ngIf="showInspector" (click)="closeInspector()">
+    <div class="inspector-modal custom-theater-view" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-main">
+          <h3>Occupancy View</h3>
+          <p>
+            {{ inspectTheaterName }} | <span style="color: #f39c12">{{ inspectMovieTitle }}</span>
+          </p>
+        </div>
+        <button class="close-btn" (click)="closeInspector()">&times;</button>
+      </div>
+
+      <div class="screen-container">
+        <div class="screen-curve">
+          <span>SCREEN SIDE</span>
+        </div>
+      </div>
+
+      <div class="theater-seating">
+        <div class="seat-grid">
+          <div *ngFor="let row of rows" class="row">
+            <div class="row-label">{{ row }}</div>
+
+            <div class="seat-group">
+              <div *ngFor="let seat of leftSeats" class="seat" [class.booked]="isBooked(row, seat)">
+                {{ seat }}
+              </div>
+            </div>
+
+            <div class="aisle-space"></div>
+
+            <div class="seat-group">
+              <div
+                *ngFor="let seat of rightSeats"
+                class="seat"
+                [class.booked]="isBooked(row, seat)"
+              >
+                {{ seat }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="legend">
+          <div class="item"><span class="box available"></span> Available</div>
+          <div class="item"><span class="box booked"></span> Booked</div>
+        </div>
+        <div class="stats">
+          <span
+            >Selected Show: <b>{{ inspectTime }}</b></span
+          >
+          <span class="badge-count">Booked: {{ bookedSeats.length }}</span>
         </div>
       </div>
     </div>

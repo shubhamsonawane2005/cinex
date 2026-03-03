@@ -1,4 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, inject ,PLATFORM_ID} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  PLATFORM_ID,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MovieService } from '../../services/movie';
@@ -37,7 +44,6 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
 
   private movieSub?: Subscription;
   private eventHandler = () => this.loadRealMoviesToTheaters();
-  
 
   todayDate: string = new Date().toISOString().split('T')[0];
   showInspector = false;
@@ -47,9 +53,9 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
   inspectMovieTitle = '';
   inspectTime = '';
 
-  rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F'];
+  rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   leftSeats = [1, 2, 3, 4];
-  rightSeats = [5, 6, 7, 8];
+  rightSeats = [5, 6, 7, 8, 9];
   bookedSeats: string[] = [];
 
   theaterForm: Theater = {
@@ -65,7 +71,7 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
   // ---------------- INIT ----------------
 
   ngOnInit() {
-    this.theaters= this.theaterService.getTheaters();
+    this.theaters = this.theaterService.getTheaters();
     this.loadRealMoviesToTheaters();
     if (isPlatformBrowser(this.platformId)) {
       window.addEventListener('movieUpdated', this.eventHandler);
@@ -100,7 +106,7 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
             times: times.map((t) => ({
               time: t,
               bookedCount: 0,
-              totalSeats: 48,
+              totalSeats: 90,
             })),
           }));
 
@@ -120,8 +126,12 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
       movie.times.forEach((timeSlot) => {
         this.authService
           .getBookedSeats(movie.title, theater.name, this.todayDate, timeSlot.time)
-          .subscribe((seats: string[]) => {
-            timeSlot.bookedCount = seats?.length || 0;
+          .subscribe({
+            next: (seats: string[]) => {
+              timeSlot.bookedCount = seats?.length || 0;
+              this.cdr.detectChanges();
+            },
+            error: (err) => console.error('Error loading count:', err),
           });
       });
     });
@@ -185,15 +195,29 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
 
     this.authService
       .getBookedSeats(movieTitle, theaterName, this.todayDate, timeData.time)
-      .subscribe((seats: string[]) => {
-        this.bookedSeats = seats || [];
-        this.cdr.detectChanges();
+      .subscribe({
+        next: (seats: string[]) => {
+          this.bookedSeats = seats || [];
+          this.showInspector = true;
+          console.log('Booked Seats Loaded:', this.bookedSeats);
+
+          setTimeout(() => {
+            this.cdr.detectChanges();
+          }, 0);
+        },
+        error: (err) => {
+          console.error('Error fetching seats', err);
+          this.showInspector = true;
+          this.bookedSeats = [];
+          this.cdr.detectChanges();
+        },
       });
   }
 
   closeInspector() {
     this.showInspector = false;
     this.bookedSeats = [];
+    // this.cdr.detectChanges();
   }
 
   isBooked(row: string, s: number): boolean {
@@ -218,16 +242,16 @@ export class ManageTheatersComponent implements OnInit, OnDestroy {
   saveTheater() {
     if (!this.theaterForm.name || !this.theaterForm.location) return;
 
-    const newTheater = { 
-    ...this.theaterForm, 
-    id: Date.now(),
-    movies: [] // Initialize empty movies array
-  };
+    const newTheater = {
+      ...this.theaterForm,
+      id: Date.now(),
+      movies: [], // Initialize empty movies array
+    };
 
-  // this.theaterService.addTheater(newTheater);
-  this.theaters = this.theaterService.getTheaters();
-  this.loadRealMoviesToTheaters();
-  this.closeForm();
+    // this.theaterService.addTheater(newTheater);
+    this.theaters = this.theaterService.getTheaters();
+    this.loadRealMoviesToTheaters();
+    this.closeForm();
   }
 
   // deleteTheater(id: number) {
