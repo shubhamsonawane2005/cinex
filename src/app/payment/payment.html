@@ -11,7 +11,7 @@
       <div class="movie-info">
         <h3>{{ movieTitle }}</h3>
         <p>{{ theaterName }}</p>
-        <p class="highlight">Today, {{ showTime }}</p>
+        <p class="highlight">{{ showDate | date:'fullDate'}}, {{showTime}}</p>
       </div>
     </div>
 

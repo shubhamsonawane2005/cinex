@@ -42,6 +42,7 @@ export class BookingComponent implements OnInit {
       const movieId = params.get('movieId');
       const theaterId = params.get('theaterId');
       const timeFromPath = params.get('time');
+      const selectDate = params.get('date');
 
       // 1. Theater Name Set
       const theaterMap: Record<string, string> = {

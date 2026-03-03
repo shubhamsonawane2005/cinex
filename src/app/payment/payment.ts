@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,6 +32,7 @@ export class PaymentComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -40,8 +41,15 @@ export class PaymentComponent implements OnInit {
       this.showTime = params['time'] || '';
       this.seats = params['seats'] || '';
       this.totalPrice = Number(params['price']) || 0;
-      // Date ko ensure karein ki query se aaye ya aaj ki date ho
-      this.showDate = params['date'] || new Date().toISOString().split('T')[0];
+      // console.log("Received Params:", params);
+      // this.showDate = params['date'] || new Date().toISOString().split('T')[0];
+      if (params['date']) {
+        this.showDate = params['date'];
+      } else {
+        this.showDate = new Date().toISOString().split('T')[0];
+        console.warn('Date missing in URL, using current date.');
+      }
+      this.cdr.detectChanges();
     });
   }
 
@@ -87,26 +95,32 @@ export class PaymentComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
+
+    const status = this.selectedMethod === 'offline' ? 'Pending' : 'Paid';
     const bookingData = {
       movieTitle: this.movieTitle,
       theaterName: this.theaterName,
       userEmail: userEmail,
       userName: userName,
       showTime: this.showTime,
-      showDate: this.showDate, 
+      showDate: this.showDate,
       seats: Array.isArray(this.seats) ? this.seats.join(', ') : String(this.seats),
       totalAmount: this.finalAmount,
-      paymentStatus: 'Paid',
-      bookingId: bookingId
+      paymentStatus: status,
+      bookingId: bookingId,
     };
 
     console.log('Final data to Backend:', bookingData);
 
     this.authService.saveBooking(bookingData).subscribe({
       next: (res: any) => {
-        alert('Booking Successful! Ticket is generating...');
-        // PDF download hone ke baad redirect hoga
+        const message =
+          this.selectedMethod === 'offline'
+            ? 'Booking Confirmed! Please pay at the cinema.'
+            : 'Payment Successful! Ticket is generating...';
+
+        alert(message);
+
         this.generatePDF(bookingData, () => {
           this.router.navigate(['/']);
         });
@@ -135,9 +149,10 @@ export class PaymentComponent implements OnInit {
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(22);
     doc.text(data.movieTitle.toUpperCase(), 20, 70);
-    
+
     doc.setFontSize(12);
     doc.text(`Theater: ${data.theaterName}`, 20, 85);
+
     doc.text(`Date: ${data.showDate}`, 20, 95);
     doc.text(`Time: ${data.showTime}`, 80, 95);
     doc.text(`Seats: ${data.seats}`, 140, 95);
@@ -145,6 +160,10 @@ export class PaymentComponent implements OnInit {
     doc.setFontSize(14);
     doc.text(`Booking ID: ${data.bookingId}`, 20, 115);
     doc.text(`Total Paid: Rs. ${data.totalAmount}`, 20, 125);
+    doc.setFontSize(12);
+    doc.setTextColor(data.paymentStatus === 'Pending' ? 255 : 0, 0, 0); // Red color for Pending
+    doc.text(`Status: ${data.paymentStatus}`, 20, 132);
+    doc.setTextColor(0, 0, 0);
 
     // QR Code
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.bookingId}`;
@@ -153,13 +172,13 @@ export class PaymentComponent implements OnInit {
     img.src = qrUrl;
 
     img.onload = () => {
-      doc.addImage(img, 'PNG', (pageWidth / 2) - 25, 140, 50, 50);
+      doc.addImage(img, 'PNG', pageWidth / 2 - 25, 140, 50, 50);
       doc.save(`Cinex_${data.bookingId}.pdf`);
-      onComplete(); // Navigation trigger karein
+      onComplete();
     };
 
     img.onerror = () => {
-      console.warn("QR code failed to load, saving PDF without it.");
+      console.warn('QR code failed to load, saving PDF without it.');
       doc.save(`Cinex_${data.bookingId}.pdf`);
       onComplete();
     };

@@ -101,16 +101,20 @@ export class MovieDetailsComponent implements OnInit {
   }
 
   proceedToBooking() {
-    if (this.movie && this.selectedTheater && this.selectedTime) {
+    const selectedDateObj = this.dates.find(d => d.active);
+    if (this.movie && this.selectedTheater && this.selectedTime && selectedDateObj) {
       
-      // Subham ki problem yahan solve hogi:
-      // Hum URL mein MovieId, TheaterId aur SelectedTime teeno bhej rahe hain
+      const formattedDate = selectedDateObj.fullDate.toISOString().split('T')[0];
+      console.log("Date Selected:", formattedDate);
+
       this.router.navigate([
         '/booking', 
         this.movie._id, 
         this.selectedTheater, 
         this.selectedTime
-      ]);
+      ],{
+        queryParams: { date: formattedDate }
+      });
 
       console.log("Navigating with:", this.movie._id, this.selectedTheater, this.selectedTime);
 
