@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MovieService } from '../services/movie';
 import { AuthService } from '../services/auth.service';
+import { DialogAlertService } from '../services/dialog-alert.service';
 
 @Component({
   selector: 'app-booking',
@@ -18,6 +19,7 @@ export class BookingComponent implements OnInit {
   private movieService = inject(MovieService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private dialogAlertService = inject(DialogAlertService);
 
   movieTitle: string = '';
   theaterName: string = '';
@@ -90,39 +92,54 @@ export class BookingComponent implements OnInit {
   }
 
   // --- SMART DYNAMIC SELECTION LOGIC (FIXED) ---
-  toggleSeat(row: string, seatNum: number) {
-    const seatId = `${row}${seatNum}`;
+  
+  toggleSeat(clickedRow: string, clickedSeatNum: number) {
+    // 1. Max Limit Check (90 Seats)
+    if (this.seatsToBook > 90) {
+      this.dialogAlertService.showAlert("Maximum limit is 90 seats!")
 
-    if (this.selectedSeats.includes(seatId)) {
+      this.seatsToBook = 90;
+      return;
+    }
+
+    // 2. Clicked Seat ka Index nikalna (Total 90 seats mein se kaunsa number hai)
+    // Row 'A' = 0, 'B' = 1... isliye (RowIndex * 9) + SeatNumber
+    const rowIndex = this.rows.indexOf(clickedRow);
+    const startIndex = rowIndex * 9 + (clickedSeatNum - 1);
+
+    // 3. Agar wahi seats dobara click ki, toh selection clear karo
+    if (this.selectedSeats.includes(`${clickedRow}${clickedSeatNum}`)) {
       this.selectedSeats = [];
       this.totalPrice = 0;
       return;
     }
 
     const newSelection: string[] = [];
-    let currentSeat = seatNum;
+    let currentIndex = startIndex;
 
-    while (newSelection.length < this.seatsToBook && currentSeat <= 9) {
-      if (!this.isBooked(row, currentSeat)) {
-        newSelection.push(`${row}${currentSeat}`);
+    // 4. Loop tab tak chalega jab tak seats puri na ho jayein ya theatre khatam na ho jaye
+    while (newSelection.length < this.seatsToBook && currentIndex < this.rows.length * 9) {
+      const rIdx = Math.floor(currentIndex / 9);
+      const sNum = (currentIndex % 9) + 1;
+      const seatId = `${this.rows[rIdx]}${sNum}`;
+
+      // Sirf wahi seats uthao jo pehle se booked nahi hain
+      if (!this.bookedSeats.includes(seatId)) {
+        newSelection.push(seatId);
       }
-      currentSeat++;
+
+      currentIndex++; // Agli seat par jao (yeh apne aap next row mein chala jayega index system ki wajah se)
     }
 
+    // 5. Final validation
     if (newSelection.length < this.seatsToBook) {
-      let backSeat = seatNum - 1;
-      while (newSelection.length < this.seatsToBook && backSeat >= 1) {
-        if (!this.isBooked(row, backSeat) && !newSelection.includes(`${row}${backSeat}`)) {
-          newSelection.unshift(`${row}${backSeat}`);
-        }
-        backSeat--;
-      }
+      this.dialogAlertService.showAlert("Not enough available seats from this position!")
+
     }
 
     this.selectedSeats = newSelection;
     this.totalPrice = this.selectedSeats.length * this.ticketPrice;
   }
-
   isSelected(row: string, seatNum: number): boolean {
     return this.selectedSeats.includes(row + seatNum);
   }
@@ -139,7 +156,7 @@ export class BookingComponent implements OnInit {
 
   goToPayment() {
     if (this.selectedSeats.length === 0) {
-      alert('Please select at least one seat!');
+      this.dialogAlertService.showAlert("Please select at least one seat!")
       return;
     }
 
