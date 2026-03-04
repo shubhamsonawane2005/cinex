@@ -59,12 +59,3 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
 
 
-
-<!-- what change task -->
-1. footer handle 
-2. when project start then login problen on navbar 
-3. cast photo add 
-4. manage movies in occupancy 
-5. Theaters in can't show the how many seat booked today problem 
-6. Documentation 
-7. ppt
