@@ -26,24 +26,24 @@ export class ReleasesComponent implements OnInit {
     });
   }
 
-  notifyUser(movieTitle: string) {
-    const currentUser = this.authService.getCurrentUser();
+  // notifyUser(movieTitle: string) {
+  //   const currentUser = this.authService.getCurrentUser();
 
-    let email = currentUser ? currentUser.email : prompt(`Enter email for ${movieTitle}:`);
+  //   let email = currentUser ? currentUser.email : prompt(`Enter email for ${movieTitle}:`);
 
-    if (email && email.includes('@')) {
-      const data = { email: email, movieName: movieTitle };
+  //   if (email && email.includes('@')) {
+  //     const data = { email: email, movieName: movieTitle };
 
-      this.authService.setupNotification({ email, movieName: movieTitle }).subscribe({
-        next: (res) => {
-          alert(`Success! Notification set for ${movieTitle}. Check your email!`);
-        },
-        error: (err) => {
-          alert('Error setting notification. Please try again.');
-        },
-      });
-    } else if (email) {
-      alert('Please enter a valid email address!');
-    }
-  }
+  //     this.authService.setupNotification({ email, movieName: movieTitle }).subscribe({
+  //       next: (res) => {
+  //         alert(`Success! Notification set for ${movieTitle}. Check your email!`);
+  //       },
+  //       error: (err) => {
+  //         alert('Error setting notification. Please try again.');
+  //       },
+  //     });
+  //   } else if (email) {
+  //     alert('Please enter a valid email address!');
+  //   }
+  // }
 }

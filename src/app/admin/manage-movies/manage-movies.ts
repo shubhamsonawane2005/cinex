@@ -263,7 +263,7 @@ export class ManageMoviesComponent implements OnInit {
 
     let totalBooked = 0;
     let totalCapacity = 0;
-    const SEAT_PER_SHOW = 200;
+    const SEAT_PER_SHOW = 90;
 
     this.inspectMovie.showtimes.forEach((theater) => {
       theater.times.forEach((slot) => {

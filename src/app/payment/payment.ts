@@ -72,7 +72,31 @@ export class PaymentComponent implements OnInit {
   }
 
   isCardValid(): boolean {
-    return this.cardNumber.length === 16 && this.expiry.length === 5 && this.cvv.length === 3;
+    // return this.cardNumber.length === 16 && this.expiry.length === 5 && this.cvv.length === 3;
+
+    if (this.cardNumber.length !== 16 || this.expiry.length !== 5 || this.cvv.length !== 3) {
+      return false;
+    }
+
+    // Expiry format MM/YY
+    const [monthStr, yearStr] = this.expiry.split('/');
+
+    const month = Number(monthStr);
+    const year = Number('20' + yearStr); // convert YY → YYYY
+
+    if (!month || !year || month < 1 || month > 12) {
+      return false;
+    }
+
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1; // 0-based
+    const currentYear = today.getFullYear();
+
+    // ❌ Expired card check
+    if (year < currentYear) return false;
+    if (year === currentYear && month < currentMonth) return false;
+
+    return true;
   }
 
   async processPayment() {
