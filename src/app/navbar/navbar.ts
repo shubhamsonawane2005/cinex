@@ -45,7 +45,6 @@ export class NavbarComponent {
 
   onSearch() {
     if (this.searchTerm.trim()) {
-      // ✅ Search ke liye bhi same logic use karein
       this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
         this.router.navigate(['/movies'], { queryParams: { q: this.searchTerm } });
       });
